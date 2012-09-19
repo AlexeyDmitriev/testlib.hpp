@@ -5,5 +5,5 @@ class Reader{
 	
 };
 
-template<typename T, typename = std::true_type>
+template<typename T, typename = void>
 class DefaultReader;

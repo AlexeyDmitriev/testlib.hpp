@@ -67,7 +67,7 @@ public:
 	}
 };
 
-// TODO: delete copy-paste
+// TODO: disallow char
 
 template<typename T>
-class DefaultReader<T, std::integral_constant<bool, std::is_integral<T>::value>> : public IntegerReader<T>{};
+class DefaultReader<T, typename std::enable_if<std::is_integral<T>::value>::type> : public IntegerReader<T>{};
