@@ -69,6 +69,7 @@ public:
 	}
 };
 
+<<<<<<< HEAD
 template<typename T>
 struct is_integer {
 	typedef typename std::is_integral<T>::type type;
@@ -96,4 +97,4 @@ struct is_integer<char> {
 
 
 template<typename T>
-class DefaultReader<T, typename is_integer<T>::type> : public IntegerReader<T> {};
+class DefaultReader<T, typename is_integer<T>::type> : public IntegerReader<T>{};
