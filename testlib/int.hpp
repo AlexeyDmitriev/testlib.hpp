@@ -43,6 +43,8 @@ public:
 		if(usedValue.empty())
 			quit(Verdict::PE, expectation("Integer", input));
 		
+		if(usedValue.size() > 1 && usedValue[0] == '0')
+			quit(Verdict::PE, expectation("Integer", input));
 		
 		std::string maxString = toString(std::numeric_limits<T>::max());
 		if(usedValue.length() > maxString.length())
