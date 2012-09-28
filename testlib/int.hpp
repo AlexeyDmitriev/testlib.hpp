@@ -69,7 +69,21 @@ public:
 	}
 };
 
-// TODO: disallow char
+template<typename T>
+struct is_integer {
+	typedef typename std::is_integral<T>::type type;
+};
+
+template<>
+struct is_integer<bool> {
+	typedef std::false_type type;
+};
+
+template<>
+struct is_integer<unsigned char> {
+	typedef std::false_type type;
+};
+
 
 template<typename T>
-class DefaultReader<T, typename std::enable_if<std::is_integral<T>::value>::type> : public IntegerReader<T>{};
+class DefaultReader<T, typename is_integer<T>::type> : public IntegerReader<T>{};
