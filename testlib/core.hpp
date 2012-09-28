@@ -2,6 +2,8 @@
 
 
 #include <cstdlib>
+#include <stdexcept>
+#include <string>
 
 //TODO: proper OS choosing
 #define ON_LINUX
@@ -13,6 +15,14 @@ enum class Verdict{
 	FAIL,
 	WA,
 	PE
+};
+
+
+class ReadingException : std::exception {
+	Verdict verdict;
+	std::string str;
+public:
+	ReadingException(Verdict verdict, std::string str): verdict(verdict), str(str){}
 };
 
 

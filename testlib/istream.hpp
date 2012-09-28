@@ -25,8 +25,7 @@ public:
 	char readChar(){
 		int c = stream.get();
 		if(!stream){
-			quit(Verdict::PE, expectation("Character", "EOF"));
-					
+			throw ReadingException(Verdict::PE, expectation("Character", "EOF"));				
 		}
 		return c;
 	}
@@ -34,7 +33,7 @@ public:
 	void readChar(char expected){
 		char found = readChar();
 		if(found != expected)
-			quit(Verdict::PE, expectation(expected, found));
+			throw ReadingException(Verdict::PE, expectation(expected, found));
 	}
 	
 	void readSpace(){
@@ -51,7 +50,7 @@ public:
 	void readEof(){
 		int c = stream.get();
 		if(!stream.eof())
-			quit(Verdict::PE, expectation("EOF", c));
+			throw ReadingException(Verdict::PE, expectation("EOF", c));
 	}
 	//TODO: maybe it be changed to Reader<std:string>
 	std::string readToken(){
@@ -61,9 +60,9 @@ public:
 			token += last;
 		if(token.empty()){
 			if(stream.eof())
-				quit(Verdict::PE, expectation("Token", "EOF"));
+				throw ReadingException(Verdict::PE, expectation("Token", "EOF"));
 			else
-				quit(Verdict::PE, expectation("Token", last));
+				throw ReadingException(Verdict::PE, expectation("Token", last));
 		}
 		stream.unget();
 		
