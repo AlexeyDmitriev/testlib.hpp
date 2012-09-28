@@ -4,6 +4,7 @@
 #include "istream.hpp"
 #include <limits>
 #include <string>
+#include <type_traits>
 
 template <typename T>
 class IntegerReader : public Reader<T>{
@@ -68,22 +69,21 @@ public:
 	}
 };
 
-// TODO: delete copy-paste
+template<typename T>
+struct is_integer {
+	typedef typename std::is_integral<T>::type type;
+};
 
 template<>
-class DefaultReader<int> : public IntegerReader<int>{};
+struct is_integer<bool> {
+	typedef std::false_type type;
+};
 
 template<>
-class DefaultReader<unsigned> : public IntegerReader<unsigned>{};
+struct is_integer<unsigned char> {
+	typedef std::false_type type;
+};
 
-template<>
-class DefaultReader<long long> : public IntegerReader<long long>{};
 
-template<>
-class DefaultReader<unsigned long long> : public IntegerReader<unsigned long long>{};
-
-template<>
-class DefaultReader<short> : public IntegerReader<short>{};
-
-template<>
-class DefaultReader<unsigned short> : public IntegerReader<unsigned short>{};
+template<typename T>
+class DefaultReader<T, typename is_integer<T>::type> : public IntegerReader<T>{};
