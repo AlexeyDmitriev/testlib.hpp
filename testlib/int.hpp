@@ -69,7 +69,6 @@ public:
 	}
 };
 
-<<<<<<< HEAD
 template<typename T>
 struct is_integer {
 	typedef typename std::is_integral<T>::type type;
