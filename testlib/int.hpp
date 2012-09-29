@@ -97,8 +97,4 @@ struct is_integer<char> {
 
 
 template<typename T>
-<<<<<<< HEAD
 class DefaultReader<T, typename is_integer<T>::type> : public IntegerReader<T>{};
-=======
-class DefaultReader<T, typename is_integer<T>::type> : public IntegerReader<T>{};
->>>>>>> change void + enable_if to boolean constants
