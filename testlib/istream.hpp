@@ -68,7 +68,7 @@ public:
 	}
 private:
 	bool isWhiteSpace(int c){
-		return c == ' ' || c == '\n' || c == '\r' || c == EOF;
+		return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == EOF ;
 	}
 	std::istream& stream;
 };
