@@ -84,6 +84,16 @@ struct is_integer<unsigned char> {
 	typedef std::false_type type;
 };
 
+template<>
+struct is_integer<signed char> {
+	typedef std::false_type type;
+};
+
+template<>
+struct is_integer<char> {
+	typedef std::false_type type;
+};
+
 
 template<typename T>
-class DefaultReader<T, typename is_integer<T>::type> : public IntegerReader<T>{};
+class DefaultReader<T, typename is_integer<T>::type> : public IntegerReader<T> {};
