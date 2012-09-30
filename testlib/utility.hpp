@@ -18,9 +18,7 @@ template <typename T>
 inline std::string toString(const T& value){
 	std::stringstream ss;
 	ss << value;
-	std::string result;
-	ss >> result;
-	return result;
+	return ss.str();
 }
 
 template <typename T>

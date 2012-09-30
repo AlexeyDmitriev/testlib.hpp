@@ -9,9 +9,7 @@
 //TODO: non-strict mode
 class IStream {
 public:
-	IStream(std::istream& stream):stream(stream){
-		
-	}
+	IStream(std::istream& stream):stream(stream){}
 	
 	template<typename T, typename... Args>
 	typename std::enable_if<!std::is_base_of<Reader<T>, typename firstType<Args...>::type>::value,T>::type read(Args... args){
@@ -24,9 +22,8 @@ public:
 	}
 	char readChar(){
 		int c = stream.get();
-		if(!stream){
-			quit(Verdict::PE, expectation("Character", "EOF"));
-					
+		if(c == EOF){
+			quit(Verdict::PE, expectation("Character", "EOF"));	
 		}
 		return c;
 	}
@@ -50,28 +47,28 @@ public:
 	
 	void readEof(){
 		int c = stream.get();
-		if(!stream.eof())
-			quit(Verdict::PE, expectation("EOF", c));
+		if(c != EOF)
+			quit(Verdict::PE, expectation("EOF", char(c)));
 	}
-	//TODO: maybe it be changed to Reader<std:string>
+	//TODO: maybe it should be changed to Reader<std:string>
 	std::string readToken(){
 		std::string token;
-		char last;
-		while(!isWhiteSpace(last = stream.get()) && !stream.eof())
-			token += last;
+		
+		while(!isWhiteSpace(stream.peek()))
+			token += stream.get();
+		
 		if(token.empty()){
-			if(stream.eof())
+			if(stream.peek() == EOF)
 				quit(Verdict::PE, expectation("Token", "EOF"));
 			else
-				quit(Verdict::PE, expectation("Token", last));
+				quit(Verdict::PE, expectation("Token", char(stream.peek())));
 		}
-		stream.unget();
 		
 		return token;
 	}
 private:
-	bool isWhiteSpace(char c){
-		return c == ' ' || c == '\n' || c == '\r';
+	bool isWhiteSpace(int c){
+		return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == EOF ;
 	}
 	std::istream& stream;
 };
