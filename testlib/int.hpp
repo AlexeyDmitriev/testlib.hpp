@@ -44,7 +44,7 @@ public:
 		if(usedValue.empty())
 			throw ReadingException(Verdict::PE, expectation("Integer", input));
 		
-		if(usedValue.size() > 1 && usedValue[0] == '0')
+		if(usedValue[0] == '0' && (negative || usedValue.size() > 1))
 			throw ReadingException(Verdict::PE, expectation("Integer", input));
 		
 		std::string maxString = toString(std::numeric_limits<T>::max());
