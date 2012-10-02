@@ -5,46 +5,44 @@
 
 #include "testlib/testlib.hpp"
 
-
 BOOST_AUTO_TEST_CASE(RandomDouble) {
 	std::stringstream ss("42 17");
 	IStream stream(ss);
 	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), 42);
 	BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
 
-        ss.str("-123.11 999.222 0.2");
+	ss.str("-123.11 999.222 0.2");
 	ss.clear();
-	
+
 	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), -123.11);
 	stream.readSpace();
 	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), 999.222);
-        stream.readSpace();
+	stream.readSpace();
 	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), 0.2);
 }
-
 
 BOOST_AUTO_TEST_CASE(NegativeDouble) {
 	std::stringstream ss("-517.512521");
 	IStream stream(ss);
-	
+
 	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), -517.512521);
-	
+
 	ss.str("-1");
 	ss.clear();
 	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), -1);
-	
+
 	ss.str("-0.0");
 	ss.clear();
 	BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
-        
-        ss.str("-0");
+
+	ss.str("-0");
 	ss.clear();
 	BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
-        
-        ss.str("-0.21");
+
+	ss.str("-0.21");
 	ss.clear();
 	BOOST_CHECK_CLOSE(FloatReader<double>().read(stream), -0.21, 0.000001);
-       
+
 }
 
 BOOST_AUTO_TEST_CASE(IncorrectSymbols) {
@@ -56,13 +54,13 @@ BOOST_AUTO_TEST_CASE(IncorrectSymbols) {
 		"-a.1",
 		"-9a.9",
 	};
-	
-	for(const auto& s: strings){
+
+	for (const auto& s : strings) {
 		ss.str(s);
 		ss.clear();
 		BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
 	}
-	
+
 }
 
 BOOST_AUTO_TEST_CASE(BadFormatMinuses) {
@@ -81,13 +79,13 @@ BOOST_AUTO_TEST_CASE(BadFormatMinuses) {
 		"-01",
 		"0+0"
 	};
-	
-	for(const auto& s: strings){
+
+	for (const auto& s : strings) {
 		ss.str(s);
 		ss.clear();
 		BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
 	}
-	
+
 }
 
 BOOST_AUTO_TEST_CASE(BadFormatTooManyPoints) {
@@ -101,28 +99,28 @@ BOOST_AUTO_TEST_CASE(BadFormatTooManyPoints) {
 		".1",
 		"-.0"
 	};
-	
-	for(const auto& s: strings){
+
+	for (const auto& s : strings) {
 		ss.str(s);
 		ss.clear();
 		BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
 	}
-	
+
 }
 
 BOOST_AUTO_TEST_CASE(WrongNumbersSize) {
 	std::stringstream ss;
 	IStream stream(ss);
 	std::vector<std::string> strings;
-        std::string curString;
-        for (int i = 0; i < 1000; ++i){
-            curString.resize(curString.size() + 1);
-            curString.back() = '1';
+	std::string curString;
+	for (int i = 0; i < 1000; ++i) {
+		curString.resize(curString.size() + 1);
+		curString.back() = '1';
 	}
-        
-        strings.push_back(curString);
-        
-	for(const auto& s: strings){
+
+	strings.push_back(curString);
+
+	for (const auto& s : strings) {
 		ss.str(s);
 		ss.clear();
 		BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
