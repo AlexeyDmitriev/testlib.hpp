@@ -33,11 +33,11 @@ BOOST_AUTO_TEST_CASE(NegativeDouble) {
 
 	ss.str("-0.0");
 	ss.clear();
-	BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
-
+	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), 0);
+	
 	ss.str("-0");
 	ss.clear();
-	BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
+	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), 0);
 
 	ss.str("-0.21");
 	ss.clear();

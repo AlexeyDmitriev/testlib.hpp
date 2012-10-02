@@ -22,7 +22,7 @@ public:
 	}
 	T read(IStream& stream, T min, T max, std::string name) {
 		T result = read(stream);
-		if(result < min || result > max)
+		if(result < min + EPS || result > max - EPS)
 			throw ReadingException(Verdict::WA, "Double " + toPrint(name) + " violates the range [" + toString(min) + "," + toString(max) + "]");
 		return result;
 	}
@@ -47,8 +47,7 @@ public:
 
 		bool wasPoint = false;
 		T integerPart = 0, fractionalPart = 0;
-		T result = 0;
-		size_t qDigitsAfterPoint = 0;
+		T fractionMultiplyer = 1;
 
 		for (char digit: usedValue) {
 			if(digit == '.') {
@@ -60,8 +59,8 @@ public:
 				if(digit < '0' || digit > '9')
 					throw ReadingException(Verdict::PE, expectation("Double", input));
 				if (wasPoint) {
-					++qDigitsAfterPoint;
-					fractionalPart += (digit - '0') * pow(0.1, qDigitsAfterPoint);
+					fractionMultiplyer /= 10.0;
+					fractionalPart += (digit - '0') * fractionMultiplyer;
 				}
 				else {
 					integerPart = integerPart * 10 + (digit - '0');
@@ -69,11 +68,9 @@ public:
 			}
 		}
 
-		result = integerPart + fractionalPart;
+		T result = integerPart + fractionalPart;
 
 		if(negative) {
-			if (fabs(result) < EPS)
-				throw ReadingException(Verdict::PE, expectation("Double", input));
 			result = -result;
 		}
 
