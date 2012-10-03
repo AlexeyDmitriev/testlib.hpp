@@ -5,8 +5,10 @@
 #include <limits>
 #include <string>
 #include <type_traits>
+#include <vector>
+#include <algorithm>
 
-template <typename T>
+template <typename T, int radix = 10>
 class IntegerReader : public Reader<T>{
 public:
 	T read(IStream& stream){
@@ -25,15 +27,26 @@ public:
 			throw ReadingException(Verdict::WA, "Integer " + toPrint(name) + " violates the range [" + toString(min) + "," + toString(max) + "]");
 		return result;
 	}
+	
+	std::vector<T> absToArray(T value){
+		bool negative = std::less<T>()(value, 0);
+		std::vector<T> result;
+		while(value != 0){
+			if(negative)
+				result.push_back(- (value % radix));
+			else
+				result.push_back(value % radix);
+			value /= radix;
+		}
+		std::reverse(result.begin(), result.end());
+		return result;
+	}
 
 	T toInt(const std::string& input){
 		bool is_signed = std::numeric_limits<T>::is_signed;
 		if(!is_signed && input[0] == '-')
 			throw ReadingException(Verdict::PE, expectation("Unsigned integer", input));
 		
-		if(input == toString(std::numeric_limits<T>::min())){
-			return std::numeric_limits<T>::min();
-		}
 		std::string usedValue = input;
 		bool negative = false;
 		if(input[0] == '-'){
@@ -41,23 +54,33 @@ public:
 			usedValue = usedValue.substr(1);
 		}
 		
-		if(usedValue.empty())
+		std::vector<T> digits(usedValue.length());
+		
+		for(size_t i = 0; i < usedValue.length(); ++i){
+			digits[i] = digitValue(usedValue[i]);
+			if(digits[i] >= radix)
+				throw ReadingException(Verdict::PE, expectation("Digit in radix " + toString(radix), usedValue[i]));
+		}
+		
+		if(negative && digits == absToArray(std::numeric_limits<T>::min())){
+			return std::numeric_limits<T>::min();
+		}
+		
+		if(digits.empty())
 			throw ReadingException(Verdict::PE, expectation("Integer", input));
 		
-		if(usedValue[0] == '0' && (negative || usedValue.size() > 1))
+		if(digits[0] == 0 && (negative || digits.size() > 1))
 			throw ReadingException(Verdict::PE, expectation("Integer", input));
 		
-		std::string maxString = toString(std::numeric_limits<T>::max());
-		if(usedValue.length() > maxString.length())
+		std::vector<T> maxArray = absToArray(std::numeric_limits<T>::max());
+		if(usedValue.length() > maxArray.size())
 			throw ReadingException(Verdict::PE, expectation("Integer", input));
-		if(usedValue.length() == maxString.length() && usedValue > maxString)
+		if(usedValue.length() == maxArray.size() && digits > maxArray)
 			throw ReadingException(Verdict::PE, expectation("Integer", input));
 		
 		T result = 0;
-		for(char digit: usedValue){
-			if(digit < '0' || digit > '9')
-				throw ReadingException(Verdict::PE, expectation("Integer", input));
-			result = result * 10 + (digit - '0');
+		for(T digit: digits){
+			result = result * radix + digit;
 		}
 		
 		
@@ -66,6 +89,17 @@ public:
 		}
 		
 		return result;
+		
+	}
+	
+	T digitValue(char c){
+		if(c >= '0' && c <= '9')
+			return c - '0';
+		if(c >= 'a' && c <= 'z')
+			return c - 'a' + 10;
+		if(c >= 'A' && c <= 'Z')
+			return c - 'A' + 10;
+		throw ReadingException(Verdict::PE, expectation("Digit", c));
 	}
 };
 
@@ -97,3 +131,6 @@ struct is_integer<char> {
 
 template<typename T>
 class DefaultReader<T, typename is_integer<T>::type> : public IntegerReader<T>{};
+
+template<typename T>
+using HexReader = IntegerReader<T, 16>;
