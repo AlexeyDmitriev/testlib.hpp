@@ -19,9 +19,9 @@ enum class Verdict{
 
 
 class ReadingException : std::exception {
+public:
 	Verdict verdict;
 	std::string str;
-public:
 	ReadingException(Verdict verdict, std::string str): verdict(verdict), str(str){}
 };
 
