@@ -144,3 +144,16 @@ BOOST_AUTO_TEST_CASE(CheckInRange) {
 	BOOST_CHECK_THROW(IntegerReader<int>().read(stream, 5, 7), ReadingException);
 
 }
+
+BOOST_AUTO_TEST_CASE(Hex){
+	std::stringstream ss("ff");
+	IStream stream(ss);
+	
+	BOOST_CHECK_EQUAL(HexReader<int>().read(stream), 255);
+	
+	ss.str("g");
+	ss.clear();
+	
+	BOOST_CHECK_THROW(HexReader<int>().read(stream), ReadingException);
+	
+}
