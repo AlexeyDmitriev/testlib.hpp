@@ -5,7 +5,7 @@
 #include <limits>
 #include <string>
 #include <type_traits>
-#include <math.h>
+#include <cmath>
 
 template <typename T>
 class FloatReader : public Reader<T> {
