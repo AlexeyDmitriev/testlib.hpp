@@ -153,7 +153,9 @@ BOOST_AUTO_TEST_CASE(Hex){
 	
 	ss.str("g");
 	ss.clear();
-	
 	BOOST_CHECK_THROW(HexReader<int>().read(stream), ReadingException);
 	
+	ss.str("-a");
+	ss.clear();
+	BOOST_CHECK_EQUAL(HexReader<int>().read(stream), -10);
 }
