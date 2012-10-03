@@ -8,7 +8,7 @@ int main(){
 		std::cout<<stream.read<int>(DefaultReader<int>(), 5, 17)<<std::endl;
 	}
 	catch(ReadingException e){
-		quit(e.verdict, e.str);
+		quit(e.verdict, e.message);
 	}
 	return 0; 
 }  

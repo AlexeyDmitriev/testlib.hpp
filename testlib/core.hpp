@@ -21,8 +21,8 @@ enum class Verdict{
 class ReadingException : std::exception {
 public:
 	Verdict verdict;
-	std::string str;
-	ReadingException(Verdict verdict, std::string str): verdict(verdict), str(str){}
+	std::string message;
+	ReadingException(Verdict verdict, std::string str): verdict(verdict), message(str){}
 };
 
 
