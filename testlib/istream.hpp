@@ -66,6 +66,9 @@ public:
 		
 		return token;
 	}
+	int peek(){
+		return stream.peek();
+	}
 private:
 	bool isWhiteSpace(int c){
 		return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == EOF ;
