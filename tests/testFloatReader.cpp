@@ -8,32 +8,32 @@ BOOST_FIXTURE_TEST_SUITE(Doubles, SimpleRead)
 
 BOOST_AUTO_TEST_CASE(RandomDouble) {
 	setStr("42 17");
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), 42);
-	BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
+	BOOST_CHECK_EQUAL(stream.read<double>(), 42);
+	BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
 
 	setStr("-123.11 999.222 0.2");
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), -123.11);
+	BOOST_CHECK_EQUAL(stream.read<double>(), -123.11);
 	stream.readSpace();
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), 999.222);
+	BOOST_CHECK_EQUAL(stream.read<double>(), 999.222);
 	stream.readSpace();
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), 0.2);
+	BOOST_CHECK_EQUAL(stream.read<double>(), 0.2);
 }
 
 BOOST_AUTO_TEST_CASE(NegativeDouble) {
 	setStr("-517.512521");
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), -517.512521);
+	BOOST_CHECK_EQUAL(stream.read<double>(), -517.512521);
 
 	setStr("-1");
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), -1);
+	BOOST_CHECK_EQUAL(stream.read<double>(), -1);
 
 	setStr("-0.0");
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), 0);
+	BOOST_CHECK_EQUAL(stream.read<double>(), 0);
 	
 	setStr("-0");
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), 0);
+	BOOST_CHECK_EQUAL(stream.read<double>(), 0);
 
 	setStr("-0.21");
-	BOOST_CHECK_CLOSE(FloatReader<double>().read(stream), -0.21, 0.000001);
+	BOOST_CHECK_CLOSE(stream.read<double>(), -0.21, 0.000001);
 }
 
 BOOST_AUTO_TEST_CASE(IncorrectSymbols) {
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(IncorrectSymbols) {
 
 	for (const auto& s : strings) {
 		setStr(s);
-		BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
+		BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
 	}
 
 }
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(BadFormatMinuses) {
 
 	for (const auto& s : strings) {
 		setStr(s);
-		BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
+		BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
 	}
 
 }
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(BadFormatTooManyPoints) {
 
 	for (const auto& s : strings) {
 		setStr(s);\
-		BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
+		BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
 	}
 
 }
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(WrongNumbersSize) {
 
 	for (const auto& s : strings) {
 		setStr(s);
-		BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
+		BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
 	}
 }
 
