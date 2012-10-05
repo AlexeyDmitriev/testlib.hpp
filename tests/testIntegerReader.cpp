@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(CheckInRange) {
 	stream.readSpace();
 	BOOST_CHECK_EQUAL(stream.read<int>(-100, 100), -2);
 	stream.readSpace();
-	BOOST_CHECK_THROW(stream.read<int>(-5, 7), ReadingException);
+	BOOST_CHECK_THROW(stream.read<int>(5, 7), ReadingException);
 }
 
 BOOST_AUTO_TEST_CASE(Hex){
