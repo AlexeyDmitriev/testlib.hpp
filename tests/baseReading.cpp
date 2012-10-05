@@ -1,31 +1,23 @@
-
-#include "testlib/istream.hpp"
-
 #include <boost/test/unit_test.hpp>
-
 #include "testlib/testlib.hpp"
-#include <sstream>
+#include "testlib/istream.hpp"
+#include "tests/fixture.hpp"
 
-using std::stringstream;
+BOOST_FIXTURE_TEST_SUITE(base, SimpleRead)
 
 BOOST_AUTO_TEST_CASE( eof ) {
-	stringstream ss;
-	IStream stream(ss);
 	BOOST_CHECK_NO_THROW(stream.readEof());
 	
-	ss.clear();
-	ss.str(" ");
+	setStr(" ");
 	BOOST_CHECK_NO_THROW(stream.readSpace());
 	BOOST_CHECK_NO_THROW(stream.readEof());
 	
-	ss.clear();
-	ss.str(" ");
+	setStr(" ");
 	BOOST_CHECK_THROW(stream.readEof(), ReadingException);
 }
 
 BOOST_AUTO_TEST_CASE( chars ) {
-	stringstream ss("a bq");
-	IStream stream(ss);
+	setStr("a bq");
 	BOOST_CHECK_EQUAL(stream.readChar(), 'a');
 	BOOST_CHECK_NO_THROW(stream.readSpace());
 	BOOST_CHECK_NO_THROW(stream.readChar('b'));
@@ -33,28 +25,23 @@ BOOST_AUTO_TEST_CASE( chars ) {
 }
 
 BOOST_AUTO_TEST_CASE( tokens ){
-	stringstream ss;
-	
-	IStream stream(ss);
 	BOOST_CHECK_THROW(stream.readToken(), ReadingException);
 	
-	
-	ss.clear();
-	ss.str("token list");
+	setStr("token list");
 	BOOST_CHECK_EQUAL(stream.readToken(), "token");
 	BOOST_CHECK_THROW(stream.readToken(), ReadingException);
 	
-	ss.clear();
-	ss.str("\ntoken");
+	setStr("\ntoken");
 	BOOST_CHECK_THROW(stream.readToken(), ReadingException);
 	
 }
 
 BOOST_AUTO_TEST_CASE(spaces){
-	stringstream ss("  \t\n");
-	IStream stream(ss);
-	
+	setStr("  \t\n");
 	BOOST_CHECK_EQUAL(stream.readChar(), ' ');
 	BOOST_CHECK_NO_THROW(stream.readSpace());
 	BOOST_CHECK_THROW(stream.readSpace(), ReadingException);
 }
+
+
+BOOST_AUTO_TEST_SUITE_END()

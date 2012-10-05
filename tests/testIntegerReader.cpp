@@ -1,115 +1,91 @@
-#include <sstream>
 #include <string>
 #include <vector>
 #include <boost/test/unit_test.hpp>
-
+#include "tests/fixture.hpp"
 #include "testlib/testlib.hpp"
 
 
-BOOST_AUTO_TEST_CASE(RandomInts) {
-	std::stringstream ss("42 17");
-	IStream stream(ss);
-	BOOST_CHECK_EQUAL(IntegerReader<int>().read(stream), 42);
-	BOOST_CHECK_THROW(IntegerReader<int>().read(stream), ReadingException);
+BOOST_FIXTURE_TEST_SUITE(Integers, SimpleRead)
 
-	ss.str("-123 999");
-	ss.clear();
-	BOOST_CHECK_EQUAL(IntegerReader<int>().read(stream), -123);
+BOOST_AUTO_TEST_CASE(RandomInts) {
+	setStr("42 17");
+	BOOST_CHECK_EQUAL(stream.read<int>(), 42);
+	BOOST_CHECK_THROW(stream.read<int>(), ReadingException);
+
+	setStr("-123 999");
+	BOOST_CHECK_EQUAL(stream.read<int>(), -123);
 	stream.readSpace();
-	BOOST_CHECK_EQUAL(IntegerReader<int>().read(stream), 999);
+	BOOST_CHECK_EQUAL(stream.read<int>(), 999);
 }
 
 
 BOOST_AUTO_TEST_CASE(Negative) {
-	std::stringstream ss("-517");
-	IStream stream(ss);
+	setStr("-517");
+	BOOST_CHECK_EQUAL(stream.read<int>(), -517);
 	
-	BOOST_CHECK_EQUAL(IntegerReader<int>().read(stream), -517);
+	setStr("-1");
+	BOOST_CHECK_EQUAL(stream.read<int>(), -1);
 	
-	ss.str("-1");
-	ss.clear();
-	BOOST_CHECK_EQUAL(IntegerReader<int>().read(stream), -1);
-	
-	ss.str("-1");
-	ss.clear();
-	BOOST_CHECK_THROW(IntegerReader<unsigned>().read(stream), ReadingException);
-	
+	setStr("-1");
+	BOOST_CHECK_THROW(stream.read<unsigned>(), ReadingException);
 }
 
 
 BOOST_AUTO_TEST_CASE(Overflow){
-	std::stringstream ss("65535 65535");
-	IStream stream(ss);
-	
-	BOOST_CHECK_EQUAL(IntegerReader<int>().read(stream), 65535);
+	setStr("65535 65535");
+	BOOST_CHECK_EQUAL(stream.read<int>(), 65535);
 	stream.readSpace();
-	BOOST_CHECK_THROW(IntegerReader<short>().read(stream), ReadingException);
+	BOOST_CHECK_THROW(stream.read<short>(), ReadingException);
 	
-	ss.str("9999999999999999999999999999999999999");
-	ss.clear();
-	BOOST_CHECK_THROW(IntegerReader<int>().read(stream), ReadingException);
+	setStr("9999999999999999999999999999999999999");
+	BOOST_CHECK_THROW(stream.read<int>(), ReadingException);
 	
-	ss.str("2000000000");
-	ss.clear();
-	BOOST_CHECK_NO_THROW(IntegerReader<int>().read(stream));
+	setStr("2000000000");
+	BOOST_CHECK_NO_THROW(stream.read<int>());
 }
 
 BOOST_AUTO_TEST_CASE(Corners){
-	std::stringstream ss("65535");
-	IStream stream(ss);
+	setStr("65535");
+	BOOST_CHECK_NO_THROW(stream.read<unsigned short>());
 	
-	BOOST_CHECK_NO_THROW(IntegerReader<unsigned short>().read(stream));
+	setStr("65536");
+	BOOST_CHECK_THROW(stream.read<unsigned short>(), ReadingException);
 	
-	ss.str("65536");
-	ss.clear();
-	BOOST_CHECK_THROW(IntegerReader<unsigned short>().read(stream), ReadingException);
-	
-	ss.str("-1");
-	ss.clear();
-	BOOST_CHECK_THROW(IntegerReader<unsigned short>().read(stream), ReadingException);
+	setStr("-1");
+	BOOST_CHECK_THROW(stream.read<unsigned short>(), ReadingException);
 	
 	
-	ss.str("32768");
-	ss.clear();
-	BOOST_CHECK_THROW(IntegerReader<short>().read(stream), ReadingException);
+	setStr("32768");
+	BOOST_CHECK_THROW(stream.read<short>(), ReadingException);
 	
-	ss.str("-32768");
-	ss.clear();
-	BOOST_CHECK_NO_THROW(IntegerReader<short>().read(stream));
+	setStr("-32768");
+	BOOST_CHECK_NO_THROW(stream.read<short>());
 	
-	ss.str("-32769");
-	ss.clear();
-	BOOST_CHECK_THROW(IntegerReader<short>().read(stream), ReadingException);
-	
-	ss.str("18446744073709551616");
-	ss.clear();
-	BOOST_CHECK_THROW(IntegerReader<unsigned long long>().read(stream), ReadingException);
-	
-	ss.str("18446744073709551615");
-	ss.clear();
-	BOOST_CHECK_NO_THROW(IntegerReader<unsigned long long>().read(stream));
+	setStr("-32769");
+	BOOST_CHECK_THROW(stream.read<short>(), ReadingException);
 	
 	
-	ss.str("9223372036854775808");
-	ss.clear();
-	BOOST_CHECK_THROW(IntegerReader<long long>().read(stream), ReadingException);
+	setStr("18446744073709551616");
+	BOOST_CHECK_THROW(stream.read<unsigned long long>(), ReadingException);
 	
-	ss.str("9223372036854775807");
-	ss.clear();
-	BOOST_CHECK_NO_THROW(IntegerReader<long long>().read(stream));
+	setStr("18446744073709551615");
+	BOOST_CHECK_NO_THROW(stream.read<unsigned long long>());
 	
-	ss.str("-9223372036854775809");
-	ss.clear();
-	BOOST_CHECK_THROW(IntegerReader<long long>().read(stream), ReadingException);
 	
-	ss.str("-9223372036854775808");
-	ss.clear();
-	BOOST_CHECK_NO_THROW(IntegerReader<long long>().read(stream));
+	setStr("9223372036854775808");
+	BOOST_CHECK_THROW(stream.read<long long>(), ReadingException);
+	
+	setStr("9223372036854775807");
+	BOOST_CHECK_NO_THROW(stream.read<long long>());
+	
+	setStr("-9223372036854775809");
+	BOOST_CHECK_THROW(stream.read<long long>(), ReadingException);
+	
+	setStr("-9223372036854775808");
+	BOOST_CHECK_NO_THROW(stream.read<long long>());
 }
 
 BOOST_AUTO_TEST_CASE(BadFormat) {
-	std::stringstream ss;
-	IStream stream(ss);
 	std::vector<std::string> strings = {
 		"--1",
 		"+1",
@@ -126,36 +102,31 @@ BOOST_AUTO_TEST_CASE(BadFormat) {
 	};
 	
 	for(const auto& s: strings){
-		ss.str(s);
-		ss.clear();
-		BOOST_CHECK_THROW(IntegerReader<int>().read(stream), ReadingException);
+		setStr(s);
+		BOOST_CHECK_THROW(stream.read<int>(), ReadingException);
 	}
 	
 }
 
 BOOST_AUTO_TEST_CASE(CheckInRange) {
-	std::stringstream ss("1 -2 3");
-	IStream stream(ss);
-	
-	BOOST_CHECK_EQUAL(IntegerReader<int>().read(stream, -5, 1), 1);
+	setStr("1 -2 3");
+	BOOST_CHECK_EQUAL(stream.read<int>(-5, 1), 1);
 	stream.readSpace();
-	BOOST_CHECK_EQUAL(IntegerReader<int>().read(stream, -100, 100), -2);
+	BOOST_CHECK_EQUAL(stream.read<int>(-100, 100), -2);
 	stream.readSpace();
-	BOOST_CHECK_THROW(IntegerReader<int>().read(stream, 5, 7), ReadingException);
-
+	BOOST_CHECK_THROW(stream.read<int>(-5, 7), ReadingException);
 }
 
 BOOST_AUTO_TEST_CASE(Hex){
-	std::stringstream ss("ff");
-	IStream stream(ss);
-	
+	setStr("ff");
 	BOOST_CHECK_EQUAL(HexReader<int>().read(stream), 255);
 	
-	ss.str("g");
-	ss.clear();
+	setStr("g");
 	BOOST_CHECK_THROW(HexReader<int>().read(stream), ReadingException);
 	
-	ss.str("-a");
-	ss.clear();
+	setStr("-a");
 	BOOST_CHECK_EQUAL(HexReader<int>().read(stream), -10);
 }
+
+
+BOOST_AUTO_TEST_SUITE_END()

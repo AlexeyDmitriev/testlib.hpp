@@ -1,53 +1,42 @@
-#include <sstream>
 #include <string>
 #include <vector>
 #include <boost/test/unit_test.hpp>
-
 #include "testlib/testlib.hpp"
+#include "tests/fixture.hpp"
+
+BOOST_FIXTURE_TEST_SUITE(Doubles, SimpleRead)
 
 BOOST_AUTO_TEST_CASE(RandomDouble) {
-	std::stringstream ss("42 17");
-	IStream stream(ss);
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), 42);
-	BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
+	setStr("42 17");
+	BOOST_CHECK_EQUAL(stream.read<double>(), 42);
+	BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
 
-	ss.str("-123.11 999.222 0.2");
-	ss.clear();
-
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), -123.11);
+	setStr("-123.11 999.222 0.2");
+	BOOST_CHECK_EQUAL(stream.read<double>(), -123.11);
 	stream.readSpace();
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), 999.222);
+	BOOST_CHECK_EQUAL(stream.read<double>(), 999.222);
 	stream.readSpace();
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), 0.2);
+	BOOST_CHECK_EQUAL(stream.read<double>(), 0.2);
 }
 
 BOOST_AUTO_TEST_CASE(NegativeDouble) {
-	std::stringstream ss("-517.512521");
-	IStream stream(ss);
+	setStr("-517.512521");
+	BOOST_CHECK_EQUAL(stream.read<double>(), -517.512521);
 
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), -517.512521);
+	setStr("-1");
+	BOOST_CHECK_EQUAL(stream.read<double>(), -1);
 
-	ss.str("-1");
-	ss.clear();
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), -1);
-
-	ss.str("-0.0");
-	ss.clear();
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), 0);
+	setStr("-0.0");
+	BOOST_CHECK_EQUAL(stream.read<double>(), 0);
 	
-	ss.str("-0");
-	ss.clear();
-	BOOST_CHECK_EQUAL(FloatReader<double>().read(stream), 0);
+	setStr("-0");
+	BOOST_CHECK_EQUAL(stream.read<double>(), 0);
 
-	ss.str("-0.21");
-	ss.clear();
-	BOOST_CHECK_CLOSE(FloatReader<double>().read(stream), -0.21, 0.000001);
-
+	setStr("-0.21");
+	BOOST_CHECK_CLOSE(stream.read<double>(), -0.21, 0.000001);
 }
 
 BOOST_AUTO_TEST_CASE(IncorrectSymbols) {
-	std::stringstream ss;
-	IStream stream(ss);
 	std::vector<std::string> strings = {
 		"za",
 		"-12a6.0",
@@ -56,16 +45,13 @@ BOOST_AUTO_TEST_CASE(IncorrectSymbols) {
 	};
 
 	for (const auto& s : strings) {
-		ss.str(s);
-		ss.clear();
-		BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
+		setStr(s);
+		BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
 	}
 
 }
 
 BOOST_AUTO_TEST_CASE(BadFormatMinuses) {
-	std::stringstream ss;
-	IStream stream(ss);
 	std::vector<std::string> strings = {
 		"--1",
 		"+-1",
@@ -81,16 +67,13 @@ BOOST_AUTO_TEST_CASE(BadFormatMinuses) {
 	};
 
 	for (const auto& s : strings) {
-		ss.str(s);
-		ss.clear();
-		BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
+		setStr(s);
+		BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
 	}
 
 }
 
 BOOST_AUTO_TEST_CASE(BadFormatTooManyPoints) {
-	std::stringstream ss;
-	IStream stream(ss);
 	std::vector<std::string> strings = {
 		"-1.0000.",
 		"+0..000",
@@ -101,16 +84,13 @@ BOOST_AUTO_TEST_CASE(BadFormatTooManyPoints) {
 	};
 
 	for (const auto& s : strings) {
-		ss.str(s);
-		ss.clear();
-		BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
+		setStr(s);\
+		BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
 	}
 
 }
 
 BOOST_AUTO_TEST_CASE(WrongNumbersSize) {
-	std::stringstream ss;
-	IStream stream(ss);
 	std::vector<std::string> strings;
 	std::string curString;
 	for (int i = 0; i < 1000; ++i) {
@@ -121,8 +101,10 @@ BOOST_AUTO_TEST_CASE(WrongNumbersSize) {
 	strings.push_back(curString);
 
 	for (const auto& s : strings) {
-		ss.str(s);
-		ss.clear();
-		BOOST_CHECK_THROW(FloatReader<double>().read(stream), ReadingException);
+		setStr(s);
+		BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
 	}
 }
+
+
+BOOST_AUTO_TEST_SUITE_END()
