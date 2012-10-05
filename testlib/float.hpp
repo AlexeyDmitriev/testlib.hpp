@@ -16,13 +16,13 @@ public:
 	}
 	T read(IStream& stream, T min, T max) {
 		T result = read(stream);
-		if(result < min + EPS || result > max - EPS)
+		if(result < min || result > max)
 			throw ReadingException(Verdict::WA, "Float violates the range [" + toString(min) + "," + toString(max) + "]");
 		return result;
 	}
 	T read(IStream& stream, T min, T max, std::string name) {
 		T result = read(stream);
-		if(result < min + EPS || result > max - EPS)
+		if(result < min || result > max)
 			throw ReadingException(Verdict::WA, "Float " + toPrint(name) + " violates the range [" + toString(min) + "," + toString(max) + "]");
 		return result;
 	}
