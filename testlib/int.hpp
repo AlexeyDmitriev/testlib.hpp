@@ -11,24 +11,24 @@
 template <typename T, int radix = 10>
 class IntegerReader : public Reader<T>{
 public:
-	T read(IStream& stream){
+	T read(IStream& stream) const {
 		std::string token = stream.readToken();
 		return toInt(token);
 	}
-	T read(IStream& stream, T min, T max){
+	T read(IStream& stream, T min, T max) const {
 		T result = read(stream);
 		if(result < min || result > max)
 			throw ReadingException(Verdict::WA, "Integer violates the range [" + toString(min) + "," + toString(max) + "]");
 		return result;
 	}
-	T read(IStream& stream, T min, T max, std::string name){
+	T read(IStream& stream, T min, T max, std::string name) const {
 		T result = read(stream);
 		if(result < min || result > max)
 			throw ReadingException(Verdict::WA, "Integer " + toPrint(name) + " violates the range [" + toString(min) + "," + toString(max) + "]");
 		return result;
 	}
 	
-	std::vector<T> absToArray(T value){
+	std::vector<T> absToArray(T value) const {
 		bool negative = std::less<T>()(value, 0);
 		std::vector<T> result;
 		while(value != 0){
@@ -42,7 +42,7 @@ public:
 		return result;
 	}
 
-	T toInt(const std::string& input){
+	T toInt(const std::string& input) const {
 		bool is_signed = std::numeric_limits<T>::is_signed;
 		if(!is_signed && input[0] == '-')
 			throw ReadingException(Verdict::PE, expectation("Unsigned integer", input));
@@ -92,7 +92,7 @@ public:
 		
 	}
 	
-	T digitValue(char c){
+	T digitValue(char c) const {
 		if(c >= '0' && c <= '9')
 			return c - '0';
 		if(c >= 'a' && c <= 'z')

@@ -10,24 +10,24 @@
 template <typename T>
 class FloatReader : public Reader<T> {
 public:
-	T read(IStream& stream) {
+	T read(IStream& stream) const {
 		std::string token = stream.readToken();
 		return toFloat(token);
 	}
-	T read(IStream& stream, T min, T max) {
+	T read(IStream& stream, T min, T max) const {
 		T result = read(stream);
 		if(result < min || result > max)
 			throw ReadingException(Verdict::WA, "Float violates the range [" + toString(min) + "," + toString(max) + "]");
 		return result;
 	}
-	T read(IStream& stream, T min, T max, std::string name) {
+	T read(IStream& stream, T min, T max, std::string name) const {
 		T result = read(stream);
 		if(result < min || result > max)
 			throw ReadingException(Verdict::WA, "Float " + toPrint(name) + " violates the range [" + toString(min) + "," + toString(max) + "]");
 		return result;
 	}
 
-	T toFloat(const std::string& input) {
+	T toFloat(const std::string& input) const {
 
 		std::string usedValue = input;
 		bool negative = false;
