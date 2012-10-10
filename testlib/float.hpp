@@ -30,11 +30,9 @@ public:
 	T toFloat(const std::string& input) {
 
 		std::string usedValue = input;
-		bool negative = false;
 		if (input.size() >= MAX_LENGTH)
 			throw ReadingException(Verdict::PE, expectation("Float", input));
 		if(input[0] == '-') {
-			negative = true;
 			usedValue = usedValue.substr(1);
 		}
 		if(usedValue.empty())
@@ -46,9 +44,6 @@ public:
 			throw ReadingException(Verdict::PE, expectation("Float", input));
 
 		bool wasPoint = false;
-		T integerPart = 0, fractionalPart = 0;
-		T fractionMultiplyer = 1;
-
 		for (char digit: usedValue) {
 			if(digit == '.') {
 				if (wasPoint)
@@ -58,22 +53,14 @@ public:
 			else {
 				if(digit < '0' || digit > '9')
 					throw ReadingException(Verdict::PE, expectation("Float", input));
-				if (wasPoint) {
-					fractionMultiplyer /= 10.0;
-					fractionalPart += (digit - '0') * fractionMultiplyer;
-				}
-				else {
-					integerPart = integerPart * 10 + (digit - '0');
-				}
 			}
 		}
 
-		T result = integerPart + fractionalPart;
-
-		if(negative) {
-			result = -result;
-		}
-
+		std::stringstream ss(input);
+		T result;
+		
+		ss >> result;
+		
 		return result;
 	}
 private:

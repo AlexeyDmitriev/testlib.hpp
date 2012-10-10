@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE(NegativeDouble) {
 	BOOST_CHECK_EQUAL(stream.read<double>(), 0);
 
 	setStr("-0.21");
-	BOOST_CHECK_CLOSE(stream.read<double>(), -0.21, 0.000001);
+	BOOST_CHECK_EQUAL(stream.read<double>(), -0.21);
 }
 
 BOOST_AUTO_TEST_CASE(IncorrectSymbols) {
@@ -80,7 +80,8 @@ BOOST_AUTO_TEST_CASE(BadFormatTooManyPoints) {
 		".2",
 		"123.12.3",
 		".1",
-		"-.0"
+		"-.0",
+		"-.17",
 	};
 
 	for (const auto& s : strings) {
@@ -91,19 +92,10 @@ BOOST_AUTO_TEST_CASE(BadFormatTooManyPoints) {
 }
 
 BOOST_AUTO_TEST_CASE(WrongNumbersSize) {
-	std::vector<std::string> strings;
-	std::string curString;
-	for (int i = 0; i < 1000; ++i) {
-		curString.resize(curString.size() + 1);
-		curString.back() = '1';
-	}
+	std::string curString(1000, '1');
 
-	strings.push_back(curString);
-
-	for (const auto& s : strings) {
-		setStr(s);
-		BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
-	}
+	setStr(curString);
+	BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
 }
 
 
