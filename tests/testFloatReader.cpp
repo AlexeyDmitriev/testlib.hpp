@@ -4,7 +4,7 @@
 #include "testlib/testlib.hpp"
 #include "tests/fixture.hpp"
 
-BOOST_FIXTURE_TEST_SUITE(Doubles, SimpleRead)
+BOOST_FIXTURE_TEST_SUITE(Doubles, StrictRead)
 
 BOOST_AUTO_TEST_CASE(RandomDouble) {
 	setStr("42 17");

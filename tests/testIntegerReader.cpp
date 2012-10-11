@@ -5,7 +5,7 @@
 #include "testlib/testlib.hpp"
 
 
-BOOST_FIXTURE_TEST_SUITE(Integers, SimpleRead)
+BOOST_FIXTURE_TEST_SUITE(Integers, StrictRead)
 
 BOOST_AUTO_TEST_CASE(RandomInts) {
 	setStr("42 17");

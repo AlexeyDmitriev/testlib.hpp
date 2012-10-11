@@ -2,7 +2,7 @@
 #include <iostream>
 int main(){
 	try{
-		IStream stream(std::cin);
+		IStream stream(std::cin, true);
 		std::cout<<stream.read<int>()<<std::endl;  
 		stream.readSpace();
 		std::cout<<stream.read<int>(DefaultReader<int>(), 5, 17)<<std::endl;
