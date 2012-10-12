@@ -20,6 +20,18 @@ public:
 	typename std::enable_if<std::is_base_of<Reader<T>, U>::value,T>::type read(U reader, Args... args){
 		return reader.read(*this, args...);
 	}
+	
+	template<typename T, typename... Args>
+	void fill(T& result, Args... args){
+		result = read<T>(args...);
+	}
+	
+	template<typename T, typename... Args>
+	IStream& operator >> (T& result){
+		fill(result);
+		return *this;
+	}
+	
 	char readChar(){
 		int c = stream.get();
 		if(c == EOF){
