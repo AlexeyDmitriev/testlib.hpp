@@ -1,14 +1,16 @@
 #include "testlib/testlib.hpp"
 #include <iostream>
-int main(){
-	try{
+#include "testlib/readerWrapper.hpp"
+
+int main() {
+	try {
 		IStream stream(std::cin);
-		std::cout<<stream.read<int>()<<std::endl;  
+		auto reader = make_reader(DefaultReader<int>(), 5, 17);
+		std::cout << stream.read<int>(reader) << std::endl;
 		stream.readSpace();
-		std::cout<<stream.read<int>(DefaultReader<int>(), 5, 17)<<std::endl;
-	}
-	catch(ReadingException e){
+		std::cout << stream.read<int>() << std::endl;
+	}	catch (ReadingException e) {
 		quit(e.verdict, e.message);
 	}
-	return 0; 
-}  
+	return 0;
+}
