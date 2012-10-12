@@ -2,14 +2,14 @@
 #include <iostream>
 #include <functional>
 #include <type_traits>
+#include <cstdio>
 #include "core.hpp"
 #include "utility.hpp"
 #include "reader.hpp"
 
-//TODO: non-strict mode
 class IStream {
 public:
-	IStream(std::istream& stream):stream(stream){}
+	IStream(std::istream& stream, bool strict):stream(stream), strict(strict){}
 	
 	template<typename T, typename... Args>
 	typename std::enable_if<!std::is_base_of<Reader<T>, typename firstType<Args...>::type>::value,T>::type read(Args... args){
@@ -33,17 +33,31 @@ public:
 	}
 	
 	char readChar(){
-		int c = stream.get();
-		if(c == EOF){
+		if (!strict)
+			skipWhiteSpaces();
+		int c = get();
+		if(c == EOF)
 			throw ReadingException(Verdict::PE, expectation("Character", "EOF"));				
-		}
 		return c;
 	}
 	
 	void readChar(char expected){
-		char found = readChar();
-		if(found != expected)
-			throw ReadingException(Verdict::PE, expectation(expected, found));
+		if (strict){
+			char c = readChar();
+			if (c != expected){
+				throw ReadingException(Verdict::PE, expectation(expected, c));	
+			}
+		}
+		else{
+			while (peek() != expected){
+				if(peek() == EOF)
+					throw ReadingException(Verdict::PE, expectation(expected, "EOF"));
+				else if (isWhiteSpace(peek()))
+					get();
+				else 
+					throw ReadingException(Verdict::PE, expectation(expected, char(peek())));
+			}
+		}
 	}
 	
 	void readSpace(){
@@ -58,12 +72,19 @@ public:
 	}
 	
 	void readEof(){
-		int c = stream.get();
+		if (!strict) {
+			skipWhiteSpaces();
+		}
+		int c = get();
 		if(c != EOF)
 			throw ReadingException(Verdict::PE, expectation("EOF", char(c)));
 	}
 	//TODO: maybe it should be changed to Reader<std:string>
 	std::string readToken(){
+		if (!strict){
+			skipWhiteSpaces();
+		}
+		
 		std::string token;
 		
 		while(!isWhiteSpace(stream.peek()))
@@ -81,9 +102,52 @@ public:
 	int peek(){
 		return stream.peek();
 	}
+	int get(){
+		return stream.get();
+	}
+	
+	void setStrict(){
+		strict = true;
+	}
+	void setNonStrict(){
+		strict = false;
+	}
+	
+	bool seekEoln(){
+	#ifdef ON_WINDOWS
+		char eoln = '\r';
+	#endif
+		char eoln = '\n';
+	
+		while (peek() != eoln){
+			if (isWhiteSpace(peek()) && peek() != EOF)
+				get();
+			else 
+				return false;
+		}
+		return true;
+	}
+	
+	bool seekEof(){
+		while (peek() != EOF){
+			if (isWhiteSpace(peek()))
+				get();
+			else
+				return false;
+		}
+		return true;
+	}
 private:
+	std::istream& stream;
+	bool strict;
 	bool isWhiteSpace(int c){
 		return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == EOF ;
 	}
-	std::istream& stream;
+	void skipWhiteSpaces(){ 
+		int c = peek();
+		while (isWhiteSpace(c) && c != EOF){
+			get();
+			c = peek();
+		}
+	}
 };

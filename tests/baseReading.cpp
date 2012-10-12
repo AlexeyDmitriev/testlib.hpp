@@ -3,9 +3,12 @@
 #include "testlib/istream.hpp"
 #include "tests/fixture.hpp"
 
-BOOST_FIXTURE_TEST_SUITE(base, SimpleRead)
+BOOST_FIXTURE_TEST_SUITE(baseStrict, StrictRead)
 
 BOOST_AUTO_TEST_CASE( eof ) {
+	
+	
+	setStr("");
 	BOOST_CHECK_NO_THROW(stream.readEof());
 	
 	setStr(" ");
@@ -29,7 +32,8 @@ BOOST_AUTO_TEST_CASE( tokens ){
 	
 	setStr("token list");
 	BOOST_CHECK_EQUAL(stream.readToken(), "token");
-	BOOST_CHECK_THROW(stream.readToken(), ReadingException);
+	BOOST_CHECK_NO_THROW(stream.readSpace());
+	BOOST_CHECK_EQUAL(stream.readToken(), "list");
 	
 	setStr("\ntoken");
 	BOOST_CHECK_THROW(stream.readToken(), ReadingException);
@@ -41,6 +45,72 @@ BOOST_AUTO_TEST_CASE(spaces){
 	BOOST_CHECK_EQUAL(stream.readChar(), ' ');
 	BOOST_CHECK_NO_THROW(stream.readSpace());
 	BOOST_CHECK_THROW(stream.readSpace(), ReadingException);
+}
+
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_FIXTURE_TEST_SUITE(baseNonStrict, NonStrictRead)
+
+BOOST_AUTO_TEST_CASE( eof ) {
+	
+	
+	setStr("");
+	BOOST_CHECK_NO_THROW(stream.readEof());
+	
+	setStr(" ");
+	BOOST_CHECK_NO_THROW(stream.readSpace());
+	BOOST_CHECK_NO_THROW(stream.readEof());
+	
+	setStr(" \npetr_is_cool_programmer");
+	BOOST_CHECK_EQUAL(stream.seekEof(), false);
+	
+	setStr(" \n\t\n");
+	BOOST_CHECK_EQUAL(stream.seekEof(), true);
+}
+
+BOOST_AUTO_TEST_CASE( eoln ) {
+	
+	
+	setStr("");
+	BOOST_CHECK_THROW(stream.readEoln(), ReadingException);
+	
+	setStr(" \n");
+	BOOST_CHECK_NO_THROW(stream.readSpace());
+	BOOST_CHECK_NO_THROW(stream.readEoln());
+	
+	setStr(" \t \npetr_is_cool_programmer");
+	BOOST_CHECK_EQUAL(stream.seekEoln(), true);
+	
+	setStr(" p\n    ");
+	BOOST_CHECK_EQUAL(stream.seekEoln(), false);
+}
+
+BOOST_AUTO_TEST_CASE( chars ) {
+	setStr("a bq");
+	BOOST_CHECK_EQUAL(stream.readChar(), 'a');
+	BOOST_CHECK_NO_THROW(stream.readSpace());
+	BOOST_CHECK_NO_THROW(stream.readChar('b'));
+	BOOST_CHECK_THROW(stream.readChar('x'), ReadingException);
+}
+
+BOOST_AUTO_TEST_CASE( tokens ){
+	BOOST_CHECK_THROW(stream.readToken(), ReadingException);
+	
+	setStr("token list");
+	BOOST_CHECK_EQUAL(stream.readToken(), "token");
+	BOOST_CHECK_EQUAL(stream.readToken(), "list");
+	
+	setStr("\ntoken");
+	BOOST_CHECK_EQUAL(stream.readToken(), "token");
+	
+}
+
+BOOST_AUTO_TEST_CASE(spaces){
+	setStr("  p\t\nvictor");
+	BOOST_CHECK_EQUAL(stream.readChar(), 'p');
+	BOOST_CHECK_EQUAL(stream.readToken(), "victor");
+	BOOST_CHECK_NO_THROW(stream.readEof())
 }
 
 

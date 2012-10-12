@@ -4,7 +4,7 @@
 
 int main() {
 	try {
-		IStream stream(std::cin);
+		IStream stream(std::cin, true);
 		auto reader = make_reader(DefaultReader<int>(), 5, 17);
 		std::cout << stream.read<int>(reader) << std::endl;
 		stream.readSpace();
