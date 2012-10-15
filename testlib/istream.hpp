@@ -117,6 +117,10 @@ public:
 		mode = Mode::NON_STRICT;
 	}
 	
+	Mode getMode(){
+		return mode;
+	}
+	
 	bool seekEoln(){
 	#ifdef ON_WINDOWS
 		char eoln = '\r';
