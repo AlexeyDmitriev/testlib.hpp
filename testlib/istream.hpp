@@ -9,7 +9,11 @@
 
 class IStream {
 public:
-	IStream(std::istream& stream, bool strict):stream(stream), strict(strict){}
+	enum class Mode{
+		STRICT,
+		NON_STRICT
+	};
+	IStream(std::istream& stream, Mode mode):stream(stream), mode(mode){}
 	
 	template<typename T, typename... Args>
 	typename std::enable_if<!std::is_base_of<Reader<T>, typename firstType<Args...>::type>::value,T>::type read(Args... args){
@@ -33,8 +37,7 @@ public:
 	}
 	
 	char readChar(){
-		if (!strict)
-			skipWhiteSpaces();
+		skipUnused();
 		int c = get();
 		if(c == EOF)
 			throw ReadingException(Verdict::PE, expectation("Character", "EOF"));				
@@ -42,22 +45,15 @@ public:
 	}
 	
 	void readChar(char expected){
-		if (strict){
-			char c = readChar();
-			if (c != expected){
-				throw ReadingException(Verdict::PE, expectation(expected, c));	
-			}
+		while (peek() != expected){
+			if(peek() == EOF)
+				throw ReadingException(Verdict::PE, expectation(expected, "EOF"));
+			else if (isSkippable(peek()))
+				get();
+			else 
+				throw ReadingException(Verdict::PE, expectation(expected, char(peek())));
 		}
-		else{
-			while (peek() != expected){
-				if(peek() == EOF)
-					throw ReadingException(Verdict::PE, expectation(expected, "EOF"));
-				else if (isWhiteSpace(peek()))
-					get();
-				else 
-					throw ReadingException(Verdict::PE, expectation(expected, char(peek())));
-			}
-		}
+		get();
 	}
 	
 	void readSpace(){
@@ -72,18 +68,14 @@ public:
 	}
 	
 	void readEof(){
-		if (!strict) {
-			skipWhiteSpaces();
-		}
+		skipUnused();
 		int c = get();
 		if(c != EOF)
 			throw ReadingException(Verdict::PE, expectation("EOF", char(c)));
 	}
 	//TODO: maybe it should be changed to Reader<std:string>
 	std::string readToken(){
-		if (!strict){
-			skipWhiteSpaces();
-		}
+		skipUnused();
 		
 		std::string token;
 		
@@ -99,7 +91,7 @@ public:
 		
 		return token;
 	}
-	int peek(){
+	int peek() const {
 		return stream.peek();
 	}
 	int get(){
@@ -107,10 +99,14 @@ public:
 	}
 	
 	void setStrict(){
-		strict = true;
+		mode = Mode::STRICT;
 	}
 	void setNonStrict(){
-		strict = false;
+		mode = Mode::NON_STRICT;
+	}
+	
+	Mode getMode() const {
+		return mode;
 	}
 	
 	bool seekEoln(){
@@ -139,13 +135,16 @@ public:
 	}
 private:
 	std::istream& stream;
-	bool strict;
-	bool isWhiteSpace(int c){
-		return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == EOF ;
+	Mode mode;
+	bool isSkippable(int c) const {
+		return isWhiteSpace(c) && (mode == Mode::NON_STRICT);
 	}
-	void skipWhiteSpaces(){ 
+	bool isWhiteSpace(int c) const {
+		return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == EOF;
+	}
+	void skipUnused() {
 		int c = peek();
-		while (isWhiteSpace(c) && c != EOF){
+		while (isSkippable(c) && c != EOF){
 			get();
 			c = peek();
 		}
