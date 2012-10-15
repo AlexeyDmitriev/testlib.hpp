@@ -91,7 +91,7 @@ public:
 		
 		return token;
 	}
-	int peek(){
+	int peek() const {
 		return stream.peek();
 	}
 	int get(){
@@ -105,7 +105,7 @@ public:
 		mode = Mode::NON_STRICT;
 	}
 	
-	Mode getMode(){
+	Mode getMode() const {
 		return mode;
 	}
 	
@@ -136,13 +136,13 @@ public:
 private:
 	std::istream& stream;
 	Mode mode;
-	bool isSkippable(int c){
+	bool isSkippable(int c) const {
 		return isWhiteSpace(c) && (mode == Mode::NON_STRICT);
 	}
-	bool isWhiteSpace(int c){
+	bool isWhiteSpace(int c) const {
 		return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == EOF;
 	}
-	void skipUnused(){
+	void skipUnused() {
 		int c = peek();
 		while (isSkippable(c) && c != EOF){
 			get();
