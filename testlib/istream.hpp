@@ -9,7 +9,11 @@
 
 class IStream {
 public:
-	IStream(std::istream& stream, bool strict):stream(stream), strict(strict){}
+	enum class Mode{
+		STRICT,
+		NON_STRICT
+	};
+	IStream(std::istream& stream, Mode mode):stream(stream), mode(mode){}
 	
 	template<typename T, typename... Args>
 	typename std::enable_if<!std::is_base_of<Reader<T>, typename firstType<Args...>::type>::value,T>::type read(Args... args){
@@ -33,7 +37,7 @@ public:
 	}
 	
 	char readChar(){
-		if (!strict)
+		if (mode == Mode::NON_STRICT)
 			skipWhiteSpaces();
 		int c = get();
 		if(c == EOF)
@@ -42,7 +46,7 @@ public:
 	}
 	
 	void readChar(char expected){
-		if (strict){
+		if (mode == Mode::STRICT){
 			char c = readChar();
 			if (c != expected){
 				throw ReadingException(Verdict::PE, expectation(expected, c));	
@@ -72,7 +76,7 @@ public:
 	}
 	
 	void readEof(){
-		if (!strict) {
+		if (mode == Mode::NON_STRICT) {
 			skipWhiteSpaces();
 		}
 		int c = get();
@@ -81,7 +85,7 @@ public:
 	}
 	//TODO: maybe it should be changed to Reader<std:string>
 	std::string readToken(){
-		if (!strict){
+		if (mode == Mode::NON_STRICT){
 			skipWhiteSpaces();
 		}
 		
@@ -107,10 +111,10 @@ public:
 	}
 	
 	void setStrict(){
-		strict = true;
+		mode = Mode::STRICT;
 	}
 	void setNonStrict(){
-		strict = false;
+		mode = Mode::NON_STRICT;
 	}
 	
 	bool seekEoln(){
@@ -139,9 +143,9 @@ public:
 	}
 private:
 	std::istream& stream;
-	bool strict;
+	Mode mode;
 	bool isWhiteSpace(int c){
-		return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == EOF ;
+		return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == EOF;
 	}
 	void skipWhiteSpaces(){ 
 		int c = peek();
