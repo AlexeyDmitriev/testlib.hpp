@@ -28,7 +28,7 @@ public:
 			throw ReadingException(Verdict::WA, "Integer " + toPrint(name) + " violates the range [" + toString(min) + "," + toString(max) + "]");
 		return result;
 	}
-	
+private:
 	std::vector<T> absToArray(T value) const {
 		bool negative = std::less<T>()(value, 0);
 		std::vector<T> result;
