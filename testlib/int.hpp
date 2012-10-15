@@ -10,6 +10,7 @@
 
 template <typename T, int radix = 10>
 class IntegerReader : public Reader<T>{
+	static_assert(radix >= 2 && radix <= 36, "Radix must be in range [2..36]");
 public:
 	T read(IStream& stream) const {
 		std::string token = stream.readToken();
