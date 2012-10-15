@@ -37,8 +37,7 @@ public:
 	}
 	
 	char readChar(){
-		if (mode == Mode::NON_STRICT)
-			skipWhiteSpaces();
+		skipUnused();
 		int c = get();
 		if(c == EOF)
 			throw ReadingException(Verdict::PE, expectation("Character", "EOF"));				
@@ -46,22 +45,15 @@ public:
 	}
 	
 	void readChar(char expected){
-		if (mode == Mode::STRICT){
-			char c = readChar();
-			if (c != expected){
-				throw ReadingException(Verdict::PE, expectation(expected, c));	
-			}
+		while (peek() != expected){
+			if(peek() == EOF)
+				throw ReadingException(Verdict::PE, expectation(expected, "EOF"));
+			else if (isSkippable(peek()))
+				get();
+			else 
+				throw ReadingException(Verdict::PE, expectation(expected, char(peek())));
 		}
-		else{
-			while (peek() != expected){
-				if(peek() == EOF)
-					throw ReadingException(Verdict::PE, expectation(expected, "EOF"));
-				else if (isWhiteSpace(peek()))
-					get();
-				else 
-					throw ReadingException(Verdict::PE, expectation(expected, char(peek())));
-			}
-		}
+		get();
 	}
 	
 	void readSpace(){
@@ -76,18 +68,14 @@ public:
 	}
 	
 	void readEof(){
-		if (mode == Mode::NON_STRICT) {
-			skipWhiteSpaces();
-		}
+		skipUnused();
 		int c = get();
 		if(c != EOF)
 			throw ReadingException(Verdict::PE, expectation("EOF", char(c)));
 	}
 	//TODO: maybe it should be changed to Reader<std:string>
 	std::string readToken(){
-		if (mode == Mode::NON_STRICT){
-			skipWhiteSpaces();
-		}
+		skipUnused();
 		
 		std::string token;
 		
@@ -148,12 +136,15 @@ public:
 private:
 	std::istream& stream;
 	Mode mode;
+	bool isSkippable(int c){
+		return isWhiteSpace(c) && (mode == Mode::NON_STRICT);
+	}
 	bool isWhiteSpace(int c){
 		return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == EOF;
 	}
-	void skipWhiteSpaces(){ 
+	void skipUnused(){
 		int c = peek();
-		while (isWhiteSpace(c) && c != EOF){
+		while (isSkippable(c) && c != EOF){
 			get();
 			c = peek();
 		}
