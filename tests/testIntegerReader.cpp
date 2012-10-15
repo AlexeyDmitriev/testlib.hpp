@@ -128,5 +128,35 @@ BOOST_AUTO_TEST_CASE(Hex){
 	BOOST_CHECK_EQUAL(HexReader<int>().read(stream), -10);
 }
 
+BOOST_AUTO_TEST_CASE(HexCase){
+	typedef HexReader<int>::Case Case;
+	setStr("FF");
+	BOOST_CHECK_THROW(HexReader<int>().read(stream), ReadingException);
+	
+	setStr("fF");
+	BOOST_CHECK_THROW(HexReader<int>().read(stream), ReadingException);
+	
+	setStr("FF");
+	BOOST_CHECK_NO_THROW(HexReader<int>(Case::UPPER).read(stream));
+	
+	setStr("ff");
+	BOOST_CHECK_THROW(HexReader<int>(Case::UPPER).read(stream), ReadingException);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
+
+		
+BOOST_FIXTURE_TEST_SUITE(NoStrictIntegers, NonStrictRead)
+
+
+BOOST_AUTO_TEST_CASE(HexBoth){
+	typedef HexReader<int>::Case Case;
+	setStr("Ff");
+	BOOST_CHECK_NO_THROW(HexReader<int>().read(stream));
+	
+	setStr("ff");
+	BOOST_CHECK_THROW(HexReader<int>(Case::UPPER).read(stream), ReadingException);
+}
+
+
+BOOST_AUTO_TEST_SUITE_END()		
