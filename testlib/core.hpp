@@ -22,11 +22,11 @@ class ReadingException : std::exception {
 public:
 	Verdict verdict;
 	std::string message;
-	ReadingException(Verdict verdict, std::string str): verdict(verdict), message(str){}
+	ReadingException(Verdict verdict, const std::string& str): verdict(verdict), message(str){}
 };
 
 
-inline void quit(Verdict verdict, std::string message){
+inline void quit(Verdict verdict, const std::string& message){
 	if(verdict == Verdict::OK)
 		std::cout << "OK ";
 	else
