@@ -30,7 +30,7 @@ public:
 		result = read<T>(args...);
 	}
 	
-	template<typename T, typename... Args>
+	template<typename T>
 	IStream& operator >> (T& result){
 		fill(result);
 		return *this;
