@@ -110,11 +110,7 @@ public:
 	}
 	
 	bool seekEoln(){
-	#ifdef ON_WINDOWS
-		char eoln = '\r';
-	#endif
 		char eoln = '\n';
-	
 		while (peek() != eoln){
 			if (isWhiteSpace(peek()) && peek() != EOF)
 				get();
