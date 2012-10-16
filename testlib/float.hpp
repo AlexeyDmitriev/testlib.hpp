@@ -18,9 +18,9 @@ public:
 		T result = read(stream);
 		if(result < min || result > max)
 			throw ReadingException(Verdict::WA, "Float violates the range [" + toString(min) + "," + toString(max) + "]");
-		return result;
+		return result; 
 	}
-	T read(IStream& stream, T min, T max, std::string name) const {
+	T read(IStream& stream, T min, T max, const std::string& name) const {
 		T result = read(stream);
 		if(result < min || result > max)
 			throw ReadingException(Verdict::WA, "Float " + toPrint(name) + " violates the range [" + toString(min) + "," + toString(max) + "]");
