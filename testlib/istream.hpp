@@ -16,18 +16,18 @@ public:
 	IStream(std::istream& stream, Mode mode):stream(stream), mode(mode){}
 	
 	template<typename T, typename... Args>
-	typename std::enable_if<!std::is_base_of<Reader<T>, typename firstType<Args...>::type>::value,T>::type read(Args... args){
-		return read<T>(DefaultReader<T>(), args...);
+	typename std::enable_if<!std::is_base_of<Reader<T>, typename firstType<Args...>::type>::value,T>::type read(Args&&... args){
+		return read<T>(DefaultReader<T>(), std::forward<Args>(args)...);
 	}
 	
 	template<typename T, typename U, typename... Args>
-	typename std::enable_if<std::is_base_of<Reader<T>, U>::value,T>::type read(U reader, Args... args){
-		return reader.read(*this, args...);
+	typename std::enable_if<std::is_base_of<Reader<T>, U>::value,T>::type read(U reader, Args&&... args){
+		return reader.read(*this, std::forward<Args>(args)...);
 	}
 	
 	template<typename T, typename... Args>
-	void fill(T& result, Args... args){
-		result = read<T>(args...);
+	void fill(T& result, Args&&... args){
+		result = read<T>(std::forward<Args>(args)...);
 	}
 	
 	template<typename T>
