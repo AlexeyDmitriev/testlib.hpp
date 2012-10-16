@@ -11,7 +11,7 @@ public:
 	typedef typename T::type type;
 	
 	template <typename... Args>
-	ReaderWrapper(T reader, Args && ... args) {
+	ReaderWrapper(T reader, Args&& ... args) {
 		using namespace std::placeholders;
 
 		lambda = std::bind(
@@ -31,11 +31,11 @@ private:
 };
 
 template <typename T, typename... Args>
-ReaderWrapper<T> make_reader(T reader, Args... args) {
+ReaderWrapper<T> make_reader(T reader, Args&&... args) {
 	return ReaderWrapper<T>(reader, std::forward<Args> (args)...);
 }
 
 template <typename T, typename... Args>
-ReaderWrapper<T> make_default_reader(Args... args) {
-	return make_reader(DefaultReader<T>(), args...);
+ReaderWrapper<DefaultReader<T>> make_default_reader(Args&&... args) {
+	return make_reader(DefaultReader<T>(), std::forward<Args>(args)...);
 }
