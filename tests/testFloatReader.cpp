@@ -82,6 +82,7 @@ BOOST_AUTO_TEST_CASE(BadFormatTooManyPoints) {
 		".1",
 		"-.0",
 		"-.17",
+		"-1.",
 	};
 
 	for (const auto& s : strings) {
@@ -98,5 +99,13 @@ BOOST_AUTO_TEST_CASE(WrongNumbersSize) {
 	BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
 }
 
-
+BOOST_AUTO_TEST_CASE(NormalWorkingWithSpaces){
+	setStr("-517.512521 2.4990");
+	BOOST_CHECK_EQUAL(stream.read<double>(), -517.512521);
+	BOOST_CHECK_NO_THROW(stream.readSpace());
+	BOOST_CHECK_EQUAL(stream.read<double>(), 2.4990);
+	
+	setStr("-517.\n");
+	BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
+}
 BOOST_AUTO_TEST_SUITE_END()

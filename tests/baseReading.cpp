@@ -11,12 +11,21 @@ BOOST_AUTO_TEST_CASE( eof ) {
 	setStr("");
 	BOOST_CHECK_NO_THROW(stream.readEof());
 	
+	setStr("");
+	BOOST_CHECK_THROW(stream.readSpace(), ReadingException);
+	
 	setStr(" ");
 	BOOST_CHECK_NO_THROW(stream.readSpace());
 	BOOST_CHECK_NO_THROW(stream.readEof());
 	
 	setStr(" ");
 	BOOST_CHECK_THROW(stream.readEof(), ReadingException);
+
+	setStr("\t");
+	BOOST_CHECK_THROW(stream.readEof(), ReadingException);
+
+	setStr("\t");
+	BOOST_CHECK_EQUAL(stream.seekEof(), false);
 }
 
 BOOST_AUTO_TEST_CASE( chars ) {
@@ -25,6 +34,26 @@ BOOST_AUTO_TEST_CASE( chars ) {
 	BOOST_CHECK_NO_THROW(stream.readSpace());
 	BOOST_CHECK_NO_THROW(stream.readChar('b'));
 	BOOST_CHECK_THROW(stream.readChar('x'), ReadingException);
+	
+	setStr(" a bq");
+	BOOST_CHECK_THROW(stream.readChar('a'), ReadingException);
+
+	setStr("\ta ");
+	BOOST_CHECK_NO_THROW(stream.readChar('\t'));
+	BOOST_CHECK_EQUAL(stream.readChar(), 'a');
+	BOOST_CHECK_NO_THROW(stream.readChar(' '));
+	BOOST_CHECK_THROW(stream.readChar('\n'), ReadingException);
+	
+	setStr("\na ");
+	BOOST_CHECK_NO_THROW(stream.readChar('\n'));
+	BOOST_CHECK_EQUAL(stream.readChar(), 'a');
+	BOOST_CHECK_NO_THROW(stream.readChar(' '));
+	BOOST_CHECK_NO_THROW(stream.readEof());
+	
+	setStr("\t");
+	BOOST_CHECK_EQUAL(stream.seekEoln(), false);
+	setStr("\n");
+	BOOST_CHECK_EQUAL(stream.seekEoln(), true);
 }
 
 BOOST_AUTO_TEST_CASE( tokens ){
@@ -38,6 +67,9 @@ BOOST_AUTO_TEST_CASE( tokens ){
 	setStr("\ntoken");
 	BOOST_CHECK_THROW(stream.readToken(), ReadingException);
 	
+	setStr("\t");
+	BOOST_CHECK_THROW(stream.readToken(), ReadingException);
+	
 }
 
 BOOST_AUTO_TEST_CASE(spaces){
@@ -45,6 +77,16 @@ BOOST_AUTO_TEST_CASE(spaces){
 	BOOST_CHECK_EQUAL(stream.readChar(), ' ');
 	BOOST_CHECK_NO_THROW(stream.readSpace());
 	BOOST_CHECK_THROW(stream.readSpace(), ReadingException);
+	
+	setStr("\n0+0=1");
+	BOOST_CHECK_THROW(stream.readSpace(), ReadingException);
+	
+	setStr("\n0+ 0= 1 ");
+	BOOST_CHECK_EQUAL(stream.readChar(), '\n');
+	BOOST_CHECK_EQUAL(stream.readToken(), "0+");
+	BOOST_CHECK_EQUAL(stream.readChar(), ' ');
+	BOOST_CHECK_EQUAL(stream.readToken(), "0=");
+	BOOST_CHECK_THROW(stream.readEof(), ReadingException);
 }
 
 
@@ -58,9 +100,11 @@ BOOST_AUTO_TEST_CASE( eof ) {
 	setStr("");
 	BOOST_CHECK_NO_THROW(stream.readEof());
 	
-	setStr(" ");
-	BOOST_CHECK_NO_THROW(stream.readSpace());
+	setStr(" \n");
 	BOOST_CHECK_NO_THROW(stream.readEof());
+	
+	setStr(" lekha\n");
+	BOOST_CHECK_THROW(stream.readEof(), ReadingException);
 	
 	setStr(" \npetr_is_cool_programmer");
 	BOOST_CHECK_EQUAL(stream.seekEof(), false);
@@ -84,6 +128,8 @@ BOOST_AUTO_TEST_CASE( eoln ) {
 	
 	setStr(" p\n    ");
 	BOOST_CHECK_EQUAL(stream.seekEoln(), false);
+	setStr(" \t\n p  ");
+	BOOST_CHECK_EQUAL(stream.seekEoln(), true);
 }
 
 BOOST_AUTO_TEST_CASE( chars ) {
@@ -103,6 +149,10 @@ BOOST_AUTO_TEST_CASE( tokens ){
 	
 	setStr("\ntoken");
 	BOOST_CHECK_EQUAL(stream.readToken(), "token");
+	
+	setStr(" lekha\n");
+	BOOST_CHECK_EQUAL(stream.readToken(), "lekha");
+	BOOST_CHECK_NO_THROW(stream.readEof());
 	
 }
 

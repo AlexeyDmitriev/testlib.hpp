@@ -98,7 +98,10 @@ BOOST_AUTO_TEST_CASE(BadFormat) {
 		"-a1",
 		"-9a9",
 		"-01",
-		"00"
+		"00",
+		"0.0",
+		"30.",
+		"-.0",
 	};
 	
 	for(const auto& s: strings){

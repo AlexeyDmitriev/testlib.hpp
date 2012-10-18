@@ -42,6 +42,8 @@ public:
 			throw ReadingException(Verdict::PE, expectation("Float", input));
 		if(usedValue[0] == '.')
 			throw ReadingException(Verdict::PE, expectation("Float", input));
+		if(usedValue.back() == '.')
+			throw ReadingException(Verdict::PE, expectation("Float", input));
 
 		bool wasPoint = false;
 		for (char digit: usedValue) {

@@ -112,7 +112,7 @@ public:
 	bool seekEoln(){
 		char eoln = '\n';
 		while (peek() != eoln){
-			if (isWhiteSpace(peek()) && peek() != EOF)
+			if (isSkippable(peek()) && peek() != EOF)
 				get();
 			else 
 				return false;
@@ -122,7 +122,7 @@ public:
 	
 	bool seekEof(){
 		while (peek() != EOF){
-			if (isWhiteSpace(peek()))
+			if (isSkippable(peek()))
 				get();
 			else
 				return false;
