@@ -41,6 +41,12 @@ BOOST_AUTO_TEST_CASE(customReaders){
 	
 	setStr("42 17");
 	BOOST_CHECK_NO_THROW(stream.read<pi>(any, upTo20));
+	
+	setStr("123 456");
+	BOOST_CHECK_NO_THROW(stream.read<pi>(make_default_reader<int>(100, 1000)));
+	
+	setStr("123 456");
+	BOOST_CHECK_THROW(stream.read<pi>(make_default_reader<int>(100, 200)), ReadingException);
 }
 
 BOOST_AUTO_TEST_CASE(Separators){
