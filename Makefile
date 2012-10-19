@@ -1,8 +1,9 @@
 CPP := g++
 CPP_FLAGS := -Wall -Wextra -Werror -std=c++11 -I.
 LINK_FLAGS := -lboost_unit_test_framework
-CPP_FILES = $(wildcard tests/*.cpp)
-OBJ_FILES = $(CPP_FILES:tests/%.cpp=build/%.o)
+TEST_CPP_FILES = $(wildcard tests/*.cpp)
+TEST_OBJ_FILES = $(TEST_CPP_FILES:%.cpp=build/%.o)
+OBJ_FILES = $(TEST_OBJ_FILES)
 DEP_FILES = $(OBJ_FILES:%.o=%.d)
 
 default:
@@ -12,21 +13,21 @@ test: build-tests
 	@echo "run test"
 	@build/test
 
-build-tests: $(OBJ_FILES) 
+build-tests: $(TEST_OBJ_FILES) 
 	@echo "build test"
-	@$(CPP) $(OBJ_FILES) $(LINK_FLAGS) -o build/test
+	@$(CPP) $(TEST_OBJ_FILES) $(LINK_FLAGS) -o build/test
 	
-build/%.d: tests/%.cpp
-	@mkdir -p build
+build/%.d: %.cpp
+	@mkdir -p build/$(*D)
 	@echo Make dependencies for $*.cpp
-	@$(CPP) -MM -MP -MT build/$*.d -MT build/$*.o $(CPP_FLAGS) $< -o $@
+	@$(CPP) -MM -MP -MT $@ -MT build/$*.o $(CPP_FLAGS) $< -o $@
 
 clean:
 	@echo "clean"
 	@rm -rf build
 
 build/%.o: 
-	@echo "Compile $*.d"
-	@$(CPP) $(@:build/%.o=tests/%.cpp) $(CPP_FLAGS) -c -o $@
+	@echo "Compile $*.o"
+	@$(CPP) $*.cpp $(CPP_FLAGS) -c -o $@
 																		
 include $(DEP_FILES)
