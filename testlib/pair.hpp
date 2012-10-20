@@ -15,12 +15,9 @@ public:
 	private:
 		std::string separator;
 	public:
-		Separator(char c): separator(c, 1){
-		}
-		Separator(const char* s): separator(s){
-			
-		}
-		Separator(const std::string& s): separator(std::move(s)){}
+		/*implicit*/ Separator(char c): separator(1, c){}
+		/*implicit*/ Separator(const char* s): separator(s){}
+		/*implicit*/ Separator(const std::string& s): separator(std::move(s)){}
 		void read(IStream& stream) const {
 			for(char c: separator){
 				stream.readChar(c);
