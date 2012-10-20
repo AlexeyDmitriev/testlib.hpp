@@ -15,7 +15,7 @@ public:
 	private:
 		std::string separator;
 	public:
-		Separator(char c): separator(c, 1){
+		Separator(char c): separator(1, c){
 		}
 		Separator(const char* s): separator(s){
 			

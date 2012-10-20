@@ -72,6 +72,9 @@ BOOST_AUTO_TEST_CASE(StrictSeparators){
 	setStr("123\n345");
 	BOOST_CHECK_THROW(stream.read<pi>(), ReadingException);
 	
+	setStr("123\n345");
+	BOOST_CHECK_NO_THROW(stream.read<pi>('\n'));
+	
 	setStr("123 vs345");
 	BOOST_CHECK_THROW(stream.read<pi>("vs"), ReadingException);
 	
