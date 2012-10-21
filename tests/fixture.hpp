@@ -5,7 +5,7 @@
 
 struct NonStrictRead {
 	std::stringstream ss;
-	IStream stream;
+	OutputIStream stream;
 	
 	NonStrictRead(): stream(ss, IStream::Mode::NON_STRICT) {}
 	void setStr(const std::string& s){
@@ -16,7 +16,7 @@ struct NonStrictRead {
 
 struct StrictRead {
 	std::stringstream ss;
-	IStream stream;
+	OutputIStream stream;
 	
 	StrictRead(): stream(ss, IStream::Mode::STRICT) {}
 	void setStr(const std::string& s){

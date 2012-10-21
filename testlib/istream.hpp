@@ -129,6 +129,8 @@ public:
 		}
 		return true;
 	}
+	
+	virtual void quit(Verdict verdict, const std::string& message) = 0;
 private:
 	std::istream& stream;
 	Mode mode;
@@ -144,5 +146,21 @@ private:
 			get();
 			c = peek();
 		}
+	}
+};
+
+class FailIStream : public IStream {
+public:
+	FailIStream(std::istream& stream, Mode mode):IStream(stream, mode){}
+	virtual void quit(Verdict, const std::string& message) override {
+		throw ReadingException(Verdict::FAIL, message);
+	}
+};
+
+class OutputIStream : public IStream {
+public:
+	OutputIStream(std::istream& stream, Mode mode):IStream(stream, mode){}
+	virtual void quit(Verdict verdict, const std::string& message) override {
+		throw ReadingException(verdict, message);
 	}
 };
