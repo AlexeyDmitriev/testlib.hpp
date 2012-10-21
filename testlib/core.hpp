@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
+#include <cassert>
+#include <map>
 
 //TODO: proper OS choosing
 #define ON_LINUX
@@ -17,6 +19,35 @@ enum class Verdict{
 	PE
 };
 
+inline int exitCode(Verdict verdict){
+	switch(verdict){
+		case Verdict::OK:
+			return 0;
+		case Verdict::WA:
+			return 1;
+		case Verdict::FAIL:
+			return 2;
+		case Verdict::PE:
+			return 3;
+		default:
+			assert(false);
+	}
+}
+
+inline std::string shortMessage(Verdict verdict){
+	switch(verdict){
+		case Verdict::OK:
+			return "OK";
+		case Verdict::WA:
+			return "Wrong answer";
+		case Verdict::FAIL:
+			return "FAIL";
+		case Verdict::PE:
+			return "Wrong output format";
+		default:
+			assert(false);
+	}
+}
 
 class ReadingException : std::exception {
 public:
@@ -24,17 +55,3 @@ public:
 	std::string message;
 	ReadingException(Verdict verdict, const std::string& str): verdict(verdict), message(str){}
 };
-
-
-inline void quit(Verdict verdict, const std::string& message){
-	if(verdict == Verdict::OK)
-		std::cout << "OK ";
-	else
-		std::cout << "FAIL ";
-	std::cout << message;
-	if(verdict == Verdict::OK)
-		exit(0);
-	else
-		exit(1);
-	//TODO: proper exit code management
-}
