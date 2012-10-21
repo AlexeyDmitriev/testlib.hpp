@@ -25,7 +25,6 @@ void writeXml(std::ostream& stream, const std::string& str){
 int main(int argc, char** argv){                                                         \
 	Verdict verdict = Verdict::OK;                                                       \
 	std::string message = "No message provided";                                         \
-	bool appes = false;                                                                  \
 	std::fstream file;                                                                   \
 	try {                                                                                \
 		if (argc  < 4 || argc > 6)                                                       \

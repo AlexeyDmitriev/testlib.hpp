@@ -3,7 +3,10 @@ CPP_FLAGS := -Wall -Wextra -Werror -std=c++11 -I.
 LINK_FLAGS := -lboost_unit_test_framework
 TEST_CPP_FILES = $(wildcard tests/*.cpp)
 TEST_OBJ_FILES = $(TEST_CPP_FILES:%.cpp=build/%.o)
-OBJ_FILES = $(TEST_OBJ_FILES)
+EXAMPLES_CPP_FILES = $(wildcard examples/checkers/*.cpp)
+EXAMPLES_OBJ_FILES = $(EXAMPLES_CPP_FILES:%.cpp=build/%.o)
+EXAMPLES_RUN_FILES = $(EXAMPLES_OBJ_FILES:%.o=%.bin)
+OBJ_FILES = $(TEST_OBJ_FILES) $(EXAMPLES_OBJ_FILES)
 DEP_FILES = $(OBJ_FILES:%.o=%.d)
 
 default:
@@ -13,10 +16,25 @@ test: build-tests
 	@echo "run test"
 	@build/test
 
+examples: $(EXAMPLES_RUN_FILES) 
+	@echo "run examples"
+	@for CPP in $(EXAMPLES_CPP_FILES); do \
+		NAME=$${CPP%%.*} ; \
+		echo "file $${NAME}"; \
+		for TEST in $${NAME}/*.t; do \
+			echo "\ttest $${TEST}"; \
+			scripts/checkExitCode.sh `cat $${TEST}.c` "build/$${NAME}.bin $${TEST} $${TEST}.o $${TEST}.a /dev/null"; \
+		done; \
+	done
+
 build-tests: $(TEST_OBJ_FILES) 
 	@echo "build test"
 	@$(CPP) $(TEST_OBJ_FILES) $(LINK_FLAGS) -o build/test
-	
+
+build/%.bin: build/%.o
+	@echo "build $*.bin"
+	$(CPP) $< $(LINK_FLAGS) -o $@
+
 build/%.d: %.cpp
 	@mkdir -p build/$(*D)
 	@echo Make dependencies for $*.cpp
