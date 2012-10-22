@@ -50,7 +50,7 @@ int main(int argc, char** argv){                                                
 		input.open(argv[1]);                                                             \
 		output.open(argv[2]);                                                            \
 		answer.open(argv[3]);                                                            \
-		if(input.fail() || output.fail() || output.fail())                               \
+		if(input.fail() || output.fail() || answer.fail())                               \
 			throw ReadingException(Verdict::FAIL,"Can't open files");                    \
 		                                                                                 \
 		check(inf, ouf, ans);                                                            \
