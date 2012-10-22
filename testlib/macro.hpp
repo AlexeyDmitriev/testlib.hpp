@@ -25,7 +25,10 @@ void writeXml(std::ostream& stream, const std::string& str){
 int main(int argc, char** argv){                                                         \
 	Verdict verdict = Verdict::OK;                                                       \
 	std::string message = "No message provided";                                         \
-	std::fstream file;                                                                   \
+	std::ifstream input, output, answer;                                                 \
+	FailIStream inf(input, IStream::Mode::NON_STRICT);                                   \
+	OutputIStream ouf(output, IStream::Mode::NON_STRICT);                                \
+	FailIStream ans(answer, IStream::Mode::NON_STRICT);                                  \
 	try {                                                                                \
 		if (argc  < 4 || argc > 6)                                                       \
 		{                                                                                \
@@ -37,39 +40,41 @@ int main(int argc, char** argv){                                                
 		                                                                                 \
 		                                                                                 \
 		if(argc == 6){                                                                   \
-			if(std::strcmp(argv[5], "-APPES") && std::strcmp(argv[5], "-appes")){                  \
+			if(std::strcmp(argv[5], "-APPES") && std::strcmp(argv[5], "-appes")){        \
 				throw ReadingException(Verdict::FAIL,                                    \
 					"Program must be run with the following arguments: \n"               \
 					"<input-file> <output-file> <answer-file> [<report-file> [<-appes>]]"\
 				);                                                                       \
 			}                                                                            \
 		}                                                                                \
-		std::ifstream input(argv[1]);                                                    \
-		std::ifstream output(argv[2]);                                                   \
-		std::ifstream answer(argv[3]);                                                   \
+		input.open(argv[1]);                                                             \
+		output.open(argv[2]);                                                            \
+		answer.open(argv[3]);                                                            \
 		if(input.fail() || output.fail() || output.fail())                               \
 			throw ReadingException(Verdict::FAIL,"Can't open files");                    \
-		FailIStream inf(input, IStream::Mode::NON_STRICT);                               \
-		OutputIStream ouf(output, IStream::Mode::NON_STRICT);                            \
-		FailIStream ans(answer, IStream::Mode::NON_STRICT);                              \
+		                                                                                 \
 		check(inf, ouf, ans);                                                            \
 		                                                                                 \
-		if(!ouf.seekEof()){                                                              \
-			throw ReadingException(Verdict::PE, "Extra Information in the output file"); \
-		}                                                                                \
-		if (argc > 4){                                                                   \
-			file.open(argv[4]);                                                          \
-			if(file.fail()){                                                             \
-				throw ReadingException(Verdict::FAIL, "Can't open output file to write");\
-			}                                                                            \
-		}                                                                                \
 	}                                                                                    \
 	catch (ReadingException& ex){                                                        \
 		verdict = ex.verdict;                                                            \
 		message = ex.message;                                                            \
 	}                                                                                    \
+	if(verdict == Verdict::OK && !ouf.seekEof()){                                        \
+		verdict = Verdict::PE;                                                           \
+		message = "Extra Information in the output file";                                \
+	}                                                                                    \
+	std::ofstream file;                                                                  \
+	if (argc > 4){                                                                       \
+		file.open(argv[4]);                                                              \
+		if(file.fail()){                                                                 \
+			verdict = Verdict::FAIL;                                                     \
+			message = "Can't open output file to write";                                 \
+		}                                                                                \
+	}                                                                                    \
 	                                                                                     \
-	std::ostream& output = argc > 4 ? file : std::cout;                                  \
+	                                                                                     \
+	std::ostream& out = argc > 4 ? file : std::cout;                                     \
 	if(argc == 6){                                                                       \
 		/*output << "<?xml version=\"1.0\" encoding=\"windows-1251\"?>"                  \
 			"<result outcome = \"" << << "\">";                                          \
@@ -78,7 +83,7 @@ int main(int argc, char** argv){                                                
 		std::cout << "Appes are not supported yet";                                      \
 		std::exit(1);                                                                    \
 	}                                                                                    \
-	output << shortMessage(verdict) << ' ' << message << std::endl;                      \
+	out << shortMessage(verdict) << ' ' << message << std::endl;                         \
 	return exitCode(verdict);                                                            \
 }                                                                                        \
 void check(IStream& inf, IStream& ouf, IStream& ans)
