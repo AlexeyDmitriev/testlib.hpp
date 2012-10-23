@@ -4,18 +4,10 @@
 #include <string>
 #include "testlib/testlib.hpp"
 #include "testlib/pair.hpp"
-#include "fixture.hpp"
+#include "testTools.hpp"
 #include "testlib/readerWrapper.hpp"
 
 using std::pair;
-
-namespace std {
-template<typename T, typename U>
-std::ostream& operator << (std::ostream& stream, pair<T, U> const & p){
-	return stream << '(' << p.first << ',' << p.second;
-}
-};
-
 
 typedef pair<int, long long> pil;
 typedef pair<int, unsigned> piu;

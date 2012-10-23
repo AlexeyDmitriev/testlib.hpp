@@ -2,7 +2,7 @@
 #include <vector>
 #include <boost/test/unit_test.hpp>
 #include "testlib/testlib.hpp"
-#include "tests/fixture.hpp"
+#include "tests/testTools.hpp"
 
 BOOST_FIXTURE_TEST_SUITE(Doubles, StrictRead)
 

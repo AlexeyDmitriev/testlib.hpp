@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 #include <boost/test/unit_test.hpp>
-#include "tests/fixture.hpp"
+#include "tests/testTools.hpp"
 #include "testlib/testlib.hpp"
 
 
