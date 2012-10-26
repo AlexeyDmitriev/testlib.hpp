@@ -13,12 +13,12 @@ class DefaultReader<std::vector<T>> : Reader<std::vector<T>>{
 public:
 	typedef std::vector<T> type;
 	
-	template <typename Reader = DefaultReader<T> >
+	template <typename Reader = DefaultReader<T>>
 	if_reader<Reader, T, type> read(IStream& stream, size_t numberElements, Reader reader = DefaultReader<T>()){
 		return read(stream, numberElements, defaultElementsSeparator(stream), reader);
 	}
 	
-	template <typename Reader = DefaultReader<T> >
+	template <typename Reader = DefaultReader<T>>
 	if_reader<Reader, T, type> read(IStream& stream, size_t numberElements, const Separator& separator, Reader reader = DefaultReader<T>()){
 		std::vector<T> res;
 		for (size_t i = 0; i < numberElements; i++){
@@ -29,13 +29,12 @@ public:
 		return res;
 	}
 	
-	
-	template <typename Reader = DefaultReader<T> >
+	template <typename Reader = DefaultReader<T>>
 	if_reader<Reader, T, type> read(IStream& stream, Reader reader = DefaultReader<T>()){
 		return read(stream, defaultSizeSeparator(stream), defaultElementsSeparator(stream), reader);
 	}
 	
-	template <typename Reader = DefaultReader<T> >
+	template <typename Reader = DefaultReader<T>>
 	if_reader<Reader, T, type> read(IStream& stream, const Separator& separator1, const Separator& separator2, Reader reader = DefaultReader<T>()){
 		size_t numberElements =  stream.read<size_t>();
 		separator1.read(stream);
