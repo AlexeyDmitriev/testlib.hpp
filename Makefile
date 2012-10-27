@@ -18,14 +18,7 @@ test: build-tests
 
 examples: $(EXAMPLES_RUN_FILES) 
 	@echo "run examples"
-	@for CPP in $(EXAMPLES_CPP_FILES); do \
-		NAME=$${CPP%%.*} ; \
-		echo "file $${NAME}"; \
-		for TEST in $${NAME}/*.t; do \
-			echo "\ttest $${TEST}"; \
-			scripts/checkExitCode.sh `cat $${TEST}.c` "build/$${NAME}.bin $${TEST} $${TEST}.o $${TEST}.a /dev/null"; \
-		done; \
-	done
+	@scripts/runExamples.py $(EXAMPLES_CPP_FILES)
 
 build-tests: $(TEST_OBJ_FILES) 
 	@echo "build test"
@@ -33,7 +26,7 @@ build-tests: $(TEST_OBJ_FILES)
 
 build/%.bin: build/%.o
 	@echo "build $*.bin"
-	$(CPP) $< $(LINK_FLAGS) -o $@
+	@$(CPP) $< $(LINK_FLAGS) -o $@
 
 build/%.d: %.cpp
 	@mkdir -p build/$(*D)
