@@ -49,6 +49,21 @@ inline std::string shortMessage(Verdict verdict){
 	}
 }
 
+inline std::string outcome(Verdict verdict){
+	switch(verdict){
+		case Verdict::OK:
+			return "accepted";
+		case Verdict::WA:
+			return "wrong-answer";
+		case Verdict::FAIL:
+			return "fail";
+		case Verdict::PE:
+			return "presentation-error";
+		default:
+			assert(false);
+	}
+}
+
 class ReadingException : std::exception {
 public:
 	Verdict verdict;
