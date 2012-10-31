@@ -1,29 +1,14 @@
 #pragma once
 #include <utility>
-#include <type_traits>
 #include <string>
 #include "istream.hpp"
 #include "int.hpp"
-
-template <typename ReaderT, typename T, typename Result>
-using if_reader = typename std::enable_if<std::is_base_of<Reader<T>, ReaderT>::value,Result>::type;
+#include "separator.hpp"
 
 template<typename T, typename U>
 class DefaultReader<std::pair<T, U>> : Reader<std::pair<T, U>>{
 public:
-	class Separator{
-	private:
-		std::string separator;
-	public:
-		/*implicit*/ Separator(char c): separator(1, c){}
-		/*implicit*/ Separator(const char* s): separator(s){}
-		/*implicit*/ Separator(const std::string& s): separator(std::move(s)){}
-		void read(IStream& stream) const {
-			for(char c: separator){
-				stream.readChar(c);
-			}
-		}
-	};
+	
 	typedef std::pair<T, U> type;
 	type read(IStream& stream){
 		return read(stream, defaultSeparator(stream));

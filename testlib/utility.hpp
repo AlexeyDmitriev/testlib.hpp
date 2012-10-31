@@ -1,6 +1,9 @@
 #pragma once
 
 #include <sstream>
+#include <type_traits>
+#include "reader.hpp"
+
 template <typename... All>
 struct firstType;
 template <typename First, typename... Other>
@@ -43,3 +46,6 @@ template<typename T, typename U>
 inline std::string expectation(T expected, U found){
 	return toPrint(expected) + " expected,  " + toPrint(found) + " found";
 }
+
+template <typename ReaderT, typename T, typename Result>
+using if_reader = typename std::enable_if<std::is_base_of<Reader<T>, ReaderT>::value,Result>::type;
