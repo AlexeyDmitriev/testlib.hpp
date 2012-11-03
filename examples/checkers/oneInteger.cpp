@@ -1,5 +1,4 @@
-#include "testlib/testlib.hpp"
-#include "testlib/macro.hpp"
+#include "testlib.hpp"
 using namespace std;
 TESTLIB_CHECK(){
 	(void)inf;

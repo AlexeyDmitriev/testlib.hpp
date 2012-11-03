@@ -1,5 +1,5 @@
 CPP := g++
-CPP_FLAGS := -Wall -Wextra -Werror -std=c++11 -I. 
+CPP_FLAGS := -Wall -Wextra -Werror -std=c++11 -I. -Ibuild/release 
 LINK_FLAGS := -lboost_unit_test_framework
 TEST_CPP_FILES := $(wildcard tests/*.cpp)
 TEST_OBJ_FILES := $(TEST_CPP_FILES:%.cpp=build/%.o)
