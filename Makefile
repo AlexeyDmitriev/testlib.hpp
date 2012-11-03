@@ -1,5 +1,5 @@
 CPP := g++
-CPP_FLAGS := -Wall -Wextra -Werror -std=c++11 -I.
+CPP_FLAGS := -Wall -Wextra -Werror -std=c++11 -I. -Wno-type-limits
 LINK_FLAGS := -lboost_unit_test_framework
 CPP_FILES = $(wildcard tests/*.cpp)
 OBJ_FILES = $(CPP_FILES:tests/%.cpp=build/%.o)

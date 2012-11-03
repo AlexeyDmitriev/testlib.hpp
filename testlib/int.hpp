@@ -99,7 +99,7 @@ private:
 	}
 	Case allowedCase;
 	std::vector<T> absToArray(T value) const {
-		bool negative = std::less<T>()(value, 0);
+		bool negative = value < 0;
 		std::vector<T> result;
 		while(value != 0){
 			if(negative)
