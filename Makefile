@@ -3,7 +3,7 @@ CPP_FLAGS := -Wall -Wextra -Werror -std=c++11 -I. -Ibuild/release
 LINK_FLAGS := -lboost_unit_test_framework
 TEST_CPP_FILES := $(wildcard tests/*.cpp)
 TEST_OBJ_FILES := $(TEST_CPP_FILES:%.cpp=build/%.o)
-EXAMPLES_CPP_FILES := $(wildcard examples/checkers/*.cpp)
+EXAMPLES_CPP_FILES := $(wildcard examples/checkers/*.cpp examples/validators/*cpp)
 EXAMPLES_OBJ_FILES := $(EXAMPLES_CPP_FILES:%.cpp=build/%.o)
 EXAMPLES_RUN_FILES := $(EXAMPLES_OBJ_FILES:%.o=%.bin)
 OBJ_FILES := $(TEST_OBJ_FILES) $(EXAMPLES_OBJ_FILES)

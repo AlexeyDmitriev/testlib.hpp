@@ -89,6 +89,27 @@ int main(int argc, char** argv){ \
 } \
 void check(IStream& inf, IStream& ouf, IStream& ans)
 
+#define TESTLIB_VALIDATE() void validate(IStream&); \
+int main(){ \
+	Verdict verdict = Verdict::OK; \
+	std::string message = "No message provided"; \
+	FailIStream input(std::cin, IStream::Mode::STRICT); \
+	try { \
+		validate(input); \
+	} \
+	catch(ReadingException& ex){ \
+		verdict = ex.verdict; \
+		message = ex.message; \
+	} \
+	if(verdict == Verdict::OK && !input.seekEof()){ \
+		verdict = Verdict::PE; \
+		message = "Extra information in input file"; \
+	} \
+	std::cout << message << std::endl; \
+	return exitCode(verdict); \
+} \
+void validate(IStream& inf)
+
 #define QUIT(verdict, msg) \
 do { \
 	std::stringstream ss; \
