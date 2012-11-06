@@ -19,11 +19,11 @@ test: build-tests
 	@echo "Run test"
 	@build/test
 
-release: test examples build/release/testlib.hpp 
+release: test examples build/release/testlib.hpp
 	@mkdir -p dist
 	@cp build/release/testlib.hpp dist/testlib.hpp
 
-examples: build/release/testlib.hpp $(EXAMPLES_RUN_FILES) 
+examples: build/release/testlib.hpp $(EXAMPLES_RUN_FILES)
 	@echo "Run examples"
 	@scripts/runExamples.py $(EXAMPLES_CPP_FILES)
 
@@ -33,9 +33,9 @@ build/release/testlib.hpp: scripts/output_head.txt $(OUTPUT_FILES)
 	@cp scripts/output_head.txt build/release/testlib.hpp
 	@cat $(OUTPUT_FILES) | grep -v -e "^#pragma once" -e "^#include \"" >> build/release/testlib.hpp
 
-EXAMPLE_CPP_FILES: build-release
+EXAMPLE_CPP_FILES: build/release/testlib.hpp
 
-build-tests: $(TEST_OBJ_FILES) 
+build-tests: $(TEST_OBJ_FILES)
 	@echo "build test"
 	@$(CPP) $(TEST_OBJ_FILES) $(LINK_FLAGS) -o build/test
 
@@ -53,8 +53,8 @@ clean:
 	@rm -rf build
 	@rm -rf dist 
 
-build/%.o: 
+build/%.o:
 	@echo "Compile $*.o"
 	@$(CPP) $*.cpp $(CPP_FLAGS) -c -o $@
-																		
+
 include $(DEP_FILES)
