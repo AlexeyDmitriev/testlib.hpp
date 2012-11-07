@@ -3,7 +3,6 @@ import sys
 import os
 import subprocess
 buildDir = "build/"
-errors = 0
 def binOfCpp(cpp):
 	"""
 	:type cpp: str
@@ -45,16 +44,21 @@ def processTest(cpp, test):
 	else:
 		return True
 
+errors = 0
+testsNumber = 0
 for cpp in sys.argv[1:]:
 	testDir = cpp.rsplit('.', 1)[0] + "/"
+	fileErrors = errors;
 	for testFile in os.listdir(testDir):
 		with open(testDir + testFile) as handler:
 			tests = handler.read().split('```\n')
 			for test in tests:
+				testsNumber += 1
 				if not processTest(cpp, test):
 					errors += 1
-
-
-print errors, "errors"
+					fileErrors += 1
+	if fileErrors > 0:
+		print fileErrors, "errors for file", cpp
+print errors, "errors in", testsNumber, "tests"
 if errors > 0:
 	sys.exit(1)
