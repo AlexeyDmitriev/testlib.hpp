@@ -29,7 +29,8 @@ def processTest(cpp, test):
 		with open(inputFile, "w") as f:
 			f.write(testParts[0])
 		with open(inputFile, "r") as f:
-			realCode = subprocess.call(binOfCpp(cpp), stdin=f)
+			with open("/dev/null", "w") as null:
+				realCode = subprocess.call(binOfCpp(cpp), stdin=f, stdout = null)
 	else:
 		names = (buildDir + "input", buildDir + "output", buildDir + "answer")
 		for name, text in zip(names, testParts):

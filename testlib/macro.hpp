@@ -102,7 +102,7 @@ int main(){ \
 		message = ex.message; \
 	} \
 	if(verdict == Verdict::OK && !input.seekEof()){ \
-		verdict = Verdict::PE; \
+		verdict = Verdict::FAIL; \
 		message = "Extra information in input file"; \
 	} \
 	std::cout << message << std::endl; \
