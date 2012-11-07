@@ -18,7 +18,6 @@ def isValidator(cpp):
 	return cpp.startswith("examples/validators");
 
 def processTest(cpp, test):
-	global errors
 	testParts = test.split('`\n')
 	testSize = 2 if isValidator(cpp) else 4
 	if len(testParts) != testSize:
@@ -42,9 +41,9 @@ def processTest(cpp, test):
 
 	if realCode != expectedCode:
 		print cpp, "expected to return", expectedCode, "but return", realCode, "on test", testParts, "from", testFile
-		errors += 1
-
-
+		return False
+	else:
+		return True
 
 for cpp in sys.argv[1:]:
 	testDir = cpp.rsplit('.', 1)[0] + "/"
@@ -52,7 +51,8 @@ for cpp in sys.argv[1:]:
 		with open(testDir + testFile) as handler:
 			tests = handler.read().split('```\n')
 			for test in tests:
-				processTest(cpp, test)
+				if not processTest(cpp, test):
+					errors += 1
 
 
 print errors, "errors"
