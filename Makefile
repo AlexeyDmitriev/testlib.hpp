@@ -25,7 +25,7 @@ release: test examples build/release/testlib.hpp
 
 examples: build/release/testlib.hpp $(EXAMPLES_RUN_FILES)
 	@echo "Run examples"
-	@scripts/runExamples.py $(EXAMPLES_CPP_FILES)
+	@scripts/runExample.py --files $(EXAMPLES_CPP_FILES)
 
 build/release/testlib.hpp: scripts/output_head.txt $(OUTPUT_FILES)
 	@echo "Make realease header"
