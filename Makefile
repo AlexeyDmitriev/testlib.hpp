@@ -19,11 +19,11 @@ test: build-tests
 	@echo "Run test"
 	@build/test
 
-release: test examples build/release/testlib.hpp
+release: test example build/release/testlib.hpp
 	@mkdir -p dist
 	@cp build/release/testlib.hpp dist/testlib.hpp
 
-examples: build/release/testlib.hpp $(EXAMPLES_RUN_FILES)
+example: build/release/testlib.hpp $(EXAMPLES_RUN_FILES)
 	@echo "Run examples"
 	@scripts/runExample.py --files $(EXAMPLES_CPP_FILES)
 
