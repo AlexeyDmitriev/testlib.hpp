@@ -131,6 +131,7 @@ public:
 	}
 	
 	virtual void quit(Verdict verdict, const std::string& message) = 0;
+	virtual ~IStream(){}
 private:
 	std::istream& stream;
 	Mode mode;
@@ -155,6 +156,7 @@ public:
 	virtual void quit(Verdict, const std::string& message) override {
 		throw ReadingException(Verdict::FAIL, message);
 	}
+	virtual ~FailIStream(){}
 };
 
 class OutputIStream : public IStream {
@@ -163,4 +165,5 @@ public:
 	virtual void quit(Verdict verdict, const std::string& message) override {
 		throw ReadingException(verdict, message);
 	}
+	virtual ~OutputIStream(){}
 };
