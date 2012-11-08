@@ -19,21 +19,6 @@ enum class Verdict{
 	PE
 };
 
-inline int exitCode(Verdict verdict){
-	switch(verdict){
-		case Verdict::OK:
-			return 0;
-		case Verdict::WA:
-			return 1;
-		case Verdict::FAIL:
-			return 2;
-		case Verdict::PE:
-			return 3;
-		default:
-			assert(false);
-	}
-}
-
 inline std::string shortMessage(Verdict verdict){
 	switch(verdict){
 		case Verdict::OK:

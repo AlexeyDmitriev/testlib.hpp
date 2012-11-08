@@ -1,6 +1,7 @@
 #pragma once
 #include "istream.hpp"
 #include "core.hpp"
+#include "exitCodes.hpp"
 #include <fstream>
 #include <cstdlib>
 #include <cstring>
