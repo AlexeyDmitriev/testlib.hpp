@@ -52,7 +52,7 @@ clean:
 	@rm -rf build
 	@rm -rf dist 
 
-build/%.o: Makefile
+build/%.o: Makefile %.cpp
 	@echo "Compile $*.o"
 	@$(CPP) $*.cpp $(CPP_FLAGS) -c -o $@
 
