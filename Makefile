@@ -1,5 +1,5 @@
 CPP := g++
-CPP_FLAGS := -Wall -Wextra -Werror -std=c++11 -I. -Ibuild/release 
+CPP_FLAGS := -Wall -Wextra -Werror -std=c++11 -I. -Ibuild/release
 LINK_FLAGS := -lboost_unit_test_framework
 TEST_CPP_FILES := $(wildcard tests/*.cpp)
 TEST_OBJ_FILES := $(TEST_CPP_FILES:%.cpp=build/%.o)
@@ -10,7 +10,6 @@ OBJ_FILES := $(TEST_OBJ_FILES) $(EXAMPLES_OBJ_FILES)
 DEP_FILES := $(OBJ_FILES:%.o=%.d)
 OUTPUT_FILES := core exitCodes reader utility istream int macro pair readerWrapper
 OUTPUT_FILES := $(wildcard $(OUTPUT_FILES:%=testlib/%.hpp))
-
 
 default:
 	@echo "Default target disallowed"
@@ -35,11 +34,11 @@ build/release/testlib.hpp: scripts/output_head.txt $(OUTPUT_FILES)
 
 EXAMPLE_CPP_FILES: build/release/testlib.hpp
 
-build-tests: $(TEST_OBJ_FILES)
+build-tests: $(TEST_OBJ_FILES) Makefile
 	@echo "build test"
 	@$(CPP) $(TEST_OBJ_FILES) $(LINK_FLAGS) -o build/test
 
-build/%.bin: build/%.o
+build/%.bin: build/%.o Makefile
 	@echo "build $*.bin"
 	@$(CPP) $< $(LINK_FLAGS) -o $@
 
@@ -53,7 +52,7 @@ clean:
 	@rm -rf build
 	@rm -rf dist 
 
-build/%.o:
+build/%.o: Makefile
 	@echo "Compile $*.o"
 	@$(CPP) $*.cpp $(CPP_FLAGS) -c -o $@
 
