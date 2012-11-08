@@ -1,7 +1,6 @@
 #include "testlib.hpp"
 using namespace std;
 TESTLIB_CHECK(){
-	(void)inf;
 	int a = ans.read<int>();
 	int b = ouf.read<int>();
 	if(a != b){
