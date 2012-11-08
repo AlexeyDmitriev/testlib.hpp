@@ -3,6 +3,13 @@
 #include <sstream>
 #include <string>
 
+inline int rnd()
+{
+	static int RND_X = 0;
+	RND_X = RND_X * 26 + 17;
+	return RND_X;
+}
+
 struct NonStrictRead {
 	std::stringstream ss;
 	OutputIStream stream;
