@@ -24,61 +24,78 @@ void writeXml(std::ostream& stream, const std::string& str){
 	}
 }
 
+struct Options{
+	FailIStream inf;
+	OutputIStream ouf;
+	FailIStream ans;
+	bool xml;
+	Options(): inf(input, IStream::Mode::NON_STRICT),
+	           ouf(output, IStream::Mode::NON_STRICT),
+	           ans(answer, IStream::Mode::NON_STRICT)
+	{}
+	std::ostream& out(){
+		return fileOutput.is_open() ? fileOutput : std::cout;
+	}
+	
+	void fill(int argc, char** argv){
+		if (argc  < 4 || argc > 6)
+		{
+			throw ReadingException(Verdict::FAIL,
+				"Program must be run with the following arguments: \n" \
+				"<input-file> <output-file> <answer-file> [<report-file> [<-appes>]]"
+			);
+		}
+		if(argc == 6){
+			if(std::strcmp(argv[5], "-APPES") && std::strcmp(argv[5], "-appes")){
+				throw ReadingException(Verdict::FAIL,
+					"Program must be run with the following arguments: \n" \
+					"<input-file> <output-file> <answer-file> [<report-file> [<-appes>]]"
+				);
+			}
+
+			xml = true;
+		}
+
+		input.open(argv[1]);
+		output.open(argv[2]);
+		answer.open(argv[3]);
+
+		if(input.fail() || output.fail() || answer.fail())
+			throw ReadingException(Verdict::FAIL, "Can't open files");
+
+
+		if (argc > 4){
+			fileOutput.open(argv[4]);
+			if(fileOutput.fail()){
+				throw ReadingException(Verdict::FAIL, "Can't open output file to write");
+			}
+		}
+	}
+private:
+	std::ifstream input, output, answer;
+	std::ofstream fileOutput;
+};
+
 #define TESTLIB_CHECK() void check(IStream& inf, IStream& ouf, IStream& ans); \
 int main(int argc, char** argv){ \
 	Verdict verdict = Verdict::OK; \
 	std::string message = "No message provided"; \
-	std::ifstream input, output, answer; \
-	FailIStream inf(input, IStream::Mode::NON_STRICT); \
-	OutputIStream ouf(output, IStream::Mode::NON_STRICT); \
-	FailIStream ans(answer, IStream::Mode::NON_STRICT); \
+	Options options; \
 	try { \
-		if (argc  < 4 || argc > 6) \
-		{ \
-			throw ReadingException(Verdict::FAIL, \
-				"Program must be run with the following arguments: \n" \
-				"<input-file> <output-file> <answer-file> [<report-file> [<-appes>]]" \
-			); \
-		} \
-		\
-		\
-		if(argc == 6){ \
-			if(std::strcmp(argv[5], "-APPES") && std::strcmp(argv[5], "-appes")){ \
-				throw ReadingException(Verdict::FAIL, \
-					"Program must be run with the following arguments: \n" \
-					"<input-file> <output-file> <answer-file> [<report-file> [<-appes>]]"\
-				); \
-			} \
-		} \
-		input.open(argv[1]); \
-		output.open(argv[2]); \
-		answer.open(argv[3]); \
-		if(input.fail() || output.fail() || answer.fail()) \
-			throw ReadingException(Verdict::FAIL, "Can't open files"); \
-		\
-		check(inf, ouf, ans); \
-		\
+		options.fill(argc, argv); \
+		check(options.inf, options.ouf, options.ans); \
 	} \
 	catch (ReadingException& ex){ \
 		verdict = ex.verdict; \
 		message = ex.message; \
 	} \
-	if(verdict == Verdict::OK && !ouf.seekEof()){ \
+	if(verdict == Verdict::OK && !options.ouf.seekEof()){ \
 		verdict = Verdict::PE; \
 		message = "Extra Information in the output file"; \
 	} \
-	std::ofstream file; \
-	if (argc > 4){ \
-		file.open(argv[4]); \
-		if(file.fail()){ \
-			verdict = Verdict::FAIL; \
-			message = "Can't open output file to write"; \
-		} \
-	} \
 	\
-	\
-	std::ostream& out = argc > 4 ? file : std::cout; \
-	if(argc == 6){ \
+	std::ostream& out = options.out(); \
+	if(options.xml){ \
 		out << "<?xml version=\"1.0\" encoding=\"windows-1251\"?>" \
 			"<result outcome = \"" << outcome(verdict) << "\">"; \
 		writeXml(out, message); \
