@@ -10,14 +10,27 @@
 using std::vector;
 
 typedef vector<int> vi;
+typedef vector<double> vd;
+
 
 BOOST_FIXTURE_TEST_SUITE(Vector, NonStrictRead)
 
 
-BOOST_AUTO_TEST_CASE(testRandom){
+BOOST_AUTO_TEST_CASE(numberElements){
+	setStr("0");
+	vi res = {};
+	BOOST_CHECK(stream.read<vi>() == res);
+	setStr("1.0 1.0");
+	BOOST_CHECK_THROW(stream.read<vd>(), ReadingException);
+	
+	setStr("-1");
+	res = {-1};
+	BOOST_CHECK_THROW(stream.read<vi>(), ReadingException);
+}
+
+BOOST_AUTO_TEST_CASE(testAllMethods){
 	Separator sepTab("\t");
 	Separator sepSpace(" ");
-	
 	
 	setStr("2 12 -1");
 	vi res = {12, -1};
@@ -70,24 +83,24 @@ BOOST_AUTO_TEST_CASE(testRandom){
 	BOOST_CHECK(stream.read<vi>((long long)(3), sepSpace, DefaultReader<int>()) == res);
 	setStr("12 10\n1");
 	res = {12, 10, 1};
-	BOOST_CHECK_THROW(stream.read<vi>((long long)(3), sepSpace, DefaultReader<int>()), ReadingException);
-	
-	setStr("12 10 1");
-	res = {12, 10, 1};
-	BOOST_CHECK(stream.read<vi>(3, sepSpace) == res);
-	setStr("12 10\t1");
-	res = {12, 10, 1};
-	BOOST_CHECK_THROW(stream.read<vi>(3, sepSpace), ReadingException);
+	BOOST_CHECK_THROW(stream.read<vi>((long long)(3), sepSpace, DefaultReader<int>()), ReadingException);	
 }
+
+BOOST_AUTO_TEST_CASE(Separator){
+	
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_FIXTURE_TEST_SUITE(StrictVector, StrictRead)
 
-BOOST_AUTO_TEST_CASE(testRandom){
-	setStr("2 12 -1");
+BOOST_AUTO_TEST_CASE(testAllMethods){
+	setStr("2\n12 -1");
 	vi res = {12, -1};
+	BOOST_CHECK(stream.read<vi>() == res);
+	setStr("2 12 -1");
 	BOOST_CHECK_THROW(stream.read<vi>(), ReadingException);
-	
+
 	setStr("2\t12 -1");
 	res = {12, -1};
 	Separator sepTab("\t");
@@ -118,6 +131,10 @@ BOOST_AUTO_TEST_CASE(testRandom){
 	setStr("12 10 1");
 	res = {12, 10, 1};
 	BOOST_CHECK(stream.read<vi>(q, sep2) == res);
+	
+}
+
+BOOST_AUTO_TEST_CASE(Separator){
 	
 }
 

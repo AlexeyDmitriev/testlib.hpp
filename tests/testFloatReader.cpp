@@ -4,9 +4,6 @@
 #include "testlib/testlib.hpp"
 #include "tests/testTools.hpp"
 
-double randomDouble(){
-	return ((double)rnd() * rnd()) / (rnd() + 1);
-}
 
 BOOST_FIXTURE_TEST_SUITE(Doubles, StrictRead)
 
@@ -113,18 +110,23 @@ BOOST_AUTO_TEST_CASE(NormalWorkingWithSpaces){
 	BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
 }
 
-/*
 BOOST_AUTO_TEST_CASE(DoubleCheckInRange) {
-	for(int i = 0; i < 1; i++){
-		double l = randomDouble();
-		double r = l + randomDouble() + 0.1;
-		double m = randomDouble();
-		setStr(toString(m));
-		std::cout << l << " " << m << " " << r << std::endl;
-		if (l <= m && m <= r)
-			BOOST_CHECK_EQUAL(stream.read<double>(l, r), m);
-		else
-			BOOST_CHECK_THROW(stream.read<double>(l, r), ReadingException);
+	for(int i = 9000; i < 9300; i+= 23){
+		double l = i / 1000.0;
+		double r = r + 0.2;
+		for (double m = l - 0.1; m <= r + 0.1; m += 0.07){
+			setStr(toString(m));
+			if (l < m - 1e-10 && m + 1e-10 < r)
+			{
+				BOOST_CHECK_NO_THROW(stream.read<double>(l, r));
+			}
+			else
+			{
+				BOOST_CHECK_THROW(stream.read<double>(l, r), ReadingException);
+		
+			}
+		}
 	}
-}*/
+}
+
 BOOST_AUTO_TEST_SUITE_END()

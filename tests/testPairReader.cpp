@@ -56,6 +56,27 @@ BOOST_AUTO_TEST_CASE(Separators){
 	BOOST_CHECK_THROW(stream.read<pi>(upTo20, upTo20, "vs"), ReadingException);
 }
 
+BOOST_AUTO_TEST_CASE(DifferentTypes){
+
+	typedef pair<unsigned int, int> p_UI_I;
+	setStr("-123\n345");
+	BOOST_CHECK_THROW(stream.read<p_UI_I>(), ReadingException);
+
+	setStr("-123\n345");
+	BOOST_CHECK_THROW(stream.read<p_UI_I>(), ReadingException);
+
+	typedef pair<int, double> p_I_D;
+	setStr("-123.0\n345");
+	BOOST_CHECK_THROW(stream.read<p_I_D>(), ReadingException);
+
+	typedef pair<int, double> p_S_D;
+	setStr("-123 -345.0");
+	BOOST_CHECK_EQUAL(stream.read<p_S_D>("-"), std::make_pair(-123, 345.0));
+	
+	typedef pair<int, double> p_S_D;
+	setStr("-123 --345.0");
+	BOOST_CHECK_EQUAL(stream.read<p_S_D>("-"), std::make_pair(-123, -345.0));
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 

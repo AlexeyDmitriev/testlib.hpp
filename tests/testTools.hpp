@@ -3,33 +3,23 @@
 #include <sstream>
 #include <string>
 
-inline int rnd()
-{
-	static int RND_X = 0;
-	RND_X = RND_X * 26 + 17;
-	return RND_X;
-}
-
-struct NonStrictRead {
-	std::stringstream ss;
+struct Read{
 	OutputIStream stream;
-	
-	NonStrictRead(): stream(ss, IStream::Mode::NON_STRICT) {}
+	std::stringstream ss;
+	Read(IStream::Mode m) : stream(ss, m) {} 
 	void setStr(const std::string& s){
 		ss.clear();
 		ss.str(s);
 	}
 };
 
-struct StrictRead {
-	std::stringstream ss;
-	OutputIStream stream;
+struct NonStrictRead : public Read{
+	NonStrictRead(): Read(IStream::Mode::NON_STRICT) {}
 	
-	StrictRead(): stream(ss, IStream::Mode::STRICT) {}
-	void setStr(const std::string& s){
-		ss.clear();
-		ss.str(s);
-	}
+};
+
+struct StrictRead : public Read{
+	StrictRead(): Read(IStream::Mode::STRICT) {}
 };
 
 namespace std {
