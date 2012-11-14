@@ -10,3 +10,15 @@ BOOST_AUTO_TEST_CASE(RandomInts1) {
 	BOOST_CHECK_EQUAL(stream.read<int>(), 42);
 	MODE_CHECK_EQUAL(stream.getMode(), stream.read<int>(), 17);
 }
+
+BOOST_AUTO_TEST_CASE(HexCaseThrow1)
+{
+	setStr("FF");
+	MODE_CHECK_EQUAL(stream.getMode(), HexReader<int>().read(stream), 255);
+
+//	setStr("ff");
+//	MODE_CHECK_EQUAL(stream.getMode(), HexReader<int>(Case::UPPER).read(stream), 255);
+	
+	setStr("fF");
+	MODE_CHECK_EQUAL(stream.getMode(), HexReader<int>().read(stream), 255);
+}

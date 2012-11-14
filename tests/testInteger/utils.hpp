@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+typedef HexReader<int>::Case Case;
+
 inline int rnd()
 {
 	static int RND_X = 0;
@@ -122,6 +124,18 @@ std::string toHex(T val) {
 }
 
 template <typename T>
+void testHexPairs(Read& in, T l1, T r1, T l2, T r2) {	
+	for (T i = l1; i <= r1; i++)
+		for (T j = l2; j <= r2; j++)
+		{
+			in.setStr(toHex<T>(i) + " " + toHex<T>(j));
+			BOOST_CHECK_EQUAL(in.stream.read<T>(HexReader<T>()), i);
+			BOOST_CHECK_NO_THROW(in.stream.readSpace());
+			BOOST_CHECK_EQUAL(in.stream.read<T>(HexReader<T>()), j);
+		}
+}
+
+template <typename T>
 void testHexCornersThrow(Read& in) {	
 	in.setStr(getPrevHexString(toHex(std::numeric_limits<T>::min())));
 	BOOST_CHECK_THROW(in.stream.read<T>(HexReader<T>()), ReadingException);
@@ -140,5 +154,4 @@ void testHexCorners(Read& in) {
 	BOOST_CHECK_NO_THROW(in.stream.read<T>(HexReader<T>()));
 	in.setStr(getNextHexString(toHex(std::numeric_limits<T>::min())));
 	BOOST_CHECK_NO_THROW(in.stream.read<T>(HexReader<T>()));
-
 }

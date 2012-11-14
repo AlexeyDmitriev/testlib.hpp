@@ -58,3 +58,21 @@ BOOST_AUTO_TEST_CASE(HexCorners){
 	testHexCorners<unsigned long long>(*this);
 	testHexCorners<unsigned short>(*this);
 }
+
+BOOST_AUTO_TEST_CASE(HexCase)
+{
+	setStr("FF");
+	BOOST_CHECK_NO_THROW(HexReader<int>(Case::UPPER).read(stream));
+}
+
+
+
+BOOST_AUTO_TEST_CASE(PairInts) {
+	testHexPairs<int>(*this, -110, 50, -110, 50);
+	testHexPairs<long long>(*this, -1e10, -1e10 + 100, -1e18 - 20, -1e18);
+	testHexPairs<short>(*this, -110, 50, -110, 50);
+			
+	testHexPairs<unsigned int>(*this, 500, 550, 100000, 100050);
+	testHexPairs<unsigned long long>(*this, 1e10, 1e10 + 100, 1e18 - 20, 1e18);
+	testHexPairs<unsigned short>(*this, 110, 150, 110, 150);
+}
