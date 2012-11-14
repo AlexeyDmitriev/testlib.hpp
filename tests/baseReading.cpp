@@ -7,8 +7,6 @@
 BOOST_FIXTURE_TEST_SUITE(baseStrict, StrictRead)
 
 BOOST_AUTO_TEST_CASE( eof ) {
-	
-	
 	setStr("");
 	BOOST_CHECK_NO_THROW(stream.readEof());
 	

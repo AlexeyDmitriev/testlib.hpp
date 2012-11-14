@@ -3,6 +3,13 @@
 #include <sstream>
 #include <string>
 
+#define MODE_CHECK_EQUAL(mode, a, b) \
+	if (mode == IStream::Mode::NON_STRICT) \
+		BOOST_CHECK_EQUAL(a, b); \
+	else \
+		BOOST_CHECK_THROW(a, ReadingException);
+
+
 struct Read{
 	OutputIStream stream;
 	std::stringstream ss;
