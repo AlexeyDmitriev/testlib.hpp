@@ -3,9 +3,9 @@
 #include <limits>
 #include <algorithm>
 #include "testlib/testlib.hpp"
-#include "tests/testTools.hpp"
+#include "testTools.hpp"
 #include <boost/test/unit_test.hpp>
-#include "tests/testInteger/utils.hpp"
+#include "testInteger/utils.hpp"
 
 BOOST_FIXTURE_TEST_SUITE(Integers, StrictRead)
 
