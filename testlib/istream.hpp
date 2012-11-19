@@ -40,18 +40,18 @@ public:
 		skipUnused();
 		int c = get();
 		if(c == EOF)
-			throw ReadingException(Verdict::PE, expectation("Character", "EOF"));				
+			quit(Verdict::PE, expectation("Character", "EOF"));				
 		return c;
 	}
 	
 	void readChar(char expected){
 		while (peek() != expected){
 			if(peek() == EOF)
-				throw ReadingException(Verdict::PE, expectation(expected, "EOF"));
+				quit(Verdict::PE, expectation(expected, "EOF"));
 			else if (isSkippable(peek()))
 				get();
 			else 
-				throw ReadingException(Verdict::PE, expectation(expected, char(peek())));
+				quit(Verdict::PE, expectation(expected, char(peek())));
 		}
 		get();
 	}
@@ -71,7 +71,7 @@ public:
 		skipUnused();
 		int c = get();
 		if(c != EOF)
-			throw ReadingException(Verdict::PE, expectation("EOF", char(c)));
+			quit(Verdict::PE, expectation("EOF", char(c)));
 	}
 	//TODO: maybe it should be changed to Reader<std:string>
 	std::string readToken(){
@@ -84,9 +84,9 @@ public:
 		
 		if(token.empty()){
 			if(stream.peek() == EOF)
-				throw ReadingException(Verdict::PE, expectation("Token", "EOF"));
+				quit(Verdict::PE, expectation("Token", "EOF"));
 			else
-				throw ReadingException(Verdict::PE, expectation("Token", char(stream.peek())));
+				quit(Verdict::PE, expectation("Token", char(stream.peek())));
 		}
 		
 		return token;
@@ -131,6 +131,7 @@ public:
 	}
 	
 	virtual void quit(Verdict verdict, const std::string& message) = 0;
+	virtual ~IStream(){}
 private:
 	std::istream& stream;
 	Mode mode;
@@ -155,6 +156,7 @@ public:
 	virtual void quit(Verdict, const std::string& message) override {
 		throw ReadingException(Verdict::FAIL, message);
 	}
+	virtual ~FailIStream(){}
 };
 
 class OutputIStream : public IStream {
@@ -163,4 +165,5 @@ public:
 	virtual void quit(Verdict verdict, const std::string& message) override {
 		throw ReadingException(verdict, message);
 	}
+	virtual ~OutputIStream(){}
 };
