@@ -39,6 +39,8 @@ BOOST_AUTO_TEST_CASE(BadFormat) {
 }
 
 BOOST_AUTO_TEST_CASE(NegativeThrow) {
+	setStr("");
+	BOOST_CHECK_THROW(stream.read<int>(), ReadingException);
 	setStr("-1");
 	BOOST_CHECK_THROW(stream.read<unsigned>(), ReadingException);
 }

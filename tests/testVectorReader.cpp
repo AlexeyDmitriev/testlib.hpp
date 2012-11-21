@@ -15,10 +15,6 @@ BOOST_FIXTURE_TEST_SUITE(Vector, NonStrictRead)
 #include "testVector/allFail.hpp"
 #include "testVector/strictFail.hpp"
 
-BOOST_AUTO_TEST_CASE(Separator){
-	
-}
-
 BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_FIXTURE_TEST_SUITE(StrictVector, StrictRead)
@@ -26,10 +22,6 @@ BOOST_FIXTURE_TEST_SUITE(StrictVector, StrictRead)
 #include "testVector/allOk.hpp"
 #include "testVector/allFail.hpp"
 #include "testVector/strictFail.hpp"
-
-BOOST_AUTO_TEST_CASE(Separator){
-	
-}
 
 BOOST_AUTO_TEST_SUITE_END()
 

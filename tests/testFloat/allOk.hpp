@@ -36,12 +36,20 @@ BOOST_AUTO_TEST_CASE(NormalWorkingWithSpaces){
 }
 
 BOOST_AUTO_TEST_CASE(DoubleCheckInRange) {
+	
+	setStr("0.001");
+	BOOST_CHECK_NO_THROW(stream.read<double>(0.001, 0.001));
+	setStr("0.000");
+	BOOST_CHECK_NO_THROW(stream.read<double>(0.000, 0.000));
+	setStr("0.000");
+	BOOST_CHECK_NO_THROW(stream.read<double>(-0.001, 0.001));
+	
 	for(int i = 9000; i < 9300; i+= 23){
 		double l = i / 1000.0;
 		double r = r + 0.2;
 		for (double m = l - 0.1; m <= r + 0.1; m += 0.07){
 			setStr(toString(m));
-			if (l < m - 1e-10 && m + 1e-10 < r)
+			if (l < m && m < r)
 			{
 				BOOST_CHECK_NO_THROW(stream.read<double>(l, r));
 			}

@@ -3,8 +3,7 @@ BOOST_AUTO_TEST_CASE(testRandom){
 	BOOST_CHECK_EQUAL(stream.read<pil>(), std::make_pair(12, -1LL));
 }
 
-BOOST_AUTO_TEST_CASE(customReaders){
-	
+BOOST_AUTO_TEST_CASE(customReaders){	
 	auto upTo20 = make_default_reader<int>(0, 20);
 	auto any = make_default_reader<int>();
 		
@@ -19,4 +18,12 @@ BOOST_AUTO_TEST_CASE(differentTypes){
 	typedef pair<float, int> p_F_I;
 	setStr("123.0 345");
 	BOOST_CHECK_EQUAL(stream.read<p_F_I>(), std::make_pair(float(123.0), 345));
+}
+
+BOOST_AUTO_TEST_CASE(StrictSeparators){	
+	setStr("123\n345");
+	BOOST_CHECK_NO_THROW(stream.read<pi>('\n'));
+	
+	setStr("123 vs345");
+	BOOST_CHECK_NO_THROW(stream.read<pi>(" vs"));
 }

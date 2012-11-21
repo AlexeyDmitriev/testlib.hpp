@@ -22,11 +22,4 @@ BOOST_FIXTURE_TEST_SUITE(NoStrictPairs, NonStrictRead)
 #include "testPair/allFail.hpp"
 #include "testPair/strictFail.hpp"
   
-BOOST_AUTO_TEST_CASE(StrictSeparators){	
-	setStr("123\n345");
-	BOOST_CHECK_NO_THROW(stream.read<pi>('\n'));
-	
-	setStr("123 vs345");
-	BOOST_CHECK_NO_THROW(stream.read<pi>(" vs"));
-}
 BOOST_AUTO_TEST_SUITE_END()
