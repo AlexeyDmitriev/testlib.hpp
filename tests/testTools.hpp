@@ -5,7 +5,7 @@
 
 #define MODE_CHECK_EQUAL(mode, a, b) \
 	if (mode == IStream::Mode::NON_STRICT) \
-		BOOST_CHECK_EQUAL(a, b); \
+		BOOST_CHECK(a == b); \
 	else \
 		BOOST_CHECK_THROW(a, ReadingException);
 
@@ -32,6 +32,6 @@ struct StrictRead : public Read{
 namespace std {
 template<typename T, typename U>
 std::ostream& operator << (std::ostream& stream, pair<T, U> const & p){
-	return stream << '(' << p.first << ',' << p.second;
+	return stream << '(' << p.first << ',' << p.second << ')' << std::endl;
 }
 };
