@@ -1,3 +1,6 @@
+
+#include "utils.hpp"
+
 BOOST_AUTO_TEST_CASE(RandomInts) {
 	setStr("42 17");
 	BOOST_CHECK_EQUAL(stream.read<int>(), 42);
@@ -59,14 +62,6 @@ BOOST_AUTO_TEST_CASE(HexCorners){
 	testHexCorners<unsigned short>(*this);
 }
 
-BOOST_AUTO_TEST_CASE(HexCase)
-{
-	setStr("FF");
-	BOOST_CHECK_NO_THROW(HexReader<int>(Case::UPPER).read(stream));
-}
-
-
-
 BOOST_AUTO_TEST_CASE(PairInts) {
 	testHexPairs<int>(*this, -110, 50, -110, 50);
 	testHexPairs<long long>(*this, -1e10, -1e10 + 100, -1e18 - 20, -1e18);
@@ -75,4 +70,38 @@ BOOST_AUTO_TEST_CASE(PairInts) {
 	testHexPairs<unsigned int>(*this, 500, 550, 100000, 100050);
 	testHexPairs<unsigned long long>(*this, 1e10, 1e10 + 100, 1e18 - 20, 1e18);
 	testHexPairs<unsigned short>(*this, 110, 150, 110, 150);
+}
+
+BOOST_AUTO_TEST_CASE(CorrectCase){
+	const int AB = 10 * 16 + 11;
+	
+	setStr("AB");
+	BOOST_CHECK_EQUAL(stream.read<int>(HexReader<int>(Case::UPPER)), AB);
+	
+	setStr("AB");
+	BOOST_CHECK_EQUAL(stream.read<int>(HexReader<int>(Case::BOTH)), AB);
+	
+	setStr("ab");
+	BOOST_CHECK_EQUAL(stream.read<int>(HexReader<int>(Case::LOWER)), AB);
+	
+	setStr("ab");
+	BOOST_CHECK_EQUAL(stream.read<int>(HexReader<int>(Case::BOTH)), AB);
+	
+	setStr("Ab");
+	BOOST_CHECK_EQUAL(stream.read<int>(HexReader<int>(Case::BOTH)), AB);
+	
+	setStr("123");
+	BOOST_CHECK_NO_THROW(stream.read<int>(HexReader<int>(Case::UPPER)));
+	
+	setStr("123");
+	BOOST_CHECK_NO_THROW(stream.read<int>(HexReader<int>(Case::LOWER)));
+	
+	setStr("123");
+	BOOST_CHECK_NO_THROW(stream.read<int>(HexReader<int>(Case::BOTH)));
+}
+
+BOOST_AUTO_TEST_CASE(ImplicitilyCorrectCase){
+	const int AB = 10 * 16 + 11;
+	setStr("ab");
+	BOOST_CHECK_EQUAL(stream.read<int>(HexReader<int>()), AB);
 }

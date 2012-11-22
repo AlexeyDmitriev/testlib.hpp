@@ -4,14 +4,11 @@ BOOST_AUTO_TEST_CASE(RandomInts1) {
 	MODE_CHECK_EQUAL(stream.getMode(), stream.read<int>(), 17);
 }
 
-BOOST_AUTO_TEST_CASE(HexCaseThrow1)
-{
-	setStr("FF");
-	MODE_CHECK_EQUAL(stream.getMode(), HexReader<int>().read(stream), 255);
-
-//	setStr("ff");
-//	MODE_CHECK_EQUAL(stream.getMode(), HexReader<int>(Case::UPPER).read(stream), 255);
+BOOST_AUTO_TEST_CASE(DefaultCase){
+	const int AB = 10 * 16 + 11;
+	setStr("AB");
+	MODE_CHECK_EQUAL(stream.getMode(), stream.read<int>(HexReader<int>()), AB);
 	
-	setStr("fF");
-	MODE_CHECK_EQUAL(stream.getMode(), HexReader<int>().read(stream), 255);
+	setStr("aB");
+	MODE_CHECK_EQUAL(stream.getMode(), stream.read<int>(HexReader<int>()), AB);
 }

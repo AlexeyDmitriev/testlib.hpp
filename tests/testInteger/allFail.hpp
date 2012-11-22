@@ -1,3 +1,6 @@
+
+#include "utils.hpp"
+
 BOOST_AUTO_TEST_CASE(CornersThrow) {
 	testCornersThrow<int>(*this);
 	testCornersThrow<long long>(*this);
@@ -112,4 +115,18 @@ BOOST_AUTO_TEST_CASE(HexCornersThrow)
 	testHexCornersThrow<unsigned int>(*this);
 	testHexCornersThrow<unsigned long long>(*this);
 	testHexCornersThrow<unsigned short>(*this);
+}
+
+BOOST_AUTO_TEST_CASE(explicitlyDisallowedCase){
+	setStr("AB");
+	BOOST_CHECK_THROW(stream.read<int>(HexReader<int>(Case::LOWER)), ReadingException);
+	
+	setStr("ab");
+	BOOST_CHECK_THROW(stream.read<int>(HexReader<int>(Case::UPPER)), ReadingException);
+	
+	setStr("Ab");
+	BOOST_CHECK_THROW(stream.read<int>(HexReader<int>(Case::LOWER)), ReadingException);
+	
+	setStr("Ab");
+	BOOST_CHECK_THROW(stream.read<int>(HexReader<int>(Case::UPPER)), ReadingException);
 }
