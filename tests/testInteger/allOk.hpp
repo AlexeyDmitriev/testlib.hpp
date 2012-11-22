@@ -1,6 +1,3 @@
-
-#include "utils.hpp"
-
 BOOST_AUTO_TEST_CASE(RandomInts) {
 	setStr("42 17");
 	BOOST_CHECK_EQUAL(stream.read<int>(), 42);
@@ -87,8 +84,17 @@ BOOST_AUTO_TEST_CASE(CorrectCase){
 	setStr("ab");
 	BOOST_CHECK_EQUAL(stream.read<int>(HexReader<int>(Case::BOTH)), AB);
 	
-	setStr("Ab");
-	BOOST_CHECK_EQUAL(stream.read<int>(HexReader<int>(Case::BOTH)), AB);
+	setStr("a");
+	BOOST_CHECK_EQUAL(stream.read<int>(HexReader<int>(Case::LOWER)), 10);
+	
+	setStr("b");
+	BOOST_CHECK_EQUAL(stream.read<int>(HexReader<int>(Case::BOTH)), 11);
+	
+	setStr("B");
+	BOOST_CHECK_EQUAL(stream.read<int>(HexReader<int>(Case::BOTH)), 11);
+	
+	setStr("B");
+	BOOST_CHECK_EQUAL(stream.read<int>(HexReader<int>(Case::UPPER)), 11);
 	
 	setStr("123");
 	BOOST_CHECK_NO_THROW(stream.read<int>(HexReader<int>(Case::UPPER)));
