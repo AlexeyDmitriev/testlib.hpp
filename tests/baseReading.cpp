@@ -1,5 +1,8 @@
 #include <boost/test/unit_test.hpp>
-#include "testlib/testlib.hpp"
+#include "testlib/reader.hpp"
+#include "testlib/float.hpp"
+#include "testlib/pair.hpp"
+#include "testlib/int.hpp"
 #include "testlib/istream.hpp"
 #include "tests/testTools.hpp"
 #include "testlib/pair.hpp"

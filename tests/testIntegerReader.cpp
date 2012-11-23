@@ -2,7 +2,7 @@
 #include <vector>
 #include <boost/test/unit_test.hpp>
 #include "tests/testTools.hpp"
-#include "testlib/testlib.hpp"
+#include "testlib/int.hpp"
 
 
 BOOST_FIXTURE_TEST_SUITE(Integers, StrictRead)
