@@ -61,7 +61,7 @@ inline std::string toPrint<char>(char value){
 }
 
 template<typename T, typename U>
-inline std::string expectation(T expected, U found){
+inline std::string expectation(T&& expected, U&& found){
 	return toPrint(expected) + " expected,  " + toPrint(found) + " found";
 }
 
