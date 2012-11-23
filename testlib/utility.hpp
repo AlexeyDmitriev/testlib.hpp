@@ -60,9 +60,14 @@ inline std::string toPrint<char>(char value){
 	return "'" + toString(value) + "'";
 }
 
+template <>
+inline std::string toPrint<const char*>(const char* string){
+	return toString(string);
+}
+
 template<typename T, typename U>
 inline std::string expectation(T&& expected, U&& found){
-	return toPrint(expected) + " expected,  " + toPrint(found) + " found";
+	return toPrint(expected) + " expected, " + toPrint(found) + " found";
 }
 
 template <typename ReaderT, typename T, typename Result>
