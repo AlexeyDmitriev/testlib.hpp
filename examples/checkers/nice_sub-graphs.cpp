@@ -68,9 +68,9 @@ TESTLIB_CHECK(){
 	for (int i = 0; i < q; i++){
 		Edge edge = ouf.read<Edge>(ourReader);
 		if (inputEdges.find(edge) == inputEdges.end())
-			WA("Edge " + toString(edge.u) + " " + toString(edge.v) + " isn't exist in input graph");
+			WA("Edge " << edge.u <<  " " << edge.v << " isn't exist in input graph");
 		if (foundEdges.find(edge) != foundEdges.end())
-			WA("Edge " + toString(edge.u) + " " + toString(edge.v) + " musn't be a multiple edge");
+			WA("Edge " << edge.u <<  " " << edge.v << " musn't be a multiple edge");
 		foundEdges.insert(edge);
 		graph[edge.u].push_back(edge.v);
 		graph[edge.v].push_back(edge.u);
