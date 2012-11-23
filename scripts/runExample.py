@@ -48,6 +48,7 @@ def getTests(cpp, testFile):
 	"""
 	suffixes = ["", ".test", ".testset"]
 	prefix = testDir(cpp) + testFile
+	name = None
 	for suffix in suffixes:
 		possibleName = prefix + suffix
 		if os.path.exists(possibleName):
@@ -141,7 +142,7 @@ logLevel = None
 
 for arg in sys.argv[1:]:
 	if arg.startswith("--log="):
-		logLevel = arg[5:]
+		logLevel = arg[6:]
 	else:
 		args.append(arg)
 
@@ -160,7 +161,7 @@ elif len(args) == 1:
 	result = runAllTests(args[0], logLevel or "cpp") != 0
 elif len(args) == 2:
 	result = runTestFile(args[0], args[1], logLevel or "testset") != 0
-elif len(sys.argv) == 3:
+elif len(args) == 3:
 	logLevel = logLevel or "all"
 	result = runTestByNumber(args[0], args[1], int(args[2]), logLevel)
 	if result:

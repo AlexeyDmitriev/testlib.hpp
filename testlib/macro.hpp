@@ -38,6 +38,7 @@ struct Options{
 	}
 	
 	void fill(int argc, char** argv){
+		xml = false;
 		if (argc  < 4 || argc > 6)
 		{
 			throw ReadingException(Verdict::FAIL,
