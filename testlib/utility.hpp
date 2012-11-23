@@ -24,6 +24,24 @@ inline std::string toString(const T& value){
 	return ss.str();
 }
 
+template <>
+inline std::string toString(const std::string& value){
+	return value;
+}
+
+template <typename T>
+inline std::string rangeToString(T start, T end){
+	std::stringstream ss;
+	ss << '[';
+	for(T current = start; current != end; ++current){
+		if(current != start)
+			ss << ", ";
+		ss << *current;
+	}
+	ss << ']';
+	return ss.str();
+}
+
 template <typename T>
 inline std::string toPrint(T value){
 	return "\"" + toString(value) + "\"";
