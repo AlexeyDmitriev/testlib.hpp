@@ -8,7 +8,7 @@ EXAMPLES_OBJ_FILES := $(EXAMPLES_CPP_FILES:%.cpp=build/%.o)
 EXAMPLES_RUN_FILES := $(EXAMPLES_OBJ_FILES:%.o=%.bin)
 OBJ_FILES := $(TEST_OBJ_FILES) $(EXAMPLES_OBJ_FILES)
 DEP_FILES := $(OBJ_FILES:%.o=%.d)
-OUTPUT_FILES := core exitCodes reader utility istream int macro separator pair vector readerWrapper
+OUTPUT_FILES := core verdictFunctions exitCodes reader utility istream int macro separator pair vector readerWrapper
 OUTPUT_FILES := $(wildcard $(OUTPUT_FILES:%=testlib/%.hpp))
 
 default:
@@ -26,13 +26,13 @@ example: build/release/testlib.hpp Makefile $(EXAMPLES_RUN_FILES)
 	@echo "Run examples"
 	@scripts/runExample.py --files $(EXAMPLES_CPP_FILES)
 
-build/release/testlib.hpp: scripts/output_head.txt $(OUTPUT_FILES)
+build/release/testlib.hpp: Makefile scripts/output_head.txt $(OUTPUT_FILES)
 	@echo "Make realease header"
 	@mkdir -p build/release
 	@cp scripts/output_head.txt build/release/testlib.hpp
 	@cat $(OUTPUT_FILES) | grep -v -e "^#pragma once" -e "^#include \"" >> build/release/testlib.hpp
 
-EXAMPLE_CPP_FILES: build/release/testlib.hpp
+EXAMPLE_OBJ_FILES: build/release/testlib.hpp
 
 build-tests: $(TEST_OBJ_FILES) Makefile
 	@echo "build test"

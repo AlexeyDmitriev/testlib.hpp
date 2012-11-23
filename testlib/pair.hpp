@@ -2,7 +2,6 @@
 #include <utility>
 #include <string>
 #include "istream.hpp"
-#include "int.hpp"
 #include "separator.hpp"
 
 template<typename T, typename U>
