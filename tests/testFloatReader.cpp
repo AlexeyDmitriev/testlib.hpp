@@ -9,7 +9,7 @@ BOOST_FIXTURE_TEST_SUITE(Doubles, StrictRead)
 BOOST_AUTO_TEST_CASE(RandomDouble) {
 	setStr("42 17");
 	BOOST_CHECK_EQUAL(stream.read<double>(), 42);
-	BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<double>(), VerdictException);
 
 	setStr("-123.11 999.222 0.2");
 	BOOST_CHECK_EQUAL(stream.read<double>(), -123.11);
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(IncorrectSymbols) {
 
 	for (const auto& s : strings) {
 		setStr(s);
-		BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
+		BOOST_CHECK_THROW(stream.read<double>(), VerdictException);
 	}
 
 }
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(BadFormatMinuses) {
 
 	for (const auto& s : strings) {
 		setStr(s);
-		BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
+		BOOST_CHECK_THROW(stream.read<double>(), VerdictException);
 	}
 
 }
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(BadFormatTooManyPoints) {
 
 	for (const auto& s : strings) {
 		setStr(s);\
-		BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
+		BOOST_CHECK_THROW(stream.read<double>(), VerdictException);
 	}
 
 }
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(WrongNumbersSize) {
 	std::string curString(1000, '1');
 
 	setStr(curString);
-	BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<double>(), VerdictException);
 }
 
 BOOST_AUTO_TEST_CASE(NormalWorkingWithSpaces){
@@ -106,6 +106,6 @@ BOOST_AUTO_TEST_CASE(NormalWorkingWithSpaces){
 	BOOST_CHECK_EQUAL(stream.read<double>(), 2.4990);
 	
 	setStr("-517.\n");
-	BOOST_CHECK_THROW(stream.read<double>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<double>(), VerdictException);
 }
 BOOST_AUTO_TEST_SUITE_END()

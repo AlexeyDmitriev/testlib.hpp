@@ -49,9 +49,9 @@ inline std::string outcome(Verdict verdict){
 	}
 }
 
-class ReadingException : std::exception {
+class VerdictException : std::exception {
 public:
 	Verdict verdict;
 	std::string message;
-	ReadingException(Verdict verdict, const std::string& str): verdict(verdict), message(str){}
+	VerdictException(Verdict verdict, const std::string& str): verdict(verdict), message(str){}
 };
