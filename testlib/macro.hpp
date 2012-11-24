@@ -41,14 +41,14 @@ struct Options{
 		xml = false;
 		if (argc  < 4 || argc > 6)
 		{
-			throw ReadingException(Verdict::FAIL,
+			throw VerdictException(Verdict::FAIL,
 				"Program must be run with the following arguments: \n" \
 				"<input-file> <output-file> <answer-file> [<report-file> [<-appes>]]"
 			);
 		}
 		if(argc == 6){
 			if(std::strcmp(argv[5], "-APPES") && std::strcmp(argv[5], "-appes")){
-				throw ReadingException(Verdict::FAIL,
+				throw VerdictException(Verdict::FAIL,
 					"Program must be run with the following arguments: \n" \
 					"<input-file> <output-file> <answer-file> [<report-file> [<-appes>]]"
 				);
@@ -62,13 +62,13 @@ struct Options{
 		answer.open(argv[3]);
 
 		if(input.fail() || output.fail() || answer.fail())
-			throw ReadingException(Verdict::FAIL, "Can't open files");
+			throw VerdictException(Verdict::FAIL, "Can't open files");
 
 
 		if (argc > 4){
 			fileOutput.open(argv[4]);
 			if(fileOutput.fail()){
-				throw ReadingException(Verdict::FAIL, "Can't open output file to write");
+				throw VerdictException(Verdict::FAIL, "Can't open output file to write");
 			}
 		}
 	}
@@ -86,7 +86,7 @@ int main(int argc, char** argv){ \
 		options.fill(argc, argv); \
 		check(options.inf, options.ouf, options.ans); \
 	} \
-	catch (ReadingException& ex){ \
+	catch (VerdictException& ex){ \
 		verdict = ex.verdict; \
 		message = ex.message; \
 	} \
@@ -116,7 +116,7 @@ int main(){ \
 	try { \
 		validate(input); \
 	} \
-	catch(ReadingException& ex){ \
+	catch(VerdictException& ex){ \
 		verdict = ex.verdict; \
 		message = ex.message; \
 	} \

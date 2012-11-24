@@ -10,7 +10,7 @@ BOOST_FIXTURE_TEST_SUITE(Integers, StrictRead)
 BOOST_AUTO_TEST_CASE(RandomInts) {
 	setStr("42 17");
 	BOOST_CHECK_EQUAL(stream.read<int>(), 42);
-	BOOST_CHECK_THROW(stream.read<int>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<int>(), VerdictException);
 
 	setStr("-123 999");
 	BOOST_CHECK_EQUAL(stream.read<int>(), -123);
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(Negative) {
 	BOOST_CHECK_EQUAL(stream.read<int>(), -1);
 	
 	setStr("-1");
-	BOOST_CHECK_THROW(stream.read<unsigned>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<unsigned>(), VerdictException);
 }
 
 
@@ -35,10 +35,10 @@ BOOST_AUTO_TEST_CASE(Overflow){
 	setStr("65535 65535");
 	BOOST_CHECK_EQUAL(stream.read<int>(), 65535);
 	stream.readSpace();
-	BOOST_CHECK_THROW(stream.read<short>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<short>(), VerdictException);
 	
 	setStr("9999999999999999999999999999999999999");
-	BOOST_CHECK_THROW(stream.read<int>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<int>(), VerdictException);
 	
 	setStr("2000000000");
 	BOOST_CHECK_NO_THROW(stream.read<int>());
@@ -49,37 +49,37 @@ BOOST_AUTO_TEST_CASE(Corners){
 	BOOST_CHECK_NO_THROW(stream.read<unsigned short>());
 	
 	setStr("65536");
-	BOOST_CHECK_THROW(stream.read<unsigned short>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<unsigned short>(), VerdictException);
 	
 	setStr("-1");
-	BOOST_CHECK_THROW(stream.read<unsigned short>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<unsigned short>(), VerdictException);
 	
 	
 	setStr("32768");
-	BOOST_CHECK_THROW(stream.read<short>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<short>(), VerdictException);
 	
 	setStr("-32768");
 	BOOST_CHECK_NO_THROW(stream.read<short>());
 	
 	setStr("-32769");
-	BOOST_CHECK_THROW(stream.read<short>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<short>(), VerdictException);
 	
 	
 	setStr("18446744073709551616");
-	BOOST_CHECK_THROW(stream.read<unsigned long long>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<unsigned long long>(), VerdictException);
 	
 	setStr("18446744073709551615");
 	BOOST_CHECK_NO_THROW(stream.read<unsigned long long>());
 	
 	
 	setStr("9223372036854775808");
-	BOOST_CHECK_THROW(stream.read<long long>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<long long>(), VerdictException);
 	
 	setStr("9223372036854775807");
 	BOOST_CHECK_NO_THROW(stream.read<long long>());
 	
 	setStr("-9223372036854775809");
-	BOOST_CHECK_THROW(stream.read<long long>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<long long>(), VerdictException);
 	
 	setStr("-9223372036854775808");
 	BOOST_CHECK_NO_THROW(stream.read<long long>());
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(BadFormat) {
 	
 	for(const auto& s: strings){
 		setStr(s);
-		BOOST_CHECK_THROW(stream.read<int>(), ReadingException);
+		BOOST_CHECK_THROW(stream.read<int>(), VerdictException);
 	}
 	
 }
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(CheckInRange) {
 	stream.readSpace();
 	BOOST_CHECK_EQUAL(stream.read<int>(-100, 100), -2);
 	stream.readSpace();
-	BOOST_CHECK_THROW(stream.read<int>(5, 7), ReadingException);
+	BOOST_CHECK_THROW(stream.read<int>(5, 7), VerdictException);
 }
 
 BOOST_AUTO_TEST_CASE(Hex){
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(Hex){
 	BOOST_CHECK_EQUAL(HexReader<int>().read(stream), 255);
 	
 	setStr("g");
-	BOOST_CHECK_THROW(HexReader<int>().read(stream), ReadingException);
+	BOOST_CHECK_THROW(HexReader<int>().read(stream), VerdictException);
 	
 	setStr("-a");
 	BOOST_CHECK_EQUAL(HexReader<int>().read(stream), -10);
@@ -134,16 +134,16 @@ BOOST_AUTO_TEST_CASE(Hex){
 BOOST_AUTO_TEST_CASE(HexCase){
 	typedef HexReader<int>::Case Case;
 	setStr("FF");
-	BOOST_CHECK_THROW(HexReader<int>().read(stream), ReadingException);
+	BOOST_CHECK_THROW(HexReader<int>().read(stream), VerdictException);
 	
 	setStr("fF");
-	BOOST_CHECK_THROW(HexReader<int>().read(stream), ReadingException);
+	BOOST_CHECK_THROW(HexReader<int>().read(stream), VerdictException);
 	
 	setStr("FF");
 	BOOST_CHECK_NO_THROW(HexReader<int>(Case::UPPER).read(stream));
 	
 	setStr("ff");
-	BOOST_CHECK_THROW(HexReader<int>(Case::UPPER).read(stream), ReadingException);
+	BOOST_CHECK_THROW(HexReader<int>(Case::UPPER).read(stream), VerdictException);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(HexBoth){
 	BOOST_CHECK_NO_THROW(HexReader<int>().read(stream));
 	
 	setStr("ff");
-	BOOST_CHECK_THROW(HexReader<int>(Case::UPPER).read(stream), ReadingException);
+	BOOST_CHECK_THROW(HexReader<int>(Case::UPPER).read(stream), VerdictException);
 }
 
 

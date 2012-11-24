@@ -7,7 +7,7 @@
 do { \
 	std::stringstream ss; \
 	ss << msg; \
-	throw ReadingException(verdict, ss.str()); \
+	throw VerdictException(verdict, ss.str()); \
 } \
 while (false); \
 

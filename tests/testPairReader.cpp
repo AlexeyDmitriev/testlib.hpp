@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(testRandom){
 	BOOST_CHECK_EQUAL(stream.read<pil>(), std::make_pair(12, -1LL));
 	
 	setStr("12 -1");
-	BOOST_CHECK_THROW(stream.read<piu>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<piu>(), VerdictException);
 }
 
 BOOST_AUTO_TEST_CASE(customReaders){
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(customReaders){
 	auto any = make_default_reader<int>();
 	
 	setStr("42 17");
-	BOOST_CHECK_THROW(stream.read<pi>(upTo20, any), ReadingException);
+	BOOST_CHECK_THROW(stream.read<pi>(upTo20, any), VerdictException);
 	
 	setStr("42 17");
 	BOOST_CHECK_NO_THROW(stream.read<pi>(any, upTo20));
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(customReaders){
 	BOOST_CHECK_NO_THROW(stream.read<pi>(make_default_reader<int>(100, 1000)));
 	
 	setStr("123 456");
-	BOOST_CHECK_THROW(stream.read<pi>(make_default_reader<int>(100, 200)), ReadingException);
+	BOOST_CHECK_THROW(stream.read<pi>(make_default_reader<int>(100, 200)), VerdictException);
 }
 
 BOOST_AUTO_TEST_CASE(Separators){
@@ -46,14 +46,14 @@ BOOST_AUTO_TEST_CASE(Separators){
 	BOOST_CHECK_NO_THROW(stream.read<pi>());
 	
 	setStr("123vs345");
-	BOOST_CHECK_THROW(stream.read<pi>("vs"), ReadingException);
+	BOOST_CHECK_THROW(stream.read<pi>("vs"), VerdictException);
 	
 	setStr("123 vs345");
 	BOOST_CHECK_NO_THROW(stream.read<pi>("vs"));
 	
 	setStr("123 vs 345");
 	auto upTo20 = make_default_reader<int>(0, 20);
-	BOOST_CHECK_THROW(stream.read<pi>(upTo20, upTo20, "vs"), ReadingException);
+	BOOST_CHECK_THROW(stream.read<pi>(upTo20, upTo20, "vs"), VerdictException);
 }
 
 
@@ -62,13 +62,13 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_FIXTURE_TEST_SUITE(StrictPairs, StrictRead)
 BOOST_AUTO_TEST_CASE(StrictSeparators){
 	setStr("123\n345");
-	BOOST_CHECK_THROW(stream.read<pi>(), ReadingException);
+	BOOST_CHECK_THROW(stream.read<pi>(), VerdictException);
 	
 	setStr("123\n345");
 	BOOST_CHECK_NO_THROW(stream.read<pi>('\n'));
 	
 	setStr("123 vs345");
-	BOOST_CHECK_THROW(stream.read<pi>("vs"), ReadingException);
+	BOOST_CHECK_THROW(stream.read<pi>("vs"), VerdictException);
 	
 	setStr("123 vs345");
 	BOOST_CHECK_NO_THROW(stream.read<pi>(" vs"));
