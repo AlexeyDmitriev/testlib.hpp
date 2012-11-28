@@ -11,6 +11,13 @@ BOOST_FIXTURE_TEST_SUITE(baseStrict, StrictRead)
 #include "testBaseReading/allFail.hpp"
 #include "testBaseReading/strictFail.hpp"
 
+BOOST_AUTO_TEST_CASE(spacesExampleStrict){
+	setStr("  \t\n");
+	BOOST_CHECK_EQUAL(stream.readChar(), ' ');
+	BOOST_CHECK_NO_THROW(stream.readSpace());
+	BOOST_CHECK_THROW(stream.readSpace(), ReadingException);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_FIXTURE_TEST_SUITE(baseNonStrict, NonStrictRead)
@@ -18,29 +25,6 @@ BOOST_FIXTURE_TEST_SUITE(baseNonStrict, NonStrictRead)
 #include "testBaseReading/allOk.hpp"
 #include "testBaseReading/allFail.hpp"
 #include "testBaseReading/strictFail.hpp"
-
-BOOST_AUTO_TEST_CASE(eofStrict) {	
-//	setStr(" \n");
-//	BOOST_CHECK_NO_THROW(stream.readEof());
-		
-	setStr(" \n\t\n");
-	MODE_CHECK_EQUAL(stream.getMode(), stream.seekEof(), true);
-	
-	setStr("\n");
-	MODE_CHECK_EQUAL(stream.getMode(), stream.seekEof(), true);
-	
-	setStr("4\n");
-	BOOST_CHECK_EQUAL(stream.read<int>(), 4);
-	MODE_CHECK_EQUAL(stream.getMode(), stream.seekEof(), true);
-}
-
-BOOST_AUTO_TEST_CASE(eolnStrict) {
-	setStr(" \t \npetr_is_cool_programmer");
-	MODE_CHECK_EQUAL(stream.getMode(), stream.seekEoln(), true);
-	
-	setStr(" \t\n p  ");
-	MODE_CHECK_EQUAL(stream.getMode(), stream.seekEoln(), true);
-}
 
 BOOST_AUTO_TEST_CASE(superTestNonStrict){
 	setStr("3 3\naba p -3 1 \np anya 1.0 1\nanya   \t aba -0.0 -21\n    \n");
@@ -63,11 +47,13 @@ BOOST_AUTO_TEST_CASE(superTestNonStrict){
 	BOOST_CHECK_EQUAL(stream.read<T>(), p);
 }
 
-BOOST_AUTO_TEST_CASE(spaces){
+BOOST_AUTO_TEST_CASE(spacesNonStrictExample){
 	setStr("  p\t\nvictor");
 	BOOST_CHECK_EQUAL(stream.readChar(), 'p');
 	BOOST_CHECK_EQUAL(stream.readToken(), "victor");
-	BOOST_CHECK_NO_THROW(stream.readEof())
+	BOOST_CHECK_NO_THROW(stream.readEof());
+	
+	setStr("  \t\n");
+	BOOST_CHECK_THROW(stream.readChar(), ReadingException);
 }
-
 BOOST_AUTO_TEST_SUITE_END()

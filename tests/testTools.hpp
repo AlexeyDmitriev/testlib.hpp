@@ -8,8 +8,18 @@
 		BOOST_CHECK(a == b); \
 	else \
 		BOOST_CHECK_THROW(a, ReadingException);
-
-
+#define MODE_CHECK(mode, a, b, c) \
+	if (mode == IStream::Mode::NON_STRICT) \
+		BOOST_CHECK(a == b); \
+	else \
+		BOOST_CHECK(a == c);
+#define MODE_CHECK_THROW(mode, a) \
+	if (mode == IStream::Mode::NON_STRICT){ \
+		BOOST_CHECK_NO_THROW(a);\
+	} \
+	else { \
+		BOOST_CHECK_THROW(a, ReadingException); \
+	}
 struct Read{
 	OutputIStream stream;
 	std::stringstream ss;
