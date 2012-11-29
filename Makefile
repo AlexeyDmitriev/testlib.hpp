@@ -45,7 +45,7 @@ build/%.bin: build/%.o Makefile
 build/%.d: build/release/testlib.hpp %.cpp
 	@mkdir -p build/$(*D)
 	@echo Make dependencies for $*.cpp
-	@$(CPP) -MM -MP -MT $@ -MT build/$*.o $(CPP_FLAGS) $< -o $@
+	@$(CPP) -MM -MP -MT $@ -MT build/$*.o $(CPP_FLAGS) $*.cpp -o $@
 
 clean:
 	@echo "clean"
