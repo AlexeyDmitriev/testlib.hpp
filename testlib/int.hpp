@@ -2,6 +2,7 @@
 
 #include "reader.hpp"
 #include "istream.hpp"
+#include "char.hpp"
 #include <limits>
 #include <string>
 #include <type_traits>
@@ -132,30 +133,10 @@ private:
 };
 
 template<typename T>
-struct is_integer {
-	typedef typename std::is_integral<T>::type type;
-};
+struct is_integer : public std::integral_constant<bool, std::is_integral<T>::value && !is_char<T>::value>{};
 
 template<>
-struct is_integer<bool> {
-	typedef std::false_type type;
-};
-
-template<>
-struct is_integer<unsigned char> {
-	typedef std::false_type type;
-};
-
-template<>
-struct is_integer<signed char> {
-	typedef std::false_type type;
-};
-
-template<>
-struct is_integer<char> {
-	typedef std::false_type type;
-};
-
+struct is_integer<bool> : public std::false_type {};
 
 template<typename T>
 class DefaultReader<T, typename is_integer<T>::type> : public IntegerReader<T>{};
