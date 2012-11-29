@@ -3,31 +3,45 @@
 #include <sstream>
 #include <string>
 
-struct NonStrictRead {
-	std::stringstream ss;
+#define MODE_CHECK_EQUAL(mode, a, b) \
+	if (mode == IStream::Mode::NON_STRICT) \
+		BOOST_CHECK(a == b); \
+	else \
+		BOOST_CHECK_THROW(a, VerdictException);
+#define MODE_CHECK(mode, a, b, c) \
+	if (mode == IStream::Mode::NON_STRICT) \
+		BOOST_CHECK(a == b); \
+	else \
+		BOOST_CHECK(a == c);
+#define MODE_CHECK_THROW(mode, a) \
+	if (mode == IStream::Mode::NON_STRICT){ \
+		BOOST_CHECK_NO_THROW(a);\
+	} \
+	else { \
+		BOOST_CHECK_THROW(a, VerdictException); \
+	}
+struct Read{
 	OutputIStream stream;
-	
-	NonStrictRead(): stream(ss, IStream::Mode::NON_STRICT) {}
+	std::stringstream ss;
+	Read(IStream::Mode m) : stream(ss, m) {} 
 	void setStr(const std::string& s){
 		ss.clear();
 		ss.str(s);
 	}
 };
 
-struct StrictRead {
-	std::stringstream ss;
-	OutputIStream stream;
+struct NonStrictRead : public Read{
+	NonStrictRead(): Read(IStream::Mode::NON_STRICT) {}
 	
-	StrictRead(): stream(ss, IStream::Mode::STRICT) {}
-	void setStr(const std::string& s){
-		ss.clear();
-		ss.str(s);
-	}
+};
+
+struct StrictRead : public Read{
+	StrictRead(): Read(IStream::Mode::STRICT) {}
 };
 
 namespace std {
 template<typename T, typename U>
 std::ostream& operator << (std::ostream& stream, pair<T, U> const & p){
-	return stream << '(' << p.first << ',' << p.second;
+	return stream << '(' << p.first << ',' << p.second << ')' << std::endl;
 }
 };
