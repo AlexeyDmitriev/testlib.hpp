@@ -13,3 +13,13 @@ BOOST_AUTO_TEST_CASE(WrongLength){
 	setStr("dfnosdngfg");
 	BOOST_CHECK_THROW(stream.read<string>(1), VerdictException);
 }
+
+BOOST_AUTO_TEST_CASE(LineFeed){
+	setStr("mac style\r");
+	BOOST_CHECK_THROW(stream.read<Line>(), VerdictException);
+}
+
+BOOST_AUTO_TEST_CASE(TooLong){
+	setStr("too long\n");
+	BOOST_CHECK_THROW(stream.read<Line>(7), VerdictException);
+}
