@@ -8,7 +8,7 @@ EXAMPLES_OBJ_FILES := $(EXAMPLES_CPP_FILES:%.cpp=build/%.o)
 EXAMPLES_RUN_FILES := $(EXAMPLES_OBJ_FILES:%.o=%.bin)
 OBJ_FILES := $(TEST_OBJ_FILES) $(EXAMPLES_OBJ_FILES)
 DEP_FILES := $(OBJ_FILES:%.o=%.d)
-OUTPUT_FILES := core verdictFunctions exitCodes reader alias utility istream char int macro separator pair vector readerWrapper
+OUTPUT_FILES := core verdictFunctions exitCodes reader alias utility istream char string int macro separator pair vector readerWrapper
 OUTPUT_FILES := $(wildcard $(OUTPUT_FILES:%=testlib/%.hpp))
 
 default:
@@ -45,7 +45,7 @@ build/%.bin: build/%.o Makefile
 build/%.d: build/release/testlib.hpp %.cpp
 	@mkdir -p build/$(*D)
 	@echo Make dependencies for $*.cpp
-	@$(CPP) -MM -MP -MT $@ -MT build/$*.o $(CPP_FLAGS) $< -o $@
+	@$(CPP) -MM -MP -MT $@ -MT build/$*.o $(CPP_FLAGS) $*.cpp -o $@
 
 clean:
 	@echo "clean"
