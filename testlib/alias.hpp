@@ -7,7 +7,7 @@ template <typename T, typename R, typename X>
 class AliasImpl;
 
 template<typename T, typename R>
-class AliasImpl<T, R, std::true_type>{
+class AliasImpl<T, R, std::true_type> : public T {
 	static_assert(std::is_base_of<Reader<T>, R>::value, "R must be reader of T");
 public:
 	/*implicit*/ AliasImpl(const T& value): T(value){}
