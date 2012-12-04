@@ -7,9 +7,9 @@
 #include <cassert>
 #include <map>
 
-//TODO: proper OS choosing
-#define ON_LINUX
-//#define ON_WINDOWS
+#if ( _WIN32 || __WIN32__ || _WIN64 || __WIN64__ )
+	#define ON_WINDOWS
+#endif
 
 
 enum class Verdict{
