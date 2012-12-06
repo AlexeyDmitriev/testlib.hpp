@@ -1,5 +1,4 @@
 #pragma once
-#include "core.hpp"
 
 #ifndef OK_EXIT_CODE
 	#define OK_EXIT_CODE 0
@@ -29,17 +28,10 @@
 	#endif
 #endif
 	
-inline int exitCode(Verdict verdict){
-	switch(verdict){
-		case Verdict::OK:
-			return OK_EXIT_CODE;
-		case Verdict::WA:
-			return WA_EXIT_CODE;
-		case Verdict::FAIL:
-			return FAIL_EXIT_CODE;
-		case Verdict::PE:
-			return PE_EXIT_CODE;
-		default:
-			assert(false);
-	}
-}
+#ifndef PARTIALLY_EXIT_CODE
+	#ifdef TESTSYS
+		#define PARTIALLY_EXIT_CODE 50
+	#else
+		#define PARTIALLY_EXIT_CODE 0
+	#endif
+#endif
