@@ -57,4 +57,14 @@ BOOST_AUTO_TEST_CASE(DoubleCheckInRange) {
 	}
 }
 
-
+BOOST_AUTO_TEST_CASE(doubleEqual){
+	BOOST_CHECK(areClose(1.0, 1.0, 1e-8));
+	
+	BOOST_CHECK(areClose(1.0, 1.0 + 1e-15, 1e-8));
+	
+	BOOST_CHECK(!areClose(1.0, 1 + 1e-7, 1e-8));
+	
+	BOOST_CHECK(areClose(100.0, 100 + 1e-7, 1e-8));
+	
+	BOOST_CHECK(areClose(0.01, 0.01 + 1e-9, 1e-8));
+}
