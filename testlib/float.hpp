@@ -72,3 +72,8 @@ public:
 
 template<typename T>
 class DefaultReader<T, typename std::is_floating_point<T>::type> : public FloatReader<T> {};
+
+template<typename T>
+inline bool areClose(T expected, T value, T epsilon){
+	return (value - expected) / std::max(1.0, expected) < epsilon;
+}
