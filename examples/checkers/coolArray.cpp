@@ -14,9 +14,9 @@ TESTLIB_CHECK(){
 	if (sumSq % n != 0)
 		WA("Sum of squares must divide on n");
 	if (s * s * n != sumSq){
-		WA("Sum of squares isn't equal to " << s);
+		WA("Quadratic mean isn't equal to " << s);
 	}
 	else{
-		OK(s);
+		OK("");
 	}
 }

@@ -17,6 +17,7 @@ struct Point{
 		return Point(x - point.x, y - point.y);
 	}
 };
+typedef vector<Point> Triangle;
 
 class ReaderPoint : Reader<Point>{
 public:
@@ -31,12 +32,12 @@ private:
 	double minX, maxX, minY, maxY;
 };
 
-double vectorMultiply(const Point& a, const Point& b){
+double outerProduct(const Point& a, const Point& b){
 	return a.x * b.y - a.y * b.x;
 }
 
-double triangleArea(const vector<Point>& triangle){
-	return fabs( vectorMultiply(triangle[2] - triangle[0], triangle[1] - triangle[0]) )/ 2.0;
+double triangleArea(const Triangle& triangle){
+	return fabs( outerProduct(triangle[2] - triangle[0], triangle[1] - triangle[0]) )/ 2.0;
 }
 
 set<Point> inputPoints;
@@ -44,7 +45,7 @@ ReaderPoint readerPoint(1e6, 1e6);
 	
 double readAns(IStream& is, Verdict verdict) {
 	double s = is.read<double>();
-	vector<Point> res = is.read<vector<Point> >(3, readerPoint); 
+	Triangle res = is.read<Triangle>(3, readerPoint); 
 	for (const auto& point: res){
 		if (inputPoints.find(point) == inputPoints.end()){
 			QUIT(verdict, "Point " << point.x << " " << point.y << " isn't exist in input file");
@@ -56,7 +57,7 @@ double readAns(IStream& is, Verdict verdict) {
 
 TESTLIB_CHECK(){
 	int n = inf.read<int>();
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < n; i++){
 		inputPoints.insert(inf.read<Point>(readerPoint));
 	}
 	
