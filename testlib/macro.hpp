@@ -98,13 +98,13 @@ int main(int argc, char** argv){ \
 	std::ostream& out = options.out(); \
 	if(options.xml){ \
 		out << "<?xml version=\"1.0\" encoding=\"windows-1251\"?>" \
-			"<result outcome = \"" << outcome(verdict) << "\">"; \
+			"<result outcome = \"" << verdict.outcome() << "\">"; \
 		writeXml(out, message); \
 		out << "</result>\n"; \
 	} \
 	else \
-		out << shortMessage(verdict) << ' ' << message << std::endl; \
-	return exitCode(verdict); \
+		out << verdict.shortMessage() << ' ' << message << std::endl; \
+	return verdict.exitCode(); \
 } \
 void check(IStream& inf, IStream& ouf, IStream& ans)
 
@@ -125,6 +125,6 @@ int main(){ \
 		message = "Extra information in input file"; \
 	} \
 	std::cout << message << std::endl; \
-	return exitCode(verdict); \
+	return verdict.exitCode(); \
 } \
 void validate(IStream& inf)
