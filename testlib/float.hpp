@@ -7,14 +7,21 @@
 #include <type_traits>
 #include <cmath>
 
+template<typename T>
+inline bool isInfinite(T value){
+	return value == std::numeric_limits<T>::infinity() || value == -std::numeric_limits<T>::infinity();
+}
+template<typename T>
+inline bool isNaN(T value){
+	return value != value;
+}
+
 template <typename T>
 class FloatReader : public Reader<T> {
 public:
 	T read(IStream& stream) const {
 		std::string input = stream.readToken();
 		std::string usedValue = input;
-		if (input.size() >= MAX_LENGTH)
-			stream.quit(Verdict::PE, expectation("Float", input));
 		if(input[0] == '-') {
 			usedValue = usedValue.substr(1);
 		}
@@ -45,7 +52,8 @@ public:
 		T result;
 		
 		ss >> result;
-		
+		if(!ss || isNaN(result) || isInfinite(result))
+			stream.quit(Verdict::PE, expectation("Float", input));
 		return result;
 	}
 	T read(IStream& stream, T min, T max) const {
@@ -60,11 +68,7 @@ public:
 			stream.quit(Verdict::WA, "Float " + toPrint(name) + " violates the range [" + toString(min) + "," + toString(max) + "]");
 		return result;
 	}
-private:
-	static constexpr T EPS = 1e-10;
-	static constexpr size_t MAX_LENGTH = 50;
 };
 
 template<typename T>
 class DefaultReader<T, typename std::is_floating_point<T>::type> : public FloatReader<T> {};
-

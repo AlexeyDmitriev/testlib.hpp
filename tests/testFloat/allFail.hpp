@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(BadFormatTooManyPoints) {
 
 }
 
-BOOST_AUTO_TEST_CASE(WrongNumbersSize) {
+BOOST_AUTO_TEST_CASE(OverFlow) {
 	std::string curString(1000, '1');
 
 	setStr(curString);
