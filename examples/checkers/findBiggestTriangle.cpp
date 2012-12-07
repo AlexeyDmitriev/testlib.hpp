@@ -13,7 +13,9 @@ struct Point{
 	bool operator < (const Point& point) const{
 		return make_pair(x, y) < make_pair(point.x, point.y);
 	}
-	
+	Point operator - (const Point& point) const{
+		return Point(x - point.x, y - point.y);
+	}
 };
 
 class ReaderPoint : Reader<Point>{
@@ -29,29 +31,26 @@ private:
 	double minX, maxX, minY, maxY;
 };
 
-double findSquare(vector<Point> polygon){
-	double res = 0;
-	polygon.push_back(polygon[0]);
-	for (size_t i = 0; i < polygon.size() - 1; i++){
-		res += (polygon[i].x - polygon[i + 1].x) * (polygon[i].y + polygon[i + 1].y);
-	}
-	return fabs(res) / 2.0;
+double vectorMultiply(const Point& a, const Point& b){
+	return a.x * b.y - a.y * b.x;
+}
+
+double triangleArea(const vector<Point>& triangle){
+	return fabs( vectorMultiply(triangle[2] - triangle[0], triangle[1] - triangle[0]) )/ 2.0;
 }
 
 set<Point> inputPoints;
 ReaderPoint readerPoint(1e6, 1e6);
 	
-double readAns(IStream &is, Verdict verdict) {
+double readAns(IStream& is, Verdict verdict) {
 	double s = is.read<double>();
-	vector<Point> res;
-	for (int i = 0; i < 3; i++){
-		Point tmp = is.read<Point>(readerPoint);
-		res.push_back(tmp);
-		if (inputPoints.find(tmp) == inputPoints.end()){
-			QUIT(verdict, "Point " << tmp.x << " " << tmp.y << " isn't exist in input file");
+	vector<Point> res = is.read<vector<Point> >(3, readerPoint); 
+	for (const auto& point: res){
+		if (inputPoints.find(point) == inputPoints.end()){
+			QUIT(verdict, "Point " << point.x << " " << point.y << " isn't exist in input file");
 		}
 	}
-	verify(fabs(findSquare(res) - s) < EPS, verdict, "Triangle's square doesn't match answer");
+	verify(fabs(triangleArea(res) - s) < EPS, verdict, "Triangle's square doesn't match answer");
 	return s;
 }
 
