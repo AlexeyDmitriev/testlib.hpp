@@ -67,6 +67,6 @@ TESTLIB_CHECK(){
 	if (fabs(ja - pa) < EPS)
 		OK(pa);
 	if (pa > ja + EPS)
-		FAIL("Participant found better answer than jury");
-	WA("Jury found better answer than participant");
+		FAIL("Participant answer is better");
+	WA("Jury answer is better");
 }

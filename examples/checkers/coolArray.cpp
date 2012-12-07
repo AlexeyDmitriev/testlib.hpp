@@ -16,7 +16,4 @@ TESTLIB_CHECK(){
 	if (s * s * n != sumSq){
 		WA("Quadratic mean isn't equal to " << s);
 	}
-	else{
-		OK("");
-	}
 }
