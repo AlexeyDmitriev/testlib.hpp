@@ -22,7 +22,7 @@ public:
 	};
 	/* implicit */ Verdict(_verdict verdict):result(verdict){}
 	Verdict partially(int result){
-		return Verdict(result + verdicts);
+		return Verdict(result + VERDICTS);
 	}
 	
 	int exitCode(){
@@ -36,7 +36,7 @@ public:
 			case PE:
 				return PE_EXIT_CODE;
 			default:
-				return PARTIALLY_EXIT_CODE + result - verdicts;
+				return PARTIALLY_EXIT_CODE + result - VERDICTS;
 		}
 	}
 	std::string shortMessage(){
@@ -72,7 +72,7 @@ public:
 		return result == right.result;
 	}
 private:
-	const static int verdicts = PE + 1;
+	const static int VERDICTS = PE + 1;
 	explicit Verdict(int result):result(result){}
 	int result;
 };
