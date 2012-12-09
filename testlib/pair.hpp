@@ -23,9 +23,9 @@ public:
 	
 	template <typename ReaderT, typename ReaderU>
 	if_reader<ReaderT, T, if_reader<ReaderU, U, type>> read(IStream& stream, const ReaderT& readerT, const ReaderU& readerU, const Separator& separator){
-		T t = stream.read<T>(readerT);
+		T t = stream.namedRead<T>("first", readerT);
 		separator.read(stream);
-		U u = stream.read<U>(readerU);
+		U u = stream.namedRead<U>("second", readerU);
 		return std::make_pair(std::move(t), std::move(u));
 	}
 	template <typename ReaderT>

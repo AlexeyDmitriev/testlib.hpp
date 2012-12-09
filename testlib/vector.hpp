@@ -23,7 +23,7 @@ public:
 		std::vector<T> res;
 		res.reserve(numberElements);
 		for (size_t i = 0; i < numberElements; i++){
-			res.push_back(stream.read<T>(reader));
+			res.push_back(stream.namedRead<T>("index " + toString(i), reader));
 			if (i != numberElements - 1)
 				separator.read(stream);
 		}
@@ -37,7 +37,7 @@ public:
 	
 	template <typename Reader = DefaultReader<T>>
 	if_reader<Reader, T, type> read(IStream& stream, const Separator& sizeSeparator, const Separator& elementsSeparator, Reader reader = DefaultReader<T>()){
-		size_t numberElements =  stream.read<size_t>();
+		size_t numberElements =  stream.namedRead<size_t>("Size");
 		sizeSeparator.read(stream);
 		return read(stream, numberElements, elementsSeparator, reader);
 	}
