@@ -78,3 +78,16 @@ inline std::string expectation(T&& expected, U&& found){
 
 template <typename ReaderT, typename T, typename Result>
 using if_reader = typename std::enable_if<std::is_base_of<Reader<T>, ReaderT>::value,Result>::type;
+
+template<typename Integral>
+inline std::string englishEnding(Integral n){
+    if (n / 10 % 10 == 1)
+        return "th";
+    if (n % 10 == 1)
+        return "st";
+    if (n % 10 == 2)
+        return "nd";
+    if (n % 10 == 3)
+        return "rd";
+    return "th";
+}
