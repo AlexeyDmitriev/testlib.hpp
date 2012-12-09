@@ -44,7 +44,13 @@ inline std::string rangeToString(T start, T end){
 
 template <typename T>
 inline std::string toPrint(T value){
-	return "\"" + toString(value) + "\"";
+	const size_t MAX_LENGTH = 70;
+	std::string str = toString(value);
+	if(str.length() <= MAX_LENGTH)
+		return "\"" + str + "\"";
+	else
+		return "\"" + str.substr(0, MAX_LENGTH / 2) + "..." 
+		            + str.substr(str.length() - MAX_LENGTH / 2) + "\"";
 }
 
 template <>
