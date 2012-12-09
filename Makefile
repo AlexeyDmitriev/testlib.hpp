@@ -42,7 +42,7 @@ build/%.bin: build/%.o Makefile
 	@echo "build $*.bin"
 	@$(CPP) $< $(LINK_FLAGS) -o $@
 
-build/%.d: build/release/testlib.hpp %.cpp
+build/%.d: %.cpp
 	@mkdir -p build/$(*D)
 	@echo Make dependencies for $*.cpp
 	@$(CPP) -MM -MP -MT $@ -MT build/$*.o $(CPP_FLAGS) $*.cpp -o $@
