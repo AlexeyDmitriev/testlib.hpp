@@ -2,6 +2,7 @@
 
 #include "reader.hpp"
 #include "istream.hpp"
+#include <algorithm>
 #include <limits>
 #include <string>
 #include <type_traits>
@@ -75,5 +76,5 @@ class DefaultReader<T, typename std::is_floating_point<T>::type> : public FloatR
 
 template<typename T>
 inline bool areClose(T expected, T value, T epsilon){
-	return (value - expected) / std::max(1.0, expected) < epsilon;
+	return (std::abs(value - expected) / std::max(1.0, expected)) < epsilon;
 }
