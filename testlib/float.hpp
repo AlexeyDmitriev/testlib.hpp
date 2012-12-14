@@ -63,12 +63,6 @@ public:
 			stream.quit(Verdict::WA, "Float violates the range [" + toString(min) + "," + toString(max) + "]");
 		return result; 
 	}
-	T read(IStream& stream, T min, T max, const std::string& name) const {
-		T result = read(stream);
-		if(result < min || result > max)
-			stream.quit(Verdict::WA, "Float " + toPrint(name) + " violates the range [" + toString(min) + "," + toString(max) + "]");
-		return result;
-	}
 };
 
 template<typename T>

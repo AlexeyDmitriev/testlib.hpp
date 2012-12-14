@@ -26,6 +26,16 @@ public:
 	}
 	
 	template<typename T, typename... Args>
+	T namedRead(const std::string& name, Args... args){
+		try {
+			return read<T>(std::forward<Args>(args)...);
+		}
+		catch(VerdictException& prev){
+			throw VerdictException(prev.verdict, name + ": " + prev.message);
+		}
+	}
+	
+	template<typename T, typename... Args>
 	void fill(T& result, Args&&... args){
 		result = read<T>(std::forward<Args>(args)...);
 	}
