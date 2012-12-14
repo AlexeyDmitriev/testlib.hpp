@@ -79,7 +79,7 @@ private:
 
 #define TESTLIB_CHECK() void check(IStream& inf, IStream& ouf, IStream& ans); \
 int main(int argc, char** argv){ \
-	Verdict verdict = Verdict::OK; \
+	Verdict verdict = Verdict::FAIL; \
 	std::string message = "No message provided"; \
 	Options options; \
 	try { \
