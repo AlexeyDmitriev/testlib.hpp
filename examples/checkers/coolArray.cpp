@@ -12,7 +12,7 @@ TESTLIB_CHECK(){
 	for (auto i : out)
 		sumSq += i * i;
 	if (sumSq % n != 0)
-		WA("Sum of squares must divide on n");
+		WA("Sum of squares must be divided by n");
 	if (s * s * n != sumSq){
 		WA("Quadratic mean isn't equal to " << s);
 	}
