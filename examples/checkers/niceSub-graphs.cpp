@@ -48,6 +48,10 @@ private:
 	int n;
 };
 
+ostream& operator << (ostream& stream, const Edge& edge){
+	return stream << edge.u + 1 << ' ' << edge.v + 1;
+}
+
 TESTLIB_CHECK(){
 	int n = inf.read<int>(1, MAXN);
 	int m = inf.read<int>(0, MAXM);
@@ -68,9 +72,9 @@ TESTLIB_CHECK(){
 	for (int i = 0; i < q; i++){
 		Edge edge = ouf.read<Edge>(ourReader);
 		if (inputEdges.find(edge) == inputEdges.end())
-			WA("Edge " << edge.u <<  " " << edge.v << " isn't exist in input graph");
+			WA("Edge " << edge << " isn't exist in input graph");
 		if (foundEdges.find(edge) != foundEdges.end())
-			WA("Edge " << edge.u <<  " " << edge.v << " musn't be a multiple edge");
+			WA("Edge " << edge << " musn't be a multiple edge");
 		foundEdges.insert(edge);
 		graph[edge.u].push_back(edge.v);
 		graph[edge.v].push_back(edge.u);
