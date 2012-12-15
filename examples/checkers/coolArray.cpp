@@ -7,7 +7,7 @@ TESTLIB_CHECK(){
 	long long l = inf.read<long long>();
 	long long r = inf.read<long long>();
 	long long s = inf.read<long long>();
-	vector<long long> out = ouf.read<vector<long long> >(n, make_default_reader<long long>(l, r));
+	vector<long long> out = ouf.read<vector<long long>>(n, make_default_reader<long long>(l, r));
 	long long sumSq = 0;
 	for (auto i : out)
 		sumSq += i * i;
