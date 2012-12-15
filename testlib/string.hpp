@@ -6,10 +6,10 @@
 template <>
 class DefaultReader<std::string>: public Reader<std::string>{
 public:
-	std::string read(IStream& stream){
+	std::string read(IStream& stream) const {
 		return stream.readToken();
 	}
-	std::string read(IStream& stream, std::size_t maxLength){
+	std::string read(IStream& stream, std::size_t maxLength) const {
 		std::string ret = read(stream);
 		if(ret.length() > maxLength)
 			stream.quit(Verdict::WA, "Too long string");
@@ -19,7 +19,7 @@ public:
 
 class LineReader: public Reader<std::string> {
 public:
-	std::string read(IStream& stream){
+	std::string read(IStream& stream) const {
 		std::string ret;
 		while(!lineEnd(stream.peek())){
 			ret += (char)stream.get();
@@ -28,14 +28,14 @@ public:
 			stream.readEoln();
 		return ret;
 	}
-	std::string read(IStream& stream, std::size_t maxLength){
+	std::string read(IStream& stream, std::size_t maxLength) const {
 		std::string ret = read(stream);
 		if(ret.length() > maxLength)
 			stream.quit(Verdict::WA, "Too long line");
 		return ret;
 	}
 private:
-	bool lineEnd(int c){
+	bool lineEnd(int c) const {
 		return c == '\n' || c == '\r' || c == EOF;
 	}
 };

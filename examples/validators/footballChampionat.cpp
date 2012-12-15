@@ -1,7 +1,6 @@
 #include "testlib.hpp"
 #include <string>
 #include <set>
-#include <map>
 
 using namespace std;
 const int MAXN = 100, MAX_LEN_TEAM = 30;
@@ -10,10 +9,15 @@ inline void isParticipant(const string& curTeam, const set<string>& teams){
 	verify(teams.find(curTeam) != teams.end(), Verdict::FAIL, "Matches must be only between participants");
 }
 
-inline void addGame(const string& firstTeam, const string& secondTeam, map<string, set<string>>& played){
-	if (played[firstTeam].find(secondTeam) != played[firstTeam].end())
+inline void addMatch(const pair<string, string>& match, const set<string>& teams, 
+		set<pair<string, string>>& playedMatches){
+	isParticipant(match.first, teams);
+	isParticipant(match.second, teams);
+	if (playedMatches.find(match) != playedMatches.end())
 		FAIL("Any two teams must play exactly one game");
-	played[firstTeam].insert(secondTeam);
+	if (playedMatches.find(make_pair(match.second, match.first)) != playedMatches.end())
+		FAIL("Any two teams must play exactly one game");
+	playedMatches.insert(match);
 }
 
 typedef pair<int, int> TMatchResult;
@@ -30,21 +34,12 @@ TESTLIB_VALIDATE(){
 		teams.insert(curTeam);
 		inf.readEoln();
 	}
-	map<string, set<string> > played;
+	set<pair<string, string>> playedMatches;
 	for (size_t i = 0; i < n * (n - 1) / 2; ++i){
-		string firstTeam = inf.read<string>(MAX_LEN_TEAM);
-		isParticipant(firstTeam, teams);
-		inf.readChar(' ');
-		string secondTeam = inf.read<string>(MAX_LEN_TEAM);
-		isParticipant(secondTeam, teams);
-		addGame(firstTeam, secondTeam, played);
-		addGame(secondTeam, firstTeam, played);
+		pair<string, string> match = inf.read<pair<string, string>>(make_default_reader<string>(MAX_LEN_TEAM), ' ');
+		addMatch(match, teams, playedMatches);
 		inf.readChar(' ');
 		inf.read<TMatchResult>(make_default_reader<int>(0, 10), " : ");
 		inf.readEoln();
-	}
-	inf.readEoln();
-	for (auto& iter: teams){
-		verify(played[iter].size() == n - 1, Verdict::FAIL, "" << iter << "has incorrect number of games");
 	}
 }
