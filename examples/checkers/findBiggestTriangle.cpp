@@ -4,7 +4,6 @@
 
 using namespace std;
 const double EPS = 1e-8;
-const double MAXX = 1e6, MAXY = 1e6;
 
 struct Point{
 	double x, y;
