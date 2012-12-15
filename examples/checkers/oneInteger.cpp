@@ -7,6 +7,6 @@ TESTLIB_CHECK(){
 		WA(expectation(a, b));
 	}
 	else {
-		OK(to_string(a));
+		OK(a);
 	}
 }

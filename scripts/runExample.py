@@ -82,7 +82,7 @@ def runTest(cpp, test, logLevel):
 			with open(resultFile, "w") as result:
 				realCode = subprocess.call(binOfCpp(cpp), stdin=f, stdout=result)
 	else:
-		names = (buildDir + "input", buildDir + "output", buildDir + "answer")
+		names = (buildDir + "input", buildDir + "output", buildDir + "answer");
 		for name, text in zip(names, testParts):
 			with open(name, 'w') as f:
 				f.write(text)
