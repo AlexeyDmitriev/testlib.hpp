@@ -18,10 +18,10 @@ struct is_char<unsigned char> : public std::true_type{};
 template<typename T>
 class DefaultReader<T, typename is_char<T>::type> : Reader<T>{
 public:
-	T read(IStream& stream){
+	T read(IStream& stream) const {
 		return stream.readChar();
 	}
-	T read(IStream& stream, const std::string& allowed){
+	T read(IStream& stream, const std::string& allowed) const {
 		T result = read(stream);
 		for(char c: allowed)
 			if(result == c)

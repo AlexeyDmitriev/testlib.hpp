@@ -14,12 +14,12 @@ public:
 	typedef std::vector<T> type;
 	
 	template <typename Reader = DefaultReader<T>>
-	if_reader<Reader, T, type> read(IStream& stream, size_t numberElements, Reader reader = DefaultReader<T>()){
+	if_reader<Reader, T, type> read(IStream& stream, size_t numberElements, Reader reader = DefaultReader<T>()) const {
 		return read(stream, numberElements, defaultElementsSeparator(stream), reader);
 	}
 	
 	template <typename Reader = DefaultReader<T>>
-	if_reader<Reader, T, type> read(IStream& stream, size_t numberElements, const Separator& separator, Reader reader = DefaultReader<T>()){
+	if_reader<Reader, T, type> read(IStream& stream, size_t numberElements, const Separator& separator, Reader reader = DefaultReader<T>()) const {
 		std::vector<T> res;
 		res.reserve(numberElements);
 		for (size_t i = 0; i < numberElements; i++){
@@ -31,22 +31,22 @@ public:
 	}
 	
 	template <typename Reader = DefaultReader<T>>
-	if_reader<Reader, T, type> read(IStream& stream, Reader reader = DefaultReader<T>()){
+	if_reader<Reader, T, type> read(IStream& stream, Reader reader = DefaultReader<T>()) const {
 		return read(stream, defaultSizeSeparator(stream), defaultElementsSeparator(stream), reader);
 	}
 	
 	template <typename Reader = DefaultReader<T>>
-	if_reader<Reader, T, type> read(IStream& stream, const Separator& sizeSeparator, const Separator& elementsSeparator, Reader reader = DefaultReader<T>()){
+	if_reader<Reader, T, type> read(IStream& stream, const Separator& sizeSeparator, const Separator& elementsSeparator, Reader reader = DefaultReader<T>()) const {
 		size_t numberElements =  stream.namedRead<size_t>("Size");
 		sizeSeparator.read(stream);
 		return read(stream, numberElements, elementsSeparator, reader);
 	}
 	
 private:
-	Separator defaultSizeSeparator(IStream& stream){
+	Separator defaultSizeSeparator(IStream& stream) const {
 		return stream.getMode() == IStream::Mode::STRICT ? "\n" : "";
 	}
-	Separator defaultElementsSeparator(IStream& stream){
+	Separator defaultElementsSeparator(IStream& stream) const {
 		return stream.getMode() == IStream::Mode::STRICT ? " " : "";
 	}	
 };
