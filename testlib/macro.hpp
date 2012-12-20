@@ -29,9 +29,9 @@ struct Options{
 	OutputIStream ouf;
 	FailIStream ans;
 	bool xml;
-	Options(): inf(std::unique_ptr<StreamReader>(new StdStreamReader(input)), IStream::Mode::NON_STRICT),
-	           ouf(std::unique_ptr<StreamReader>(new StdStreamReader(output)), IStream::Mode::NON_STRICT),
-	           ans(std::unique_ptr<StreamReader>(new StdStreamReader(answer)), IStream::Mode::NON_STRICT)
+	Options(): inf(std::unique_ptr<StreamReader>(new BufferedFileReader(input)), IStream::Mode::NON_STRICT),
+	           ouf(std::unique_ptr<StreamReader>(new BufferedFileReader(output)), IStream::Mode::NON_STRICT),
+	           ans(std::unique_ptr<StreamReader>(new BufferedFileReader(answer)), IStream::Mode::NON_STRICT)
 	{}
 	std::ostream& out(){
 		return fileOutput.is_open() ? fileOutput : std::cout;
@@ -57,9 +57,9 @@ struct Options{
 			xml = true;
 		}
 
-		input.open(argv[1]);
-		output.open(argv[2]);
-		answer.open(argv[3]);
+		input.open(argv[1], "r");
+		output.open(argv[2], "r");
+		answer.open(argv[3], "r");
 
 		if(input.fail() || output.fail() || answer.fail())
 			throw VerdictException(Verdict::FAIL, "Can't open files");
@@ -73,7 +73,7 @@ struct Options{
 		}
 	}
 private:
-	std::ifstream input, output, answer;
+	File input, output, answer;
 	std::ofstream fileOutput;
 };
 

@@ -61,7 +61,7 @@ inline std::string toPrint<char>(char value){
 		return "CR";
 	if(value == ' ')
 		return "' '";
-	if(value < ' ')
+	if(value >= 0 && value < ' ')
 		return "'#" + toString(static_cast<int>(value)) + "'";
 	return "'" + toString(value) + "'";
 }
