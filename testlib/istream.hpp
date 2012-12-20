@@ -85,24 +85,22 @@ public:
 		if(c != EOF)
 			quit(Verdict::PE, expectation("EOF", char(c)));
 	}
-	//TODO: maybe it should be changed to Reader<std:string>
-	std::string readToken(){
+	
+	std::string readToken(){	
 		skipUnused();
-		
-		std::string token;
-		
+		buffer.clear();
 		while(!isWhiteSpace(stream->peek()))
-			token += stream->get();
+			buffer += stream->get();
 		
-		if(token.empty()){
+		if(buffer.empty()){
 			if(stream->peek() == EOF)
 				quit(Verdict::PE, expectation("Token", "EOF"));
 			else
 				quit(Verdict::PE, expectation("Token", char(stream->peek())));
 		}
-		
-		return token;
+		return buffer;
 	}
+	
 	int peek() const {
 		return stream->peek();
 	}
@@ -145,6 +143,7 @@ public:
 	virtual void quit(Verdict verdict, const std::string& message) = 0;
 	virtual ~IStream(){}
 private:
+	std::string buffer;
 	std::unique_ptr<StreamReader> stream;
 	Mode mode;
 	bool isSkippable(int c) const {
