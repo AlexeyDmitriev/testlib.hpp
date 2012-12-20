@@ -23,7 +23,7 @@
 struct Read{
 	OutputIStream stream;
 	std::stringstream ss;
-	Read(IStream::Mode m) : stream(ss, m) {} 
+	Read(IStream::Mode m) : stream(std::unique_ptr<StreamReader>(new StdStreamReader(ss)), m) {} 
 	void setStr(const std::string& s){
 		ss.clear();
 		ss.str(s);

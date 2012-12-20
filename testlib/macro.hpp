@@ -29,9 +29,9 @@ struct Options{
 	OutputIStream ouf;
 	FailIStream ans;
 	bool xml;
-	Options(): inf(input, IStream::Mode::NON_STRICT),
-	           ouf(output, IStream::Mode::NON_STRICT),
-	           ans(answer, IStream::Mode::NON_STRICT)
+	Options(): inf(std::unique_ptr<StreamReader>(new StdStreamReader(input)), IStream::Mode::NON_STRICT),
+	           ouf(std::unique_ptr<StreamReader>(new StdStreamReader(output)), IStream::Mode::NON_STRICT),
+	           ans(std::unique_ptr<StreamReader>(new StdStreamReader(answer)), IStream::Mode::NON_STRICT)
 	{}
 	std::ostream& out(){
 		return fileOutput.is_open() ? fileOutput : std::cout;
@@ -112,7 +112,7 @@ void check(IStream& inf, IStream& ouf, IStream& ans)
 int main(){ \
 	Verdict verdict = Verdict::OK; \
 	std::string message = "No message provided"; \
-	FailIStream input(std::cin, IStream::Mode::STRICT); \
+	FailIStream input(std::unique_ptr<StreamReader>(new StdStreamReader(std::cin)), IStream::Mode::STRICT); \
 	try { \
 		validate(input); \
 	} \

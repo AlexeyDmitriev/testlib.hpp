@@ -3,6 +3,8 @@
 #include <functional>
 #include <type_traits>
 #include <cstdio>
+#include <memory>
+#include "streamReader.hpp"
 #include "core.hpp"
 #include "utility.hpp"
 #include "reader.hpp"
@@ -13,7 +15,7 @@ public:
 		STRICT,
 		NON_STRICT
 	};
-	IStream(std::istream& stream, Mode mode):stream(stream), mode(mode){}
+	IStream(std::unique_ptr<StreamReader> stream, Mode mode):stream(std::move(stream)), mode(mode){}
 	
 	template<typename T, typename... Args>
 	typename std::enable_if<!std::is_base_of<Reader<T>, typename firstType<Args...>::type>::value,T>::type read(Args&&... args){
@@ -89,23 +91,23 @@ public:
 		
 		std::string token;
 		
-		while(!isWhiteSpace(stream.peek()))
-			token += stream.get();
+		while(!isWhiteSpace(stream->peek()))
+			token += stream->get();
 		
 		if(token.empty()){
-			if(stream.peek() == EOF)
+			if(stream->peek() == EOF)
 				quit(Verdict::PE, expectation("Token", "EOF"));
 			else
-				quit(Verdict::PE, expectation("Token", char(stream.peek())));
+				quit(Verdict::PE, expectation("Token", char(stream->peek())));
 		}
 		
 		return token;
 	}
 	int peek() const {
-		return stream.peek();
+		return stream->peek();
 	}
 	int get(){
-		return stream.get();
+		return stream->get();
 	}
 	
 	void setStrict(){
@@ -143,7 +145,7 @@ public:
 	virtual void quit(Verdict verdict, const std::string& message) = 0;
 	virtual ~IStream(){}
 private:
-	std::istream& stream;
+	std::unique_ptr<StreamReader> stream;
 	Mode mode;
 	bool isSkippable(int c) const {
 		return isWhiteSpace(c) && (mode == Mode::NON_STRICT);
@@ -162,7 +164,7 @@ private:
 
 class FailIStream : public IStream {
 public:
-	FailIStream(std::istream& stream, Mode mode):IStream(stream, mode){}
+	FailIStream(std::unique_ptr<StreamReader> stream, Mode mode):IStream(std::move(stream), mode){}
 	virtual void quit(Verdict, const std::string& message) override {
 		throw VerdictException(Verdict::FAIL, message);
 	}
@@ -171,7 +173,7 @@ public:
 
 class OutputIStream : public IStream {
 public:
-	OutputIStream(std::istream& stream, Mode mode):IStream(stream, mode){}
+	OutputIStream(std::unique_ptr<StreamReader> stream, Mode mode):IStream(std::move(stream), mode){}
 	virtual void quit(Verdict verdict, const std::string& message) override {
 		throw VerdictException(verdict, message);
 	}
