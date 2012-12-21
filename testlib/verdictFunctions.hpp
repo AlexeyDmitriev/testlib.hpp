@@ -1,8 +1,10 @@
 #pragma once
 #include <sstream>
 #include <algorithm>
+#include <iterator>
 #include "core.hpp"
 #include "utility.hpp"
+
 #define QUIT(verdict, msg) \
 do { \
 	std::stringstream ss; \
@@ -29,7 +31,7 @@ do { \
 		QUIT(verdict, message); \
 	} \
 } while(false);
-
+/*
 template <typename T, typename U>
 inline void verifyEqual(T&& t, U&& u, Verdict verdict = Verdict::WA){
 	verify(t == u, verdict, t << " != " << u);
@@ -38,6 +40,16 @@ inline void verifyEqual(T&& t, U&& u, Verdict verdict = Verdict::WA){
 template <typename T>
 inline void verifySorted(T start, T end, Verdict verdict = Verdict::WA){
 	verify(std::is_sorted(start, end), verdict, expectation("Sorted range", rangeToString(start, end)));
+}
+*/
+template <typename T, typename U, typename Compare = std::equal_to<T>>
+inline void verifyEqual(T&& t, U&& u, Verdict verdict = Verdict::WA, Compare comp = Compare()){
+	verify(comp(t, u), verdict, t << " != " << u);
+}
+
+template <typename T, typename Compare = std::less<typename std::iterator_traits<T>::value_type>>
+inline void verifySorted(T start, T end, Verdict verdict = Verdict::WA, Compare comp = Compare()){
+	verify(std::is_sorted(start, end, comp), verdict, expectation("Sorted range", rangeToString(start, end)));
 }
 
 template <typename T, typename U>
