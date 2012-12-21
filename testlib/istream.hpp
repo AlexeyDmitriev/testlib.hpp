@@ -87,8 +87,8 @@ public:
 	}
 	
 	std::string readToken(){	
-		skipUnused();
 		buffer.clear();
+		skipUnused();
 		while(!isWhiteSpace(stream->peek()))
 			buffer += stream->get();
 		

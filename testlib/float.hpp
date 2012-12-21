@@ -22,22 +22,25 @@ class FloatReader : public Reader<T> {
 public:
 	T read(IStream& stream) const {
 		std::string input = stream.readToken();
-		std::string usedValue = input;
+		const char* usedValue = input.c_str();
+		size_t length = input.length();
 		if(input[0] == '-') {
-			usedValue = usedValue.substr(1);
+			++usedValue;
+			--length;
 		}
-		if(usedValue.empty())
+		if(length == 0)
 			stream.quit(Verdict::PE, expectation("Float", input));
 
-		if(usedValue[0] == '0' && usedValue.size() > 1 && usedValue[1] != '.')
+		if(usedValue[0] == '0' && length > 1 && usedValue[1] != '.')
 			stream.quit(Verdict::PE, expectation("Float", input));
 		if(usedValue[0] == '.')
 			stream.quit(Verdict::PE, expectation("Float", input));
-		if(usedValue.back() == '.')
+		if(usedValue[length - 1] == '.')
 			stream.quit(Verdict::PE, expectation("Float", input));
 
 		bool wasPoint = false;
-		for (char digit: usedValue) {
+		for (size_t i = 0; i < length; ++i) {
+			char digit = usedValue[i];
 			if(digit == '.') {
 				if (wasPoint)
 					stream.quit(Verdict::PE, expectation("Float", input));

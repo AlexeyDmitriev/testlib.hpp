@@ -28,7 +28,8 @@ BOOST_AUTO_TEST_CASE(BadFormat) {
 		"-.2",
 		"-2.0",
 		".1",
-		"2.2"
+		"2.2",
+		"11111111111",
 	};
 
 	for(const auto& s: strings) {

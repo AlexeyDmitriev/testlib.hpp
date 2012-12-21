@@ -27,16 +27,23 @@ public:
 		if(!is_signed && input[0] == '-')
 			stream.quit(Verdict::PE, expectation("Unsigned integer", input));
 		
-		std::string usedValue = input;
+		const char* usedValue = input.c_str();
+		size_t length = input.length();
 		bool negative = false;
 		if(input[0] == '-'){
 			negative = true;
-			usedValue = usedValue.substr(1);
+			++usedValue;
+			--length;
 		}
 		
-		std::vector<T> digits(usedValue.length());
+		static const std::vector<int> maxArray = absToArray(std::numeric_limits<T>::max());
+		if(length > maxArray.size())
+			stream.quit(Verdict::PE, expectation("Integer", input));
 		
-		for(size_t i = 0; i < usedValue.length(); ++i){
+		
+		static std::vector<int> digits(maxArray.size());
+		
+		for(size_t i = 0; i < length; ++i){
 			try {
 				digits[i] = digitValue(usedValue[i], streamCase);
 			}
@@ -46,26 +53,23 @@ public:
 			if(digits[i] >= radix)
 				stream.quit(Verdict::PE, expectation("Digit in radix " + toString(radix), usedValue[i]));
 		}
-		
-		if(negative && digits == absToArray(std::numeric_limits<T>::min())){
+		static const std::vector<int> minArray = absToArray(std::numeric_limits<T>::min());
+		if(negative && digits == minArray){
 			return std::numeric_limits<T>::min();
 		}
 		
 		if(digits.empty())
 			stream.quit(Verdict::PE, expectation("Integer", input));
 		
-		if(digits[0] == 0 && (negative || digits.size() > 1))
+		if(digits[0] == 0 && (negative || length > 1))
 			stream.quit(Verdict::PE, expectation("Integer", input));
 		
-		std::vector<T> maxArray = absToArray(std::numeric_limits<T>::max());
-		if(usedValue.length() > maxArray.size())
-			stream.quit(Verdict::PE, expectation("Integer", input));
-		if(usedValue.length() == maxArray.size() && digits > maxArray)
+		if(length == maxArray.size() && digits > maxArray)
 			stream.quit(Verdict::PE, expectation("Integer", input));
 		
 		T result = 0;
-		for(T digit: digits){
-			result = result * radix + digit;
+		for(size_t i = 0; i < length; ++i){
+			result = result * radix + digits[i];
 		}
 		
 		
@@ -93,9 +97,9 @@ private:
 		return stream.getMode() == IStream::Mode::STRICT ? Case::LOWER : Case::BOTH;
 	}
 	Case allowedCase;
-	std::vector<T> absToArray(T value) const {
+	std::vector<int> absToArray(T value) const {
 		bool negative = value < 0;
-		std::vector<T> result;
+		std::vector<int> result;
 		while(value != 0){
 			if(negative)
 				result.push_back(- (value % radix));
