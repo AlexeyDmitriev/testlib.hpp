@@ -24,6 +24,8 @@ public:
 	ReaderPoint(double minX, double maxX, double minY, double maxY): minX(minX), maxX(maxX), minY(minY) , maxY(maxY) {}
 	Point read(IStream& stream){
 		double x = stream.read<double>(minX, maxX);
+		if (stream.getMode() == IStream::Mode::STRICT)
+			stream.readChar(' ');
 		double y = stream.read<double>(minY, maxY);
 		return Point(x, y);
 	}
