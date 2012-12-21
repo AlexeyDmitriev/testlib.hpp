@@ -42,9 +42,9 @@ inline void verifySorted(T start, T end, Verdict verdict = Verdict::WA){
 	verify(std::is_sorted(start, end), verdict, expectation("Sorted range", rangeToString(start, end)));
 }
 */
-template <typename T, typename U, typename Compare = std::equal_to<T>>
-inline void verifyEqual(T&& t, U&& u, Verdict verdict = Verdict::WA, Compare comp = Compare()){
-	verify(comp(t, u), verdict, t << " != " << u);
+template <typename T, typename Equal = std::equal_to<T>>
+inline void verifyEqual(T&& t, T&& u, Verdict verdict = Verdict::WA, Equal equal = Equal()){
+	verify(equal(t, u), verdict, t << " != " << u);
 }
 
 template <typename T, typename Compare = std::less<typename std::iterator_traits<T>::value_type>>
