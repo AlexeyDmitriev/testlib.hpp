@@ -6,7 +6,7 @@ TESTLIB_CHECK(){
 	if(a != b){
 		WA(expectation(a, b));
 	}
-	else {
+	else{
 		OK(a);
 	}
 }
