@@ -124,7 +124,11 @@ int main(){ \
 		verdict = Verdict::FAIL; \
 		message = "Extra information in input file"; \
 	} \
-	std::cout << message << std::endl; \
+	if(verdict != Verdict::OK && verdict != Verdict::FAIL){ \
+		verdict = Verdict::FAIL; \
+		message = "Wrong verdict: " + verdict.shortMessage() + ". Message: " + message; \
+	} \
+	std::cout << verdict.shortMessage() << " " << message << std::endl; \
 	return verdict.exitCode(); \
 } \
 void validate(IStream& inf)
