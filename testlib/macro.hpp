@@ -112,7 +112,7 @@ void check(IStream& inf, IStream& ouf, IStream& ans)
 int main(){ \
 	Verdict verdict = Verdict::OK; \
 	std::string message = "No message provided"; \
-	FailIStream input(std::unique_ptr<StreamReader>(new StdStreamReader(std::cin)), IStream::Mode::STRICT); \
+	FailIStream input(std::unique_ptr<StreamReader>(new BufferedFileReader(File(stdin))), IStream::Mode::STRICT); \
 	try { \
 		validate(input); \
 	} \
@@ -124,7 +124,11 @@ int main(){ \
 		verdict = Verdict::FAIL; \
 		message = "Extra information in input file"; \
 	} \
-	std::cout << message << std::endl; \
+	if(verdict != Verdict::OK && verdict != Verdict::FAIL){ \
+		verdict = Verdict::FAIL; \
+		message = "Wrong verdict: " + verdict.shortMessage() + ". Message: " + message; \
+	} \
+	std::cout << verdict.shortMessage() << " " << message << std::endl; \
 	return verdict.exitCode(); \
 } \
 void validate(IStream& inf)

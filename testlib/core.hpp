@@ -71,6 +71,9 @@ public:
 	bool operator == (Verdict right){
 		return result == right.result;
 	}
+	bool operator != (Verdict right){
+		return result != right.result;
+	}
 private:
 	const static int VERDICTS = PE + 1;
 	explicit Verdict(int result):result(result){}
