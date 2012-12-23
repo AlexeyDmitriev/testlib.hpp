@@ -19,7 +19,9 @@ BOOST_AUTO_TEST_CASE(NoLineFeed) {
 	}
 	MODE_CHECK_THROW(stream.getMode(), stream.read<Line>());
 	
+#ifndef ON_WINDOWS
 	// OK, reads to \r, found \n
 	setStr("windows-style\r\n"); 
 	MODE_CHECK_EQUAL(stream.getMode(), stream.read<Line>(), "windows-style");
+#endif
 }
