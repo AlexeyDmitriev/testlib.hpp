@@ -45,3 +45,9 @@ std::ostream& operator << (std::ostream& stream, pair<T, U> const & p){
 	return stream << '(' << p.first << ',' << p.second << ')' << std::endl;
 }
 };
+
+#ifdef ON_WINDOWS
+	#define LINE_SEPARATOR "\r\n"
+#else
+	#define LINE_SEPARATOR "\n"
+#endif

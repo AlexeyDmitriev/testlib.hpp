@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_CASE(NoLineFeed) {
 	setStr("line");
 	MODE_CHECK_THROW(stream.getMode(), stream.read<Line>());
 	
-	setStr("\n\n\n");
+	setStr(LINE_SEPARATOR LINE_SEPARATOR LINE_SEPARATOR);
 	for(int i = 0; i < 3; ++i){
 		BOOST_CHECK_EQUAL(stream.read<Line>(), "");
 	}
