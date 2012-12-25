@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(eoln) {
 	setStr(" p\n    ");
 	BOOST_CHECK_EQUAL(stream.seekEoln(), false);
 	
-	setStr("\n");
+	setStr(LINE_SEPARATOR);
 	BOOST_CHECK_EQUAL(stream.seekEoln(), true);
 	
 	setStr("\t");

@@ -120,7 +120,11 @@ public:
 	}
 	
 	bool seekEoln(){
+	#ifdef ON_WINDOWS
+		char eoln = '\r';
+	#else
 		char eoln = '\n';
+	#endif
 		while (peek() != eoln){
 			if (isSkippable(peek()) && peek() != EOF)
 				get();
