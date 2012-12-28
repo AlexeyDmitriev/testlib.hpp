@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(eofStrict) {
 }
 
 BOOST_AUTO_TEST_CASE(eolnStrict) {
-	setStr(" \t "LINE_SEPARATOR "petr_is_cool_programmer");
+	setStr(" \t " LINE_SEPARATOR "petr_is_cool_programmer");
 	MODE_CHECK(stream.getMode(), stream.seekEoln(), true, false);
 	
 	setStr(" \t" LINE_SEPARATOR " p  ");
