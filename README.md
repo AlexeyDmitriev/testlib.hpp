@@ -9,6 +9,6 @@ TESTLIB_CHECK(){
     OK("1 number");
 }
 ```
-
+[Download the latest version](https://raw.github.com/AlexeyDmitriev/testlib.hpp/master/dist/testlib.hpp)  
 [Tutorial](https://github.com/AlexeyDmitriev/testlib.hpp/wiki/Tutorial)  
 [More complex documentation](https://github.com/AlexeyDmitriev/testlib.hpp/wiki/General-Documentation)
