@@ -31,6 +31,9 @@ BOOST_AUTO_TEST_CASE(tokensThrow){
 	setStr("\n");
 	BOOST_CHECK_THROW(stream.readToken(), VerdictException);
 	
+	setStr("\r\n");
+	BOOST_CHECK_THROW(stream.readToken(), VerdictException);
+	
 	setStr("");
 	BOOST_CHECK_THROW(stream.readToken(), VerdictException);
 }

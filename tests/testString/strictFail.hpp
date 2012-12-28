@@ -13,13 +13,15 @@ BOOST_AUTO_TEST_CASE(NoLineFeed) {
 	setStr("line");
 	MODE_CHECK_THROW(stream.getMode(), stream.read<Line>());
 	
-	setStr("\n\n\n");
+	setStr(LINE_SEPARATOR LINE_SEPARATOR LINE_SEPARATOR);
 	for(int i = 0; i < 3; ++i){
 		BOOST_CHECK_EQUAL(stream.read<Line>(), "");
 	}
 	MODE_CHECK_THROW(stream.getMode(), stream.read<Line>());
 	
+#ifndef ON_WINDOWS
 	// OK, reads to \r, found \n
 	setStr("windows-style\r\n"); 
 	MODE_CHECK_EQUAL(stream.getMode(), stream.read<Line>(), "windows-style");
+#endif
 }

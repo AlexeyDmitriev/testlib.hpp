@@ -16,18 +16,18 @@ BOOST_AUTO_TEST_CASE(CorrectLength){
 }
 
 BOOST_AUTO_TEST_CASE(Lines){
-	setStr("oneWord\n");
+	setStr("oneWord" LINE_SEPARATOR);
 	BOOST_CHECK_EQUAL(stream.read<Line>(),"oneWord");
 	
-	setStr("two words\n");
+	setStr("two words" LINE_SEPARATOR);
 	BOOST_CHECK_EQUAL(stream.read<Line>(),"two words");
 	
-	setStr("  with \t spaces \t\t \n");
+	setStr("  with \t spaces \t\t " LINE_SEPARATOR);
 	BOOST_CHECK_EQUAL(stream.read<Line>(),"  with \t spaces \t\t ");
 	
-	setStr("exact length\n");
+	setStr("exact length" LINE_SEPARATOR);
 	BOOST_CHECK_NO_THROW(stream.read<Line>(12));
 	
-	setStr("short line\nand a lot of text after that");
+	setStr("short line" LINE_SEPARATOR "and a lot of text after that");
 	BOOST_CHECK_NO_THROW(stream.read<Line>(15));
 }

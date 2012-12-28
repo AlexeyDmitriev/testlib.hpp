@@ -17,6 +17,11 @@ BOOST_AUTO_TEST_CASE(WrongLength){
 BOOST_AUTO_TEST_CASE(LineFeed){
 	setStr("mac style\r");
 	BOOST_CHECK_THROW(stream.read<Line>(), VerdictException);
+	
+#ifdef ON_WINDOWS
+	setStr("nix-style\n");
+	BOOST_CHECK_THROW(stream.read<Line>(), VerdictException);
+#endif
 }
 
 BOOST_AUTO_TEST_CASE(TooLong){
