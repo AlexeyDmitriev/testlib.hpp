@@ -11,7 +11,7 @@ do { \
 	ss << msg; \
 	throw VerdictException(verdict, ss.str()); \
 } \
-while (false); \
+while (false) \
 
 #define OK(msg) QUIT(Verdict::OK, msg)
 #define WA(msg) QUIT(Verdict::WA, msg)
@@ -23,14 +23,14 @@ do { \
 	if(!(condition)) {\
 		FAIL("\"" #condition "\" on line "  << __LINE__ << " is false"); \
 	} \
-} while(false);
+} while(false)
 
 #define verify(condition, verdict, message) \
 do { \
 	if(!(condition)) {\
 		QUIT(verdict, message); \
 	} \
-} while(false);
+} while(false)
 /*
 template <typename T, typename U>
 inline void verifyEqual(T&& t, U&& u, Verdict verdict = Verdict::WA){
