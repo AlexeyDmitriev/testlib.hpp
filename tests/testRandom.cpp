@@ -13,6 +13,9 @@ BOOST_AUTO_TEST_CASE(basicRandom){
 
 	value = rnd.next<int>(5, 10);
 	BOOST_CHECK(value >= 5 && value <= 10);
+
+	rnd.fill(value, 42, 42);
+	BOOST_CHECK_EQUAL(value, 42);
 }
 
 BOOST_AUTO_TEST_CASE(customGenerator) {

@@ -34,12 +34,17 @@ public:
 
 	template<typename T, typename... Args>
 	typename std::enable_if<!std::is_base_of<Generator<T>, typename firstType<Args...>::type>::value,T>::type next(Args&&... args){
-		return DefaultGenerator<T>().generate(*this, args...);
+		return DefaultGenerator<T>().generate(*this, std::forward<Args>(args)...);
 	}
 	
 	template<typename T, typename U, typename... Args>
 	typename std::enable_if<std::is_base_of<Generator<T>, U>::value,T>::type next(U generator, Args&&... args){
-		return generator.generate(*this, args...);
+		return generator.generate(*this, std::forward<Args>(args)...);
+	}
+
+	template<typename T, typename... Args>
+	void fill(T& variable, Args&&... args) {
+		variable = next<T>(std::forward<Args>(args)...);
 	}
 	
 	template <typename RAI>
