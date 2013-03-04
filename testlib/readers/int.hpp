@@ -1,8 +1,8 @@
 #pragma once
 
-#include "reader.hpp"
-#include "istream.hpp"
-#include "char.hpp"
+#include "testlib/reader.hpp"
+#include "testlib/istream.hpp"
+#include "testlib/readers/char.hpp"
 #include <limits>
 #include <string>
 #include <type_traits>

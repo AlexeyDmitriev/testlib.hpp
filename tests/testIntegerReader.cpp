@@ -2,7 +2,7 @@
 #include <vector>
 #include <limits>
 #include <algorithm>
-#include "testlib/int.hpp"
+#include "testlib/readers/int.hpp"
 #include "testTools.hpp"
 #include <boost/test/unit_test.hpp>
 #include "testInteger/utils.hpp"

@@ -1,12 +1,12 @@
 #pragma once
 #include <utility>
 #include <type_traits>
-#include "istream.hpp"
-#include "int.hpp"
-#include "separator.hpp"
 #include <vector>
-#include "reader.hpp"
-#include "utility.hpp"
+#include "testlib/istream.hpp"
+#include "testlib/readers/int.hpp"
+#include "testlib/separator.hpp"
+#include "testlib/reader.hpp"
+#include "testlib/utility.hpp"
 
 template<typename T>
 class DefaultReader<std::vector<T>> : Reader<std::vector<T>>{

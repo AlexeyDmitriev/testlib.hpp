@@ -1,15 +1,16 @@
-#include "../generator.hpp"
+#include "testlib/generator.hpp"
 
 template<typename T>
-class DefaultGenerator<T, std::is_integral<T>> {
+class DefaultGenerator<T, typename std::is_integral<T>::type> {
 	uintmax_t generateMax(Random& rnd) {
 		return rnd.nextBits(rnd.MAX_BITS);
 	}
-	T generateTo (uintmax_t to){
-		uintmax_t disallowed = std::numeric_limits<uintmax_t>::min() / to * to;
+
+	T generateTo (Random& rnd, uintmax_t to){
+		uintmax_t disallowed = std::numeric_limits<uintmax_t>::max() / to * to;
 		uintmax_t number;
 		do {
-			number = maxAllowed;
+			number = rnd.nextBits(rnd.MAX_BITS);
 		}
 		while(number >= disallowed);
 		return number % to;
@@ -25,6 +26,7 @@ public:
 		if(l == std::numeric_limits<T>::min() && r == std::numeric_limits<T>::max())
 			return generate(rnd);
 
-		return generateTo(uintmax_t(r) - uintmax_t(l) + uintmax_t(1)) + l;
+		return generateTo(rnd, uintmax_t(r) - uintmax_t(l) + uintmax_t(1)) + l;
 	}
-}
+};
+

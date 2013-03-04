@@ -7,7 +7,7 @@
 
 class Random {
 public:
-	static const int MAX_BITS = sizeof(uintmax_t) * CHAR_BIT;
+	static const size_t MAX_BITS = sizeof(uintmax_t) * CHAR_BIT;
 	Random(uint64_t seed){
 		this->seed = (seed ^ 0x5DEECE66DL) & ((one() << 48) - 1);
 	}
@@ -31,14 +31,9 @@ public:
 
 	template <typename T, typename... Args>
 	T next(Args... args){
-		return DefaultGenerator<T>().generate(this, args...);
+		return DefaultGenerator<T>().generate(*this, args...);
 	}
 	
-	template <typename T, typename... Args>
-	T next(Generator<T> gen, Args... args){
-		return gen.generate(this, args...);
-	}
-
 	template <typename RAI>
 	void shuffle(RAI first, RAI last) {
 		using std::swap;
