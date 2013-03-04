@@ -1,8 +1,11 @@
+#pragma once
+
 #include <ctime>
 #include <cstdint>
 #include <cstddef>
 #include <climits>
 #include <stdexcept>
+#include <type_traits>
 #include "generator.hpp"
 
 class Random {
@@ -29,9 +32,14 @@ public:
 		return v;
 	}
 
-	template <typename T, typename... Args>
-	T next(Args... args){
+	template<typename T, typename... Args>
+	typename std::enable_if<!std::is_base_of<Generator<T>, typename firstType<Args...>::type>::value,T>::type next(Args&&... args){
 		return DefaultGenerator<T>().generate(*this, args...);
+	}
+	
+	template<typename T, typename U, typename... Args>
+	typename std::enable_if<std::is_base_of<Generator<T>, U>::value,T>::type next(U generator, Args&&... args){
+		return generator.generate(*this, args...);
 	}
 	
 	template <typename RAI>

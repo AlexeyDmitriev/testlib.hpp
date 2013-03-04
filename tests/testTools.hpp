@@ -1,5 +1,6 @@
 #pragma once
 #include "testlib/istream.hpp"
+#include "testlib/random.hpp"
 #include <sstream>
 #include <string>
 
@@ -37,6 +38,11 @@ struct NonStrictRead : public Read{
 
 struct StrictRead : public Read{
 	StrictRead(): Read(IStream::Mode::STRICT) {}
+};
+
+struct RandomTest {
+	Random rnd;
+	RandomTest():rnd(0xFACE){}
 };
 
 namespace std {

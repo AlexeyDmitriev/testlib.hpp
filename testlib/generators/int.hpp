@@ -1,7 +1,7 @@
 #include "testlib/generator.hpp"
 
 template<typename T>
-class DefaultGenerator<T, typename std::is_integral<T>::type> {
+class DefaultGenerator<T, typename std::is_integral<T>::type> : public Generator<T>{
 	uintmax_t generateMax(Random& rnd) {
 		return rnd.nextBits(rnd.MAX_BITS);
 	}
