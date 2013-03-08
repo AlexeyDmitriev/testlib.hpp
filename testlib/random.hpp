@@ -58,6 +58,11 @@ public:
 		}
 	}
 
+	template <typename T, typename Args>
+	void fill(T& var, Args&&... args) {
+		var = fill(std::forward<Args>(args)...);
+	}
+
 	template <typename T, typename OI, typename... Args> 
 	void fillN(size_t n, OI iterator, Args&&... args){
 		for(size_t i = 0; i < n; ++i){
