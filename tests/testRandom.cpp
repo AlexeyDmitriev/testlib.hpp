@@ -2,10 +2,11 @@
 #include <boost/test/unit_test.hpp>
 #include <vector>
 #include <set>
+#include <string>
 #include "testlib/verdictFunctions.hpp"
 #include "testlib/random.hpp"
 #include "testlib/generators/int.hpp"
-#include "testlib/generators/vector.hpp"
+#include "testlib/generators/collection.hpp"
 struct OnesGenerator: public Generator<int>{
 	int generate(Random&){
 		return 1;
@@ -74,4 +75,25 @@ BOOST_AUTO_TEST_CASE(vectorTest){
 
 }
 
+BOOST_AUTO_TEST_CASE(stringGen){
+	auto s = rnd.next<std::string>(10, 'a', 'z');
+	BOOST_CHECK_EQUAL(s.size(), 10);
+	for(char c: s)
+		BOOST_CHECK_MESSAGE(islower(c), c << " isn't lowercase letter");
+}
+
+BOOST_AUTO_TEST_CASE(genPushBack) {
+	//check only compilation
+	auto s = rnd.next<std::deque<int>>(1);
+	auto t = rnd.next<std::list<int>>(1);
+}
+
+BOOST_AUTO_TEST_CASE(checkStability){
+	std::set<std::vector<int>> vectors;
+	for(int i = 0; i < 10; ++i){
+		auto copy = rnd;
+		vectors.insert(copy.next<std::vector<int>>(10));
+	}
+	BOOST_CHECK_EQUAL(vectors.size(), 1);
+}
 BOOST_AUTO_TEST_SUITE_END()
