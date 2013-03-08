@@ -3,15 +3,15 @@
 #include <string>
 #include "testlib/generator.hpp"
 
-template<class T>
-auto reserveIfExists(T& v, size_t n, int)
+template<typename T, typename U>
+auto reserveIfExists(T& v, U n, int)
 	-> decltype(v.reserve(n), void())
 {
 	v.reserve(n);
 }
 
-template<class T>
-void reserveIfExists(T&, size_t, long){}
+template<typename T, typename U>
+void reserveIfExists(T&, U n, long){}
 
 template<typename T>
 class PushBackGenerator : public Generator<T> {
