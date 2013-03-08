@@ -62,6 +62,16 @@ BOOST_AUTO_TEST_CASE(vectorTest){
 	for(int x: v){
 		BOOST_CHECK(x >= -100 && x <= 100);
 	}
+
+	auto copyRnd = rnd;
+
+	std::vector<int> backInserter;
+	std::vector<int> beginEnd(5);
+
+	rnd.fillN<int>(5, back_inserter(backInserter));
+	copyRnd.fillRange(beginEnd.begin(), beginEnd.end());
+	BOOST_CHECK_EQUAL_COLLECTIONS(backInserter.begin(), backInserter.end(), beginEnd.begin(), beginEnd.end());
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

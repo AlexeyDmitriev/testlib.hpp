@@ -57,6 +57,20 @@ public:
 			++first;
 		}
 	}
+
+	template <typename T, typename OI, typename... Args> 
+	void fillN(size_t n, OI iterator, Args&&... args){
+		for(size_t i = 0; i < n; ++i){
+			*(iterator++) = next<T>(std::forward<Args>(args)...);
+		}
+	}
+
+	template <typename FI, typename... Args>
+	void fillRange(FI first, FI last, Args&&... args) {
+		for(;first != last;++first){
+			*first = next<typename std::remove_reference<decltype(*first)>::type>(std::forward<Args>(args)...);
+		}
+	}
 private:
 	uint64_t seed;
 	
