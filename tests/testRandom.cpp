@@ -6,6 +6,7 @@
 #include "testlib/verdictFunctions.hpp"
 #include "testlib/random.hpp"
 #include "testlib/generators/int.hpp"
+#include "testlib/generators/float.hpp"
 #include "testlib/generators/collection.hpp"
 struct OnesGenerator: public Generator<int>{
 	int generate(Random&){
@@ -96,4 +97,10 @@ BOOST_AUTO_TEST_CASE(checkStability){
 	}
 	BOOST_CHECK_EQUAL(vectors.size(), 1);
 }
+
+BOOST_AUTO_TEST_CASE(testFloats) {
+
+	BOOST_CHECK(abs(rnd.next<double>(-1, 1)) <= 1.0);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
