@@ -8,6 +8,12 @@
 #include "testlib/generators/int.hpp"
 #include "testlib/generators/float.hpp"
 #include "testlib/generators/collection.hpp"
+
+struct RandomTest {
+	Random rnd;
+	RandomTest(): rnd(0xFACE){}
+};
+
 struct OnesGenerator: public Generator<int>{
 	int generate(Random&){
 		return 1;
@@ -99,8 +105,17 @@ BOOST_AUTO_TEST_CASE(checkStability){
 }
 
 BOOST_AUTO_TEST_CASE(testFloats) {
+	for(int i = 0; i < 100; ++i){
+		BOOST_CHECK(abs(rnd.next<double>(-1, 1)) <= 1.0);
+	}
+}
 
-	BOOST_CHECK(abs(rnd.next<double>(-1, 1)) <= 1.0);
+BOOST_AUTO_TEST_CASE(testAny) {
+	std::set<int> s;
+	for(int i = 0; i < 10; ++i){
+		s.insert(rnd.next<int>());
+	}
+	BOOST_CHECK(s.find(rnd.any(s)) != s.end());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

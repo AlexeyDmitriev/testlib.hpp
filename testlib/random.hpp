@@ -6,6 +6,8 @@
 #include <climits>
 #include <stdexcept>
 #include <type_traits>
+#include <utility>
+#include <iterator>
 #include "generator.hpp"
 
 class Random {
@@ -70,6 +72,19 @@ public:
 		for(;first != last;++first){
 			*first = next<typename std::remove_reference<decltype(*first)>::type>(std::forward<Args>(args)...);
 		}
+	}
+
+	template <typename Iterator>
+	typename std::iterator_traits<Iterator>::value_type any(Iterator begin, Iterator end) {
+		auto len = std::distance(begin, end);
+		if(begin == end)
+			throw VerdictException(Verdict::FAIL, "Empty range to generate any");
+		return *std::next(begin, next<decltype(len)>(0, len - 1));
+	}
+
+	template <typename T>
+	auto any(const T& collection) -> decltype(any(collection.begin(), collection.end())) {
+		return any(collection.begin(), collection.end());
 	}
 private:
 	uint64_t seed;

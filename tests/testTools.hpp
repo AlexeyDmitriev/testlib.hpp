@@ -40,11 +40,6 @@ struct StrictRead : public Read{
 	StrictRead(): Read(IStream::Mode::STRICT) {}
 };
 
-struct RandomTest {
-	Random rnd;
-	RandomTest():rnd(0xFACE){}
-};
-
 namespace std {
 template<typename T, typename U>
 std::ostream& operator << (std::ostream& stream, pair<T, U> const & p){
