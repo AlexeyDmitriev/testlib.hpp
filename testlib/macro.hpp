@@ -151,7 +151,6 @@ uint64_t getHash(size_t argc, char** argv)
 #define TESTLIB_GENERATE() void generate(Random& rnd, const std::vector<std::string>& args); \
 int main(int argc, char** argv) {\
 	Verdict verdict = Verdict::OK; \
-	std::string message = "No message provided"; \
 	\
 	std::vector<std::string> args(argc - 1); \
 	for(int i = 1; i < argc; ++i) { \
@@ -164,7 +163,7 @@ int main(int argc, char** argv) {\
 	} \
 	catch(VerdictException& ex) { \
 		verdict = Verdict::FAIL; \
-		message = ex.message; \
+		std::cerr << "FAIL: " << ex.message << std::endl;\
 	} \
 	return verdict.exitCode(); \
 } \
