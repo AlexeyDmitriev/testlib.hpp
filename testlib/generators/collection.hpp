@@ -1,6 +1,7 @@
 #include <deque>
 #include <vector>
 #include <string>
+#include <list>
 #include "testlib/generator.hpp"
 
 template<typename T, typename U>

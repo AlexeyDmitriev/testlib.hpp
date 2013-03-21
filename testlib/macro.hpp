@@ -132,3 +132,41 @@ int main(){ \
 	return verdict.exitCode(); \
 } \
 void validate(IStream& inf)
+
+uint64_t getHash(size_t argc, char** argv)
+{
+	uint64_t seed = 0, multiplier = 0x5f17;
+	uint64_t p = 1;
+	for (size_t i = 1; i < argc; ++i) {
+		for (size_t j = 0, n = strlen(argv[i]); j < n; ++j) {
+			seed += argv[i][j] * p;
+			p *= multiplier;
+		}
+		seed += p * ' ';
+		p *= multiplier;
+	}
+	return seed;
+}
+
+#define TESTLIB_GENERATE() void generate(Random& rnd, const std::vector<std::string>& args); \
+int main(int argc, char** argv) {\
+	Verdict verdict = Verdict::OK; \
+	std::string message = "No message provided"; \
+	\
+	std::vector<std::string> args(argc - 1); \
+	for(int i = 1; i < argc; ++i) { \
+		args[i - 1] = argv[i]; \
+	} \
+	\
+	Random rnd(getHash(argc, argv)); \
+	try { \
+		generate(rnd, args); \
+	} \
+	catch(VerdictException& ex) { \
+		verdict = Verdict::FAIL; \
+		message = ex.message; \
+	} \
+	return verdict.exitCode(); \
+} \
+void generate(Random& rnd, const std::vector<std::string>& args)
+

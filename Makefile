@@ -3,12 +3,12 @@ CPP_FLAGS := -Wall -Wextra -Werror -Wno-type-limits -Wno-unused-parameter -std=c
 LINK_FLAGS := -lboost_unit_test_framework
 TEST_CPP_FILES := $(wildcard tests/*.cpp)
 TEST_OBJ_FILES := $(TEST_CPP_FILES:%.cpp=build/%.o)
-EXAMPLES_CPP_FILES := $(wildcard examples/checkers/*.cpp examples/validators/*cpp)
+EXAMPLES_CPP_FILES := $(wildcard examples/checkers/*.cpp examples/validators/*.cpp examples/generators/*.cpp)
 EXAMPLES_OBJ_FILES := $(EXAMPLES_CPP_FILES:%.cpp=build/%.o)
 EXAMPLES_RUN_FILES := $(EXAMPLES_OBJ_FILES:%.o=%.bin)
 OBJ_FILES := $(TEST_OBJ_FILES) $(EXAMPLES_OBJ_FILES)
 DEP_FILES := $(OBJ_FILES:%.o=%.d)
-OUTPUT_FILES := exitCodes streamReader core reader utility verdictFunctions alias istream readers/char readers/string readers/int readers/float macro separator readers/pair readers/vector readerWrapper
+OUTPUT_FILES := exitCodes streamReader core reader utility verdictFunctions alias istream readers/char readers/string readers/int readers/float macro separator readers/pair readers/vector readerWrapper generator random generators/int generators/float generators/collection
 OUTPUT_FILES := $(wildcard $(OUTPUT_FILES:%=testlib/%.hpp))
 
 default:
