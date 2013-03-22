@@ -1,8 +1,8 @@
 #include "testlib.hpp"
 
 TESTLIB_GENERATE() {
-	int n = atoi(args[0].c_str());
-	int max = atoi(args[1].c_str());
+	size_t n = args.get<size_t>();
+	int max = args.get<int>();
 	std::cout << n << std::endl;
 	std::cout << separated(rnd.next<std::vector<int>>(n, 1, max), ' ') << std::endl;
 }

@@ -148,16 +148,37 @@ uint64_t getHash(size_t argc, char** argv)
 	return seed;
 }
 
-#define TESTLIB_GENERATE() void generate(Random& rnd, const std::vector<std::string>& args); \
+class ArgumentsReader {
+public:
+	template<typename T, typename... Args>
+	T get(Args&&... args) {
+		rangeCheck();
+		std::stringstream ss(argv[cur]);
+		FailIStream in(std::unique_ptr<StreamReader>(new StdStreamReader(ss)), IStream::Mode::NON_STRICT);
+		return in.read<T>(std::forward<Args>(args)...);
+	}
+	std::string getRaw() {
+		rangeCheck();
+		return argv[cur];
+	}
+	ArgumentsReader (int argc, char** argv): argc(argc), argv(argv), cur(0) {}
+private:
+	void rangeCheck() {
+		++cur;
+		if(cur == argc)
+			throw VerdictException(Verdict::FAIL, "Too few command-line arguments");
+	}
+	int argc;
+	char** argv;
+	int cur;
+};
+
+#define TESTLIB_GENERATE() void generate(Random& rnd, ArgumentsReader& args); \
 int main(int argc, char** argv) {\
 	Verdict verdict = Verdict::OK; \
 	\
-	std::vector<std::string> args(argc - 1); \
-	for(int i = 1; i < argc; ++i) { \
-		args[i - 1] = argv[i]; \
-	} \
-	\
 	Random rnd(getHash(argc, argv)); \
+	ArgumentsReader args(argc, argv); \
 	try { \
 		generate(rnd, args); \
 	} \
@@ -167,5 +188,5 @@ int main(int argc, char** argv) {\
 	} \
 	return verdict.exitCode(); \
 } \
-void generate(Random& rnd, const std::vector<std::string>& args)
+void generate(Random& rnd, ArgumentsReader& args)
 
