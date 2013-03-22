@@ -3,6 +3,7 @@
 #include <sstream>
 #include <type_traits>
 #include "reader.hpp"
+#include "istream.hpp"
 
 template <typename... All>
 struct firstType;
