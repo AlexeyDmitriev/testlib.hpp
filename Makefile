@@ -8,7 +8,7 @@ EXAMPLES_OBJ_FILES := $(EXAMPLES_CPP_FILES:%.cpp=build/%.o)
 EXAMPLES_RUN_FILES := $(EXAMPLES_OBJ_FILES:%.o=%.bin)
 OBJ_FILES := $(TEST_OBJ_FILES) $(EXAMPLES_OBJ_FILES)
 DEP_FILES := $(OBJ_FILES:%.o=%.d)
-OUTPUT_FILES := exitCodes streamReader core reader utility verdictFunctions alias istream char string int float macro separator pair vector readerWrapper check
+OUTPUT_FILES := exitCodes streamReader core reader utility verdictFunctions alias istream char string int float macro separator pair vector readerWrapper checkerUtility
 OUTPUT_FILES := $(wildcard $(OUTPUT_FILES:%=testlib/%.hpp))
 
 default:
