@@ -1,5 +1,6 @@
 #pragma once
 #include "testlib/istream.hpp"
+#include "testlib/random.hpp"
 #include <sstream>
 #include <string>
 

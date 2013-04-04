@@ -2,9 +2,9 @@
 #include <iostream>
 #include <utility>
 #include <string>
-#include "testlib/vector.hpp"
-#include "testlib/int.hpp"
-#include "testlib/float.hpp"
+#include "testlib/readers/vector.hpp"
+#include "testlib/readers/int.hpp"
+#include "testlib/readers/float.hpp"
 #include "testTools.hpp"
 #include "testlib/readerWrapper.hpp"
 #include <vector>
