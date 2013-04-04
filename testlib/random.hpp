@@ -9,6 +9,7 @@
 #include <utility>
 #include <iterator>
 #include "generator.hpp"
+#include "core.hpp"
 
 class Random {
 public:
