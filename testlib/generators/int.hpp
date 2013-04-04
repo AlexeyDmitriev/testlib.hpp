@@ -1,4 +1,6 @@
 #include "testlib/generator.hpp"
+#include "testlib/random.hpp"
+#include "testlib/core.hpp"
 
 template<typename T>
 class DefaultGenerator<T, typename std::is_integral<T>::type> : public Generator<T>{
