@@ -2,28 +2,6 @@
 
 #include "istream.hpp"
 
-// template<typename T>
-// class FinishCondition {
-// public:
-// 	tokensRead(const T& ansToken, const T& oufToken);
-// };
-	
-// EOF
-// special symbol
-// N
-
-// CompareBetter
-
-// check(ans, ouf, FinishCondition finishCondition, Comparator comparator, Reader) {
-// 	while (!finishCondition(ans, ouf)) {
-// 		ansToken = ans.read(reader)
-// 		oufToken = ouf.read(reader)
-
-// 		if (comparator(ansToken, oufToken))
-// 		comparator returns message
-// 	}
-// }
-
 template<typename T, typename TReader = DefaultReader<T>>
 inline void checkExtraTokensInEnd(IStream& ans, IStream& ouf, size_t alreadyReadTokensNumber, 
 	                                TReader reader = DefaultReader<T>()) {
@@ -60,25 +38,44 @@ struct DefaultEqualComparator
 	}
 };
 
+enum class ErrorCode {
+	OK, WA, FAIL
+};
+
+struct CheckResult {
+	CheckResult(ErrorCode errorCode, const std::string& message): errorCode(errorCode), message(message) {}
+
+	ErrorCode errorCode;
+	std::string message;
+};
+
 template<typename T, typename TEqualComparator = DefaultEqualComparator<T>>
 struct AreEqualChecker {
-	bool operator() (const T& ansToken, const T& oufToken, TEqualComparator equalComparator = DefaultEqualComparator<T>()) const {
+	CheckResult operator() (const T& ansToken, const T& oufToken, 
+			TEqualComparator equalComparator = TEqualComparator()) const {
+
 		if (!equalComparator(ansToken, oufToken)) {
-			WA(expectation(ansToken, oufToken));
-			return false;
+			return CheckResult(ErrorCode::WA, expectation(ansToken, oufToken));
 		}
-		return true;
+		return CheckResult(ErrorCode::OK, "");
 	}
 };
 
-template<typename T, typename TReader = DefaultReader<T>, typename TokensChecker>
-inline void checkEOF(IStream& ans, IStream& ouf, TokensChecker tokensChecker, TReader reader = DefaultReader<T>()) {
+template<typename T, typename TReader = DefaultReader<T>, typename TokensChecker = AreEqualChecker<T>>
+inline void checkEOF(IStream& ans, IStream& ouf, TokensChecker tokensChecker = AreEqualChecker<T>(), 
+	                   TReader reader = DefaultReader<T>()) {
 	size_t tokensNumber = 0;
 	while (!ans.seekEof() && !ouf.seekEof()) {
 		T ansToken = ans.read<T>(reader);
 		T oufToken = ouf.read<T>(reader);
 		++tokensNumber;
-		tokensChecker(ansToken, oufToken);
+		CheckResult checkResult = tokensChecker(ansToken, oufToken);
+		if (checkResult.errorCode == ErrorCode::WA) {
+			WA(checkResult.message);
+		}
+		if (checkResult.errorCode == ErrorCode::FAIL) {
+			FAIL(checkResult.message);
+		}
 	}
 	checkExtraTokensInEnd<T>(ans, ouf, tokensNumber, reader);
 	OK("Correct answer, " << tokensNumber << " numbers");
@@ -90,23 +87,18 @@ inline void checkN(IStream& ans, IStream& ouf, size_t tokensNumber, TokensChecke
 		T ansToken = ans.read<T>(reader);
 		T oufToken = ouf.read<T>(reader);
 
-		tokensChecker(ansToken, oufToken);
+		CheckResult checkResult = tokensChecker(ansToken, oufToken);
+		if (checkResult.errorCode == ErrorCode::WA) {
+			WA(checkResult.message);
+		}
+		if (checkResult.errorCode == ErrorCode::FAIL) {
+			FAIL(checkResult.message);
+		}
 	}
 }
 
-// if (IsBetterComparator(ans, ouf)) {
-// 	WA("Jury's answer is better, " << expectation(ansToken, oufToken) <<
-// 		" in " << tokensNumber << " element");
-// } else if (IsBetterComparator(ouf, ans)) {
-// 	Fail("Competitor's answer is better, " << expectation(ansToken, oufToken) <<
-// 		" in " << tokensNumber << " element");
-// }
-// if(!areClose(ansDouble, oufDouble, EPS)) {
-// 	WA(expectation(ansDouble, oufDouble) << ", error = " << ansDouble - oufDouble 
-// 		<< " in " << doublesNumber << " element");
-// }
-
 inline void multipleDoublesEpsCheck(IStream& ans, IStream& ouf, const double EPS) {
+
 	size_t doublesNumber = 0;
 	while (!ans.seekEof() && !ouf.seekEof()) {
 		double ansDouble = ans.read<double>();
