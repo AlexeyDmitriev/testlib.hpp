@@ -1,6 +1,6 @@
 #pragma once
 #include <set>
-#include "collection.hpp"
+#include "container.hpp"
 template <typename T, typename Cmp = std::less<typename T::value_type>>
 class UniqueGenerator : public Generator<T> {
 	typedef typename T::value_type value_type;

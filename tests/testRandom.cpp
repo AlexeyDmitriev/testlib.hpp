@@ -3,11 +3,14 @@
 #include <vector>
 #include <set>
 #include <string>
+#include <list>
+#include <deque>
+#include <map>
 #include "testlib/verdictFunctions.hpp"
 #include "testlib/random.hpp"
 #include "testlib/generators/int.hpp"
 #include "testlib/generators/float.hpp"
-#include "testlib/generators/collection.hpp"
+#include "testlib/generators/container.hpp"
 #include "testlib/generators/unique.hpp"
 
 struct RandomTest {
@@ -90,10 +93,21 @@ BOOST_AUTO_TEST_CASE(stringGen){
 		BOOST_CHECK_MESSAGE(islower(c), c << " isn't lowercase letter");
 }
 
-BOOST_AUTO_TEST_CASE(genPushBack) {
+BOOST_AUTO_TEST_CASE(genCollection) {
 	//check only compilation
-	auto s = rnd.next<std::deque<int>>(1);
-	auto t = rnd.next<std::list<int>>(1);
+	auto d = rnd.next<std::deque<int>>(1);
+	auto l = rnd.next<std::list<int>>(1);
+	typedef std::pair<const int, char> pair;
+	struct PairGenerator : public Generator<pair>{
+		pair generate(Random& rnd) {
+			return pair(0, 'a');
+		}
+	};
+	auto m = rnd.next<std::map<int, char>>(1, PairGenerator());
+
+	auto ms = rnd.next<std::multiset<std::string>>(2, 3, 'a', 'a');
+	BOOST_CHECK_EQUAL(ms.size(), 2);
+	BOOST_CHECK_EQUAL(*ms.begin(), "aaa");
 }
 
 BOOST_AUTO_TEST_CASE(checkStability){
@@ -125,6 +139,12 @@ BOOST_AUTO_TEST_CASE(testUnique) {
 		std::sort(unique.begin(), unique.end());
 		int numberOfUnique = std::unique(unique.begin(), unique.end()) - unique.begin();
 		BOOST_CHECK_EQUAL(numberOfUnique, 3);
+	}
+
+
+	for(int i = 0; i < 5; ++i) {
+		std::set<int> unique = rnd.next<std::set<int>>(3, 1, 3);
+		BOOST_CHECK_EQUAL(unique.size(), 3);
 	}
 }
 
