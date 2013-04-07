@@ -14,7 +14,11 @@ public:
 	
 	template <typename GeneratorT, typename GeneratorU>
 	type generate(Random& rnd, const GeneratorT& generatorT, const GeneratorU& generatorU) const {
-		return std::make_pair(rnd.next<T>(generatorT), rnd.next<U>(generatorU));
+		//Can't inline here because order of argument calculation is unspecified
+		//It would possibly break random stability on different compilers
+		T first = rnd.next<T>(generatorT);
+		U second = rnd.next<T>(generatorU);
+		return std::make_pair(std::move(first), std::move(second));
 	}
 	
 	template <typename GeneratorT>
