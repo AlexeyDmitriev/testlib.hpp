@@ -6,7 +6,7 @@ class DefaultGenerator<T, typename std::is_integral<T>::type> : public Generator
 		return rnd.nextBits(rnd.MAX_BITS);
 	}
 
-	T generateTo (Random& rnd, uintmax_t to){
+	T generateTo (Random& rnd, uintmax_t to) const {
 		uintmax_t disallowed = std::numeric_limits<uintmax_t>::max() / to * to;
 		uintmax_t number;
 		do {
@@ -16,11 +16,11 @@ class DefaultGenerator<T, typename std::is_integral<T>::type> : public Generator
 		return number % to;
 	}
 public:
-	T generate(Random& rnd){
+	T generate(Random& rnd) const {
 		return rnd.nextBits(sizeof(T) * CHAR_BIT);
 	}
 
-	T generate(Random& rnd, T l, T r){
+	T generate(Random& rnd, T l, T r) const {
 		if(l > r)
 			throw VerdictException(Verdict::FAIL, "DefaultGenerator<int>::generate(): l > r");
 		if(l == std::numeric_limits<T>::min() && r == std::numeric_limits<T>::max())
