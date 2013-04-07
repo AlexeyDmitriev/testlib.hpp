@@ -13,6 +13,7 @@
 #include "testlib/generators/float.hpp"
 #include "testlib/generators/container.hpp"
 #include "testlib/generators/unique.hpp"
+#include "testlib/generators/pair.hpp"
 #include "testlib/generatorWrapper.hpp"
 struct RandomTest {
 	Random rnd;
@@ -118,6 +119,7 @@ BOOST_AUTO_TEST_CASE(genCollection) {
 		}
 	};
 	auto m = rnd.next<std::map<int, char>>(1, PairGenerator());
+	m = rnd.next<std::map<int, char>>(1);
 
 	auto ms = rnd.next<std::multiset<std::string>>(2, 3, 'a', 'a');
 	BOOST_CHECK_EQUAL(ms.size(), 2);
