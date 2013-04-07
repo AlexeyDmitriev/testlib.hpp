@@ -1,3 +1,5 @@
+#pragma once
+
 #include <deque>
 #include <vector>
 #include <string>
@@ -5,14 +7,14 @@
 #include "testlib/generator.hpp"
 
 template<typename T, typename U>
-auto reserveIfExists(T& v, U n, int)
+inline auto reserveIfExists(T& v, U n, int)
 	-> decltype(v.reserve(n), void())
 {
 	v.reserve(n);
 }
 
 template<typename T, typename U>
-void reserveIfExists(T&, U n, long){}
+inline void reserveIfExists(T&, U n, long){}
 
 template<typename T>
 class PushBackGenerator : public Generator<T> {

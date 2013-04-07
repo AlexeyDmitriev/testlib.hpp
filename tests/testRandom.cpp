@@ -8,6 +8,7 @@
 #include "testlib/generators/int.hpp"
 #include "testlib/generators/float.hpp"
 #include "testlib/generators/collection.hpp"
+#include "testlib/generators/unique.hpp"
 
 struct RandomTest {
 	Random rnd;
@@ -116,6 +117,15 @@ BOOST_AUTO_TEST_CASE(testAny) {
 		s.insert(rnd.next<int>());
 	}
 	BOOST_CHECK(s.find(rnd.any(s)) != s.end());
+}
+
+BOOST_AUTO_TEST_CASE(testUnique) {
+	for(int i = 0; i < 5; ++i){
+		std::vector<int> unique = rnd.next<std::vector<int>>(UniqueGenerator<std::vector<int>>(), 3, 1, 3);
+		std::sort(unique.begin(), unique.end());
+		int numberOfUnique = std::unique(unique.begin(), unique.end()) - unique.begin();
+		BOOST_CHECK_EQUAL(numberOfUnique, 3);
+	}
 }
 
 BOOST_AUTO_TEST_SUITE_END()
