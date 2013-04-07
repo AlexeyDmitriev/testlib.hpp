@@ -33,7 +33,7 @@ class ContainerGenerator : public Generator<T> {
 	typedef typename T::size_type size_type;
 public:
 	template<typename... Args>
-	T generate(Random& rnd, size_type n, Args&&... args){
+	T generate(Random& rnd, size_type n, Args&&... args) const {
 		T result;
 		reserveIfExists(result, n, 0);
 		while(result.size() != n) {

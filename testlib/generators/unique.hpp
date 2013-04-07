@@ -9,7 +9,7 @@ class UniqueGenerator : public Generator<T> {
 public:
 	UniqueGenerator(Cmp less = Cmp()): less(less) {}
 	template<typename... Args>
-	T generate(Random& rnd, size_type n, Args&&... args) {
+	T generate(Random& rnd, size_type n, Args&&... args) const {
 		T result;
 		std::set<value_type, Cmp> used(less);
 		reserveIfExists(result, n, 0);

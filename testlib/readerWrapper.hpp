@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
 #include <utility>
-#include <tuple>
+#include "reader.hpp"
 
 template <typename T>
 class ReaderWrapper : public Reader<typename T::type> {

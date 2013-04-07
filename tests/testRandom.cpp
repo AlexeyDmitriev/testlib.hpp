@@ -13,7 +13,7 @@
 #include "testlib/generators/float.hpp"
 #include "testlib/generators/container.hpp"
 #include "testlib/generators/unique.hpp"
-
+#include "testlib/generatorWrapper.hpp"
 struct RandomTest {
 	Random rnd;
 	RandomTest(): rnd(0xFACE){}
@@ -31,6 +31,12 @@ BOOST_AUTO_TEST_CASE(alias) {
 	for(int i = 0; i < 5; ++i) {
 		BOOST_CHECK_EQUAL(rnd.next<One>(), 1);
 	}
+}
+
+BOOST_AUTO_TEST_CASE(genWrapper) {
+	auto generator = make_default_generator<int>(1, 5);
+	int value = rnd.next<int>(generator);
+	BOOST_CHECK(1 <= value && value <= 5);
 }
 
 BOOST_AUTO_TEST_CASE(basicRandom){
