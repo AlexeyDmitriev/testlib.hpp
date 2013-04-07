@@ -8,6 +8,7 @@
 #include <map>
 #include "testlib/verdictFunctions.hpp"
 #include "testlib/random.hpp"
+#include "testlib/alias.hpp"
 #include "testlib/generators/int.hpp"
 #include "testlib/generators/float.hpp"
 #include "testlib/generators/container.hpp"
@@ -23,7 +24,14 @@ struct OnesGenerator: public Generator<int>{
 		return 1;
 	}
 };
-BOOST_FIXTURE_TEST_SUITE(randomTest, RandomTest) 
+BOOST_FIXTURE_TEST_SUITE(randomTest, RandomTest)
+
+BOOST_AUTO_TEST_CASE(alias) {
+	typedef Alias<int, OnesGenerator> One;
+	for(int i = 0; i < 5; ++i) {
+		BOOST_CHECK_EQUAL(rnd.next<One>(), 1);
+	}
+}
 
 BOOST_AUTO_TEST_CASE(basicRandom){
 	int value = rnd.next<int>(5, 5);
