@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 #include <list>
+#include <set>
+#include <map>
 #include "testlib/generator.hpp"
 
 template<typename T, typename U>

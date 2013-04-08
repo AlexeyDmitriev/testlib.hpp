@@ -1,4 +1,4 @@
-#include "testTools.hpp"
+#include "testRandomTools.hpp"
 #include <boost/test/unit_test.hpp>
 #include <vector>
 #include <set>
@@ -15,16 +15,7 @@
 #include "testlib/generators/unique.hpp"
 #include "testlib/generators/pair.hpp"
 #include "testlib/generatorWrapper.hpp"
-struct RandomTest {
-	Random rnd;
-	RandomTest(): rnd(0xFACE){}
-};
 
-struct OnesGenerator: public Generator<int>{
-	int generate(Random&){
-		return 1;
-	}
-};
 BOOST_FIXTURE_TEST_SUITE(randomTest, RandomTest)
 
 BOOST_AUTO_TEST_CASE(alias) {

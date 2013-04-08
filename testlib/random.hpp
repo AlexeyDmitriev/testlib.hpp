@@ -10,7 +10,7 @@
 #include <iterator>
 #include "generator.hpp"
 #include "core.hpp"
-
+#include "utility.hpp"
 class Random {
 public:
 	static const size_t MAX_BITS = sizeof(uintmax_t) * CHAR_BIT;
