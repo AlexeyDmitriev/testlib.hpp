@@ -1,4 +1,5 @@
 #include "testlib/generator.hpp"
+#include "testlib/random.hpp"
 #include <type_traits>
 
 template <typename T>

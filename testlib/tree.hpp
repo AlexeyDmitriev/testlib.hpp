@@ -3,7 +3,9 @@
 #include <cassert>
 #include "random.hpp"
 #include <iostream>
-namespace treee
+#include "testlib/generator.hpp"
+#include "testlib/generators/int.hpp"
+namespace tree
 {
 using std::vector;
 
@@ -26,7 +28,6 @@ public:
 		parent[_root] = -1;
 		vector<char> used(_graph.size(), false);
 		dfsToOrderVertices(_graph, used, root);
-		std::cerr << parent.size() << "\n";
 	}
 	
 	Tree(const vector<std::pair<size_t, size_t> > edges, size_t _root = 0){
@@ -37,13 +38,11 @@ public:
 			g[edges[i].second].push_back(edges[i].first);
 		}
 		*this = Tree(g, _root);
-		std::cerr << parent.size() << "\n";
 	}
 	
 	Tree() {}
 	
 	const vector<size_t>& children(size_t vertex) const{
-		std::cerr << graph.size() << "\n";
 		return graph[vertex];
 	}
 	
@@ -71,7 +70,6 @@ private:
 	vector<int> parent;
 	size_t root;
 	void dfsToOrderVertices(const vector<vector<size_t> >& g, vector<char>& used, size_t vertex){
-		std::cerr << "dfs " << vertex << " " << graph.size()<< "\n";
 		used[vertex] = true;
 		for (auto to : g[vertex]){
 			if (!used[to]){
@@ -84,7 +82,7 @@ private:
 };
 
 inline vector<vector<size_t> > treeToGraph(const Tree& tree);
-inline Tree shuffle(const Tree& tree, Random rnd);
+inline Tree shuffle(const Tree& tree, Random& rnd);
 inline Tree makeParentsIdLess(const Tree& tree);
 	
 inline void dfsToRenumerate(const Tree& tree, size_t vertex, vector<size_t>& resultsPermutation, size_t usedNumbers){ //hide in namespace
@@ -111,11 +109,11 @@ inline Tree renumerateVertices(const Tree& tree, vector<size_t> permutation){
 	return Tree(resG);
 }
 
-inline Tree shuffle(const Tree& tree, Random rnd) { // don't change root
+inline Tree shuffle(const Tree& tree, Random& rnd) { // don't change root
 	vector<size_t> permutation(tree.size());
 	for (size_t i = 0; i < permutation.size(); ++i) 
 		permutation[i] = i;
-	//rnd.shuffle(permutation.begin(), permutation.end());
+	rnd.shuffle(permutation.begin(), permutation.end());
 	for (size_t i = 0; i < permutation.size(); ++i)
 		if (permutation[i] == tree.getRoot()){
 			std::swap(permutation[i], permutation[tree.getRoot()]);
@@ -131,13 +129,6 @@ inline vector<vector<size_t> > treeToGraph(const Tree& tree){
 			g[v].push_back(to);
 			g[to].push_back(v);
 		}
-	for (size_t v = 0 ; v < tree.size(); ++v) {
-		int parent = tree.getParent(v);
-		if (parent >= 0 && parent != (int)v){
-			g[v].push_back(parent);
-			g[parent].push_back(v);
-		}
-	}
 	return g;
 }
 
@@ -148,5 +139,19 @@ inline Tree makeParentsIdLess(const Tree& tree){
 }
 
 
-
 }
+
+template<>
+class DefaultGenerator<tree::Tree> : public Generator<tree::Tree>{
+public:
+	
+	tree::Tree generate(Random& rnd, size_t numberVertices) const {
+		std::vector<std::pair<size_t, size_t> > edges(numberVertices - 1);
+		for (size_t i = 1; i < numberVertices; i++)
+			edges[i - 1] = std::make_pair(i, rnd.next<int>(0, i - 1));
+		tree::Tree tree = tree::Tree(edges);
+		tree = tree.rehang(rnd.next<int>(0, numberVertices - 1));
+		tree = tree::shuffle(tree, rnd);
+		return tree;
+	}
+};

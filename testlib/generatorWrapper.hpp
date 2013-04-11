@@ -2,6 +2,7 @@
 #include <functional>
 #include <utility>
 #include "generator.hpp"
+#include "random.hpp"
 
 template <typename T>
 class GeneratorWrapper : public Generator<typename T::type> {
