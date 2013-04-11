@@ -155,3 +155,16 @@ public:
 		return tree;
 	}
 };
+
+class BambooTreeGenerator : public Generator<tree::Tree>{
+public:
+	tree::Tree generate(Random& rnd, size_t numberVertices) const {
+		std::vector<std::pair<size_t, size_t> > edges(numberVertices - 1);
+		for (size_t i = 1; i < numberVertices; i++)
+			edges[i - 1] = std::make_pair(i, i - 1);
+		tree::Tree tree = tree::Tree(edges);
+		tree = tree.rehang(rnd.next<int>(0, numberVertices - 1));
+		tree = tree::shuffle(tree, rnd);
+		return tree;
+	}
+};

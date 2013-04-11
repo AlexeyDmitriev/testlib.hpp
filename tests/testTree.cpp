@@ -32,10 +32,16 @@ BOOST_FIXTURE_TEST_SUITE(TreeTest, NonStrictRead)
 	}
 	
 	BOOST_AUTO_TEST_CASE(GeneratorTree) {
-		Random rnd(1);
+		Random rnd(11);
 		for (size_t n = 1; n <= 100; ++n){
 			Tree tree = rnd.next<Tree>(n);
 			//printTree(tree);
+			BOOST_CHECK(isTree(tree) == true);	
+		}
+		
+		for (size_t n = 1; n <= 100; ++n){
+			Tree tree = rnd.next<Tree>(BambooTreeGenerator(), n);
+			//if (n == 5) printTree(tree);
 			BOOST_CHECK(isTree(tree) == true);	
 		}
 	}
