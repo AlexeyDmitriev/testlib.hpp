@@ -33,7 +33,7 @@ do { \
 } while(false)
 template <typename T, typename Equal = std::equal_to<T>>
 inline void verifyEqual(T&& t, T&& u, Verdict verdict = Verdict::WA, Equal equal = Equal()){
-	verify(equal(t, u), verdict, toPrint(t) << " != " << toPrint(u));
+	verify(equal(t, u), verdict, expectation(t, u));
 }
 
 template <typename T, typename Compare = std::less<typename std::iterator_traits<T>::value_type>>
@@ -49,9 +49,9 @@ inline void verifyEqualRanges (T startT, T endT, U startU, U endU, Verdict verdi
 		if(itT == endT && itU == endU)
 			return;
 		if(itT == endT || itU == endU)
-			QUIT(verdict, rangeToString(startT, endT) << " != " << rangeToString(startU, endU));
+			QUIT(verdict, "Length differ, " << expectation(rangeToString(startT, endT), rangeToString(startU, endU)));
 		if(*itT != *itU)
-			QUIT(verdict, rangeToString(startT, endT) << " != " << rangeToString(startU, endU));
+			QUIT(verdict, expectation(rangeToString(startT, endT), rangeToString(startU, endU)));
 		++itT;
 		++itU;
 	}

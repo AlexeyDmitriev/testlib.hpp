@@ -1,6 +1,8 @@
 #pragma once
 
 #include "istream.hpp"
+#include "float.hpp"
+#include "verdictFunctions.hpp"
 
 template<typename T, typename TReader = DefaultReader<T>>
 inline void checkExtraTokensInEnd(IStream& ans, IStream& ouf, size_t alreadyReadTokensNumber, 
@@ -20,97 +22,62 @@ inline void checkExtraTokensInEnd(IStream& ans, IStream& ouf, size_t alreadyRead
 	if (extraInAnsCount) {
 		WA("Answer contains longer sequence [length = " 
 				<< alreadyReadTokensNumber + extraInAnsCount << "], but output contains "
-				<< alreadyReadTokensNumber << " elements");
+				<< alreadyReadTokensNumber << " tokens");
 	}
 
 	if (extraInOufCount) {
 		WA("Output contains longer sequence [length = " 
 				<< alreadyReadTokensNumber + extraInOufCount << "], but answer contains "
-				<< alreadyReadTokensNumber << " elements");
+				<< alreadyReadTokensNumber << " tokens");
 	}
 }
 
-template<typename T, typename Less = std::less<T>>
-struct DefaultEqualComparator
-{
-	bool operator() (const T& ansToken, const T& oufToken, Less less = Less()) const {
-		return !less(ansToken, oufToken) && !less(oufToken, ansToken);
-	}
-};
-
-enum class ErrorCode {
-	OK, WA, FAIL
-};
-
-struct CheckResult {
-	CheckResult(ErrorCode errorCode, const std::string& message): errorCode(errorCode), message(message) {}
-
-	ErrorCode errorCode;
-	std::string message;
-};
-
-template<typename T, typename TEqualComparator = DefaultEqualComparator<T>>
+template<typename T, typename EqualComparator = std::equal_to<T>>
 struct AreEqualChecker {
-	CheckResult operator() (const T& ansToken, const T& oufToken, 
-			TEqualComparator equalComparator = TEqualComparator()) const {
+	explicit AreEqualChecker(const EqualComparator& equalComparator = EqualComparator()): equalComparator(equalComparator) {}
 
-		if (!equalComparator(ansToken, oufToken)) {
-			return CheckResult(ErrorCode::WA, expectation(ansToken, oufToken));
-		}
-		return CheckResult(ErrorCode::OK, "");
+	void operator() (const T& ansToken, const T& oufToken) const {
+		verifyEqual(ansToken, oufToken, Verdict::WA, equalComparator);
 	}
+
+private:
+	EqualComparator equalComparator;
 };
 
-template<typename T, typename TReader = DefaultReader<T>, typename TokensChecker = AreEqualChecker<T>>
-inline void checkEOF(IStream& ans, IStream& ouf, TokensChecker tokensChecker = AreEqualChecker<T>(), 
-	                   TReader reader = DefaultReader<T>()) {
+template<typename T, typename TokensChecker = AreEqualChecker<T>, typename TReader = DefaultReader<T>>
+inline void checkToEof(IStream& ans, IStream& ouf, TokensChecker tokensChecker = AreEqualChecker<T>(), 
+	                     TReader reader = DefaultReader<T>()) {
 	size_t tokensNumber = 0;
 	while (!ans.seekEof() && !ouf.seekEof()) {
 		T ansToken = ans.read<T>(reader);
 		T oufToken = ouf.read<T>(reader);
 		++tokensNumber;
-		CheckResult checkResult = tokensChecker(ansToken, oufToken);
-		if (checkResult.errorCode == ErrorCode::WA) {
-			WA(checkResult.message);
-		}
-		if (checkResult.errorCode == ErrorCode::FAIL) {
-			FAIL(checkResult.message);
-		}
+		tokensChecker(ansToken, oufToken);
 	}
 	checkExtraTokensInEnd<T>(ans, ouf, tokensNumber, reader);
-	OK("Correct answer, " << tokensNumber << " numbers");
+	OK("OK, " << tokensNumber << " tokens");
 }
 
-template<typename T, typename TReader = DefaultReader<T>, typename TokensChecker>
-inline void checkN(IStream& ans, IStream& ouf, size_t tokensNumber, TokensChecker tokensChecker, Reader<T> reader = DefaultReader<T>()) {
+template<typename T, typename TokensChecker = AreEqualChecker<T>, typename TReader = DefaultReader<T>>
+inline void checkN(IStream& ans, IStream& ouf, size_t tokensNumber, TokensChecker tokensChecker = AreEqualChecker<T>(), 
+	                 Reader<T> reader = DefaultReader<T>()) {
 	for (size_t tokenNumber = 0; tokenNumber < tokensNumber; ++tokenNumber) {
 		T ansToken = ans.read<T>(reader);
 		T oufToken = ouf.read<T>(reader);
 
-		CheckResult checkResult = tokensChecker(ansToken, oufToken);
-		if (checkResult.errorCode == ErrorCode::WA) {
-			WA(checkResult.message);
-		}
-		if (checkResult.errorCode == ErrorCode::FAIL) {
-			FAIL(checkResult.message);
-		}
+		tokensChecker(ansToken, oufToken);
 	}
 }
 
-inline void multipleDoublesEpsCheck(IStream& ans, IStream& ouf, const double EPS) {
+template<typename T>
+struct areCloseComparator {
+	explicit areCloseComparator(T epsilon): epsilon(epsilon) {}
 
-	size_t doublesNumber = 0;
-	while (!ans.seekEof() && !ouf.seekEof()) {
-		double ansDouble = ans.read<double>();
-		double oufDouble = ouf.read<double>();
-		++doublesNumber;
-
-		if(!areClose(ansDouble, oufDouble, EPS)) {
-			WA(expectation(ansDouble, oufDouble) << ", error = " << ansDouble - oufDouble 
-				<< " in " << doublesNumber << " element");
-		}
+	bool operator() (const T& lhs, const T& rhs) const {
+		return areClose(lhs, rhs, epsilon);
 	}
 
-	checkExtraTokensInEnd<double>(ans, ouf, doublesNumber);
-	OK("Correct answer, " << doublesNumber << " numbers");
-}
+private:
+	T epsilon;
+};
+
