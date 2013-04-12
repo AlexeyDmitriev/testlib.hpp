@@ -16,7 +16,7 @@ public:
 		while(used.size() != n){
 			auto value = rnd.next<value_type>(std::forward<Args>(args)...);
 			if(used.find(value) == used.end()) {
-				result.push_back(value);
+				addToContainer(result, value);
 				used.insert(value);
 			}
 		}
