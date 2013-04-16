@@ -5,14 +5,16 @@
 #include "testlib/generators/int.hpp"
 #include "testlib/generators/float.hpp"
 #include "testlib/generatorWrapper.hpp"
+#include "testlib/readers/int.hpp"
 
 #include "libs/geometry/point.hpp"
 
+#include "testReadTools.hpp"
 #include "testRandomTools.hpp"
 
+using namespace geometry;
 BOOST_FIXTURE_TEST_SUITE(PointsRandom, RandomTest)
 
-using namespace geometry;
 struct TestDotProduct{
 	TestDotProduct(Random& rnd): rnd(rnd) {}
 	template<typename T>
@@ -68,3 +70,21 @@ BOOST_AUTO_TEST_CASE(misc) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_FIXTURE_TEST_SUITE(readPoints, StrictRead)
+
+BOOST_AUTO_TEST_CASE (readPoint2D) {
+	typedef Point2D<int> Point;
+	setStr("5 7");
+	BOOST_CHECK_EQUAL(stream.read<Point>().lengthSquared(), 74);
+
+	setStr("2 3");
+	BOOST_CHECK_EQUAL(stream.read<Point>().x, 2);
+
+	setStr("5");
+	BOOST_CHECK_THROW(stream.read<Point>(), VerdictException);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+

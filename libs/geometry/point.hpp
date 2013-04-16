@@ -4,6 +4,7 @@
 #include "testlib/generator.hpp"
 #include "testlib/random.hpp"
 #include "testlib/istream.hpp"
+#include "testlib/readers/pair.hpp"
 #include <type_traits>
 #include <cmath>
 
@@ -302,23 +303,10 @@ template<typename T>
 class DefaultReader<typename geometry::Point2D<T>>: public Reader<typename geometry::Point2D<T>> {
 	typedef typename geometry::Point2D<T> Point;
 public:
-	Point read(IStream& stream) {
-		return read(stream, DefaultReader<T>()); 
-	}
-
-	template <typename U>
-	Point read(IStream& stream, U reader) {
-		static_assert(std::is_base_of<Reader<T>, U>::value, "reader must be Reader<T>");
-		return read(stream, reader, reader);
-	}
-
-	template <typename X, typename Y> 
-	Point read(IStream& stream, X readerX, Y readerY) {
-		static_assert(std::is_base_of<Reader<T>, X>::value, "reader must be Reader<T>");
-		static_assert(std::is_base_of<Reader<T>, Y>::value, "reader must be Reader<T>");
-		T x = stream.read(readerX);
-		T y = stream.read(readerY);
-		return Point(std::move(x), std::move(y));
+	template <typename... Args>
+	Point read(Args&&... args) {
+		std::pair<T, T> pair = DefaultReader<std::pair<T,T>>().read(std::forward<Args>(args)...);
+		return Point(pair.first, pair.second);
 	}
 };
 
