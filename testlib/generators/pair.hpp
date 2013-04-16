@@ -17,7 +17,7 @@ public:
 		//Can't inline here because order of argument calculation is unspecified
 		//It would possibly break random stability on different compilers
 		T first = rnd.next<T>(generatorT);
-		U second = rnd.next<T>(generatorU);
+		U second = rnd.next<U>(generatorU);
 		return std::make_pair(std::move(first), std::move(second));
 	}
 	
