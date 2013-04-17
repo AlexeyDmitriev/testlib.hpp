@@ -4,7 +4,9 @@
 #include "testlib/generator.hpp"
 #include "testlib/random.hpp"
 #include "testlib/istream.hpp"
+#include "testlib/separator.hpp"
 #include "testlib/readers/pair.hpp"
+#include "testlib/utility.hpp"
 #include <type_traits>
 #include <cmath>
 
@@ -304,7 +306,7 @@ class DefaultReader<typename geometry::Point2D<T>>: public Reader<typename geome
 	typedef typename geometry::Point2D<T> Point;
 public:
 	template <typename... Args>
-	Point read(Args&&... args) {
+	Point read(Args&&... args) const {
 		std::pair<T, T> pair = DefaultReader<std::pair<T,T>>().read(std::forward<Args>(args)...);
 		return Point(pair.first, pair.second);
 	}
@@ -314,25 +316,43 @@ template<typename T>
 class DefaultReader<typename geometry::Point3D<T>>: public Reader<typename geometry::Point3D<T>> {
 	typedef typename geometry::Point3D<T> Point;
 public:
-	Point read(IStream& stream) {
-		return read(stream, DefaultReader<T>()); 
+	Point read(IStream& stream) const {
+		return read(stream, defaultSeparator(stream));
+	}
+	Point read(IStream& stream, const Separator& separator) const {
+		return read(stream, DefaultReader<T>(), separator);
 	}
 
 	template <typename U>
-	Point read(IStream& stream, U reader) {
-		static_assert(std::is_base_of<Reader<T>, U>::value, "reader must be Reader<T>");
-		return read(stream, reader, reader, reader);
+	if_reader<U, T, Point> read(IStream& stream, U reader) const {
+		return read(stream, defaultSeparator(stream));
 	}
 
-	template <typename X, typename Y, typename Z> 
-	Point read(IStream& stream, X readerX, Y readerY, Z readerZ) {
+	template <typename U>
+	if_reader<U, T, Point> read(IStream& stream, U reader, const Separator& separator) const {
+		return read(stream, reader, reader, reader, separator);
+	}
+
+	template <typename X, typename Y, typename Z>
+	Point read(IStream& stream, X readerX, Y readerY, Z readerZ) const {
+		return read(stream, readerX, readerY, readerZ, defaultSeparator(stream));
+	}
+
+	template <typename X, typename Y, typename Z>
+	Point read(IStream& stream, X readerX, Y readerY, Z readerZ, const Separator& separator) const {
 		static_assert(std::is_base_of<Reader<T>, X>::value, "reader must be Reader<T>");
 		static_assert(std::is_base_of<Reader<T>, Y>::value, "reader must be Reader<T>");
 		static_assert(std::is_base_of<Reader<T>, Z>::value, "reader must be Reader<T>");
-		T x = stream.read(readerX);
-		T y = stream.read(readerY);
-		T z = stream.read(readerY);
+		T x = stream.read<T>(readerX);
+		separator.read(stream);
+		T y = stream.read<T>(readerY);
+		separator.read(stream);
+		T z = stream.read<T>(readerZ);
 		return Point(std::move(x), std::move(y), std::move(z));
+	}
+private:
+	Separator defaultSeparator(IStream& stream) const {
+		return stream.getMode() == IStream::Mode::STRICT ? " " : "";
 	}
 };
 

@@ -85,6 +85,18 @@ BOOST_AUTO_TEST_CASE (readPoint2D) {
 	BOOST_CHECK_THROW(stream.read<Point>(), VerdictException);
 }
 
+BOOST_AUTO_TEST_CASE(readPoint3D) {
+	typedef Point3D<int> Point;
+	setStr("1 2 3");
+	BOOST_CHECK(stream.read<Point>() == Point(1,2,3));
+	
+	setStr("1 2x3");
+	BOOST_CHECK_THROW(stream.read<Point>(), VerdictException);
+
+	setStr("1.0 2 3");
+	BOOST_CHECK_THROW(stream.read<Point>(), VerdictException);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
