@@ -5,7 +5,6 @@
 #include <iostream>
 #include "testlib/generator.hpp"
 #include "testlib/generators/int.hpp"
-#include <queue>
 
 namespace tree
 {
