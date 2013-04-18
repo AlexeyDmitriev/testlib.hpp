@@ -5,6 +5,8 @@
 #include <iostream>
 #include "testlib/generator.hpp"
 #include "testlib/generators/int.hpp"
+#include <queue>
+
 namespace tree
 {
 using std::vector;
@@ -30,16 +32,8 @@ public:
 		dfsToOrderVertices(_graph, used, root);
 	}
 	
-	Tree(const vector<std::pair<size_t, size_t> > edges, size_t _root = 0){
-		vector<vector<size_t>> g;
-		g.resize(edges.size() + 1);
-		for (size_t i = 0; i < edges.size(); ++i) {
-			g[edges[i].first].push_back(edges[i].second);
-			g[edges[i].second].push_back(edges[i].first);
-		}
-		*this = Tree(g, _root);
-	}
-	
+	Tree(const vector<std::pair<size_t, size_t> >& edges, size_t _root = 0): Tree(edgesListToGraph(edges), _root) {}
+
 	Tree() {}
 	
 	const vector<size_t>& children(size_t vertex) const{
@@ -69,7 +63,7 @@ private:
 	vector<vector<size_t> > graph;
 	vector<int> parent;
 	size_t root;
-	void dfsToOrderVertices(const vector<vector<size_t> >& g, vector<char>& used, size_t vertex){
+	void dfsToOrderVertices(const vector<vector<size_t> >& g, vector<char>& used, size_t vertex) {
 		used[vertex] = true;
 		for (auto to : g[vertex]){
 			if (!used[to]){
@@ -79,20 +73,32 @@ private:
 			}
 		}
 	}
+	
+	static vector<vector<size_t> > edgesListToGraph(const vector<std::pair<size_t, size_t> >& edges) {
+		vector<vector<size_t> > g;
+		g.resize(edges.size() + 1);
+		for (size_t i = 0; i < edges.size(); ++i) {
+			g[edges[i].first].push_back(edges[i].second);
+			g[edges[i].second].push_back(edges[i].first);
+		}
+		return g;
+	}
 };
 
 inline vector<vector<size_t> > treeToGraph(const Tree& tree);
 inline Tree shuffle(const Tree& tree, Random& rnd);
 inline Tree makeParentsIdLess(const Tree& tree);
-	
-inline void dfsToRenumerate(const Tree& tree, size_t vertex, vector<size_t>& resultsPermutation, size_t usedNumbers){ //hide in namespace
+
+namespace utils{
+inline void dfsToRenumerate(const Tree& tree, size_t vertex, vector<size_t>& resultsPermutation, size_t usedNumbers){
 	resultsPermutation[vertex] = usedNumbers++;
 	for (size_t to: tree.children(vertex))
 		dfsToRenumerate(tree, to, resultsPermutation, usedNumbers);
 }	
+}
 	
 
-Tree Tree::rehang(size_t newRoot) const { // we want const method, but it is hard to realize
+Tree Tree::rehang(size_t newRoot) const {
 	vector<vector<size_t>> g = treeToGraph(*this);	
 	Tree resultTree(g, newRoot);
 	return resultTree;
@@ -109,7 +115,7 @@ inline Tree renumerateVertices(const Tree& tree, vector<size_t> permutation){
 	return Tree(resG);
 }
 
-inline Tree shuffle(const Tree& tree, Random& rnd) { // don't change root
+inline Tree shuffle(const Tree& tree, Random& rnd) {
 	vector<size_t> permutation(tree.size());
 	for (size_t i = 0; i < permutation.size(); ++i) 
 		permutation[i] = i;
@@ -134,7 +140,7 @@ inline vector<vector<size_t> > treeToGraph(const Tree& tree){
 
 inline Tree makeParentsIdLess(const Tree& tree){
 	vector<size_t> permutation(tree.size());
-	dfsToRenumerate(tree, tree.getRoot(), permutation, 0);
+	utils::dfsToRenumerate(tree, tree.getRoot(), permutation, 0);
 	return renumerateVertices(tree, permutation);
 }
 
@@ -156,12 +162,81 @@ public:
 	}
 };
 
-class BambooTreeGenerator : public Generator<tree::Tree>{
+class BambooGenerator : public Generator<tree::Tree>{
 public:
 	tree::Tree generate(Random& rnd, size_t numberVertices) const {
 		std::vector<std::pair<size_t, size_t> > edges(numberVertices - 1);
 		for (size_t i = 1; i < numberVertices; i++)
 			edges[i - 1] = std::make_pair(i, i - 1);
+		tree::Tree tree = tree::Tree(edges);
+		tree = tree.rehang(rnd.next<int>(0, numberVertices - 1));
+		tree = tree::shuffle(tree, rnd);
+		return tree;
+	}
+};
+//
+class BinaryTreeGenerator : public Generator<tree::Tree>{
+public:
+	tree::Tree generate(Random& rnd, size_t numberVertices) const {
+		std::vector<std::pair<size_t, size_t> > edges; edges.reserve(numberVertices - 1);
+		std::vector<size_t> curLevel, nextLevel;
+		curLevel.push_back(0); size_t qProcessed = 1;
+		while (qProcessed != numberVertices){
+			bool isNonList = false;
+			for (size_t i = 0; i < curLevel.size(); i++)
+				if (rnd.nextBit())
+				{
+					size_t v = curLevel[i];
+					for (size_t j = 0; j < 2 && qProcessed < numberVertices; j++)
+					{
+						edges.push_back(std::make_pair(v, qProcessed));
+						nextLevel.push_back(qProcessed);
+						qProcessed++;
+						isNonList = true;
+					}
+				}
+			if (!isNonList)
+			{
+				size_t v = curLevel[0];
+				for (size_t j = 0; j < 2 && qProcessed < numberVertices; j++)
+				{
+					edges.push_back(std::make_pair(v, qProcessed));
+					nextLevel.push_back(qProcessed);
+					qProcessed++;
+				}
+			}
+			curLevel = nextLevel;
+			nextLevel.clear();
+		}
+		tree::Tree tree = tree::Tree(edges);
+		tree = tree.rehang(rnd.next<int>(0, numberVertices - 1));
+		tree = tree::shuffle(tree, rnd);
+		return tree;
+	}
+};
+
+class BalancedKTreeGenerator : public Generator<tree::Tree>{
+public:
+	tree::Tree generate(Random& rnd, size_t numberVertices, size_t vertexDegree) const {
+		std::vector<std::pair<size_t, size_t> > edges(numberVertices - 1);
+		for (size_t i = 1; i < numberVertices; i++)
+			edges[i - 1] = std::make_pair(i , (i - 1) / vertexDegree);
+		tree::Tree tree = tree::Tree(edges);
+		tree = tree.rehang(rnd.next<int>(0, numberVertices - 1));
+		tree = tree::shuffle(tree, rnd);
+		return tree;
+	}
+};
+
+class FluffyBambooGenerator : public Generator<tree::Tree>{
+public:
+	tree::Tree generate(Random& rnd, size_t numberVertices) const {
+		std::vector<std::pair<size_t, size_t> > edges(numberVertices - 1);
+		size_t bambooSize = rnd.next<int>(1, numberVertices);
+		for (size_t i = 1; i < bambooSize; i++)
+			edges[i - 1] = std::make_pair(i, i - 1);
+		for (size_t i = bambooSize; i < numberVertices; i++)
+			edges[i - 1] = std::make_pair(i, rnd.next<int>(0, bambooSize - 1));
 		tree::Tree tree = tree::Tree(edges);
 		tree = tree.rehang(rnd.next<int>(0, numberVertices - 1));
 		tree = tree::shuffle(tree, rnd);

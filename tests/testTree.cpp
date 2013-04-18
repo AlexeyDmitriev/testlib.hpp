@@ -32,17 +32,40 @@ BOOST_FIXTURE_TEST_SUITE(TreeTest, NonStrictRead)
 	}
 	
 	BOOST_AUTO_TEST_CASE(GeneratorTree) {
-		Random rnd(11);
-		for (size_t n = 1; n <= 100; ++n){
-			Tree tree = rnd.next<Tree>(n);
-			//printTree(tree);
-			BOOST_CHECK(isTree(tree) == true);	
-		}
-		
-		for (size_t n = 1; n <= 100; ++n){
-			Tree tree = rnd.next<Tree>(BambooTreeGenerator(), n);
-			//if (n == 5) printTree(tree);
-			BOOST_CHECK(isTree(tree) == true);	
+		for (size_t i = 1, q = 0; q < 10; i *= 123, q++){
+			Random rnd(i);
+			for (size_t n = 1; n <= 100; ++n){
+				//cerr << n << endl;
+				Tree tree = rnd.next<Tree>(n);
+				//printTree(tree);
+				BOOST_CHECK(isTree(tree) == true);	
+			}
+			
+			for (size_t n = 1; n <= 100; ++n){
+				Tree tree = rnd.next<Tree>(BambooGenerator(), n);
+				//if (n == 5) printTree(tree);
+				BOOST_CHECK(isTree(tree) == true);	
+			}
+			
+			for (size_t n = 1; n <= 100; ++n){
+				Tree tree = rnd.next<Tree>(FluffyBambooGenerator(), n);
+				//if (n == 5) printTree(tree);
+				BOOST_CHECK(isTree(tree) == true);	
+			}
+			
+			for (size_t n = 1; n <= 100; ++n){
+				Tree tree = rnd.next<Tree>(BinaryTreeGenerator(), n);
+				//if (n == 5) printTree(tree);
+				BOOST_CHECK(isTree(tree) == true);	
+			}
+			
+			for (size_t n = 2; n <= 100; ++n){
+				for (size_t v = 1; v < n; v++){
+					Tree tree = rnd.next<Tree>(BalancedKTreeGenerator(), n, v);
+					//if (n == 5) printTree(tree);
+					BOOST_CHECK(isTree(tree) == true);;
+				}
+			}
 		}
 	}
 BOOST_AUTO_TEST_SUITE_END()
