@@ -109,7 +109,7 @@ bool operator == (const Point2D<T>& lhs, const Point2D<T>& rhs) {
 }
 
 template<typename T>
-Point2D<T> operator != (const Point2D<T>& lhs, const Point2D<T>& rhs) {
+bool operator != (const Point2D<T>& lhs, const Point2D<T>& rhs) {
 	return !(lhs == rhs);
 }
 
@@ -234,7 +234,7 @@ bool operator == (const Point3D<T>& lhs, const Point3D<T>& rhs) {
 }
 
 template<typename T>
-Point3D<T> operator != (const Point3D<T>& lhs, const Point3D<T>& rhs) {
+bool operator != (const Point3D<T>& lhs, const Point3D<T>& rhs) {
 	return !(lhs == rhs);
 }
 
