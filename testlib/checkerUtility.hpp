@@ -52,10 +52,16 @@ inline void checkToEof(IStream& ans, IStream& ouf, TokensChecker tokensChecker =
 		T ansToken = ans.read<T>(reader);
 		T oufToken = ouf.read<T>(reader);
 		++tokensNumber;
-		tokensChecker(ansToken, oufToken);
+		try {
+			tokensChecker(ansToken, oufToken);
+		} catch(VerdictException& verdict) {
+			verdict.message = "Differs in " + std::to_string(tokensNumber) + englishEnding(tokensNumber) 
+			           	       + " item: " + verdict.message;
+			throw verdict;
+		}
 	}
 	checkExtraTokensInEnd<T>(ans, ouf, tokensNumber, reader);
-	OK("OK, " << tokensNumber << " tokens");
+	OK(tokensNumber << " tokens");
 }
 
 template<typename T, typename TokensChecker = AreEqualChecker<T>, typename TReader = DefaultReader<T>>
@@ -65,13 +71,19 @@ inline void checkN(IStream& ans, IStream& ouf, size_t tokensNumber, TokensChecke
 		T ansToken = ans.read<T>(reader);
 		T oufToken = ouf.read<T>(reader);
 
-		tokensChecker(ansToken, oufToken);
+		try {
+			tokensChecker(ansToken, oufToken);
+		} catch(VerdictException& verdict) {
+			verdict.message = "Differs in " + std::to_string(tokensNumber) + englishEnding(tokensNumber) 
+			           	       + " item: " + verdict.message;
+			throw verdict;
+		}
 	}
 }
 
 template<typename T>
-struct areCloseComparator {
-	explicit areCloseComparator(T epsilon): epsilon(epsilon) {}
+struct AreClose {
+	explicit AreClose(T epsilon): epsilon(epsilon) {}
 
 	bool operator() (const T& lhs, const T& rhs) const {
 		return areClose(lhs, rhs, epsilon);
