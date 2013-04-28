@@ -1,22 +1,14 @@
 #include "testlib.hpp"
+#include "geometry.hpp"
 #include <set>
 #include <vector>
 
 using namespace std;
 const double EPS = 1e-8;
-
-struct Point{
-	double x, y;
-	Point() {}
-	Point(double x, double y): x(x), y(y) {}
-	bool operator < (const Point& point) const{
-		return make_pair(x, y) < make_pair(point.x, point.y);
-	}
-	Point operator - (const Point& point) const{
-		return Point(x - point.x, y - point.y);
-	}
-};
+//
+typedef geometry::Point2D<double> Point;
 typedef vector<Point> Triangle;
+
 
 class ReaderPoint : Reader<Point>{
 public:

@@ -2,7 +2,7 @@
 #include <type_traits>
 
 template <typename T>
-class DefaultGenerator<T, typename std::is_floating_point<T>::type> {
+class DefaultGenerator<T, typename std::is_floating_point<T>::type> : public Generator<T> {
 public:
 	T generate(Random& rnd, T from, T to) const {
 		T diff = to - from;
