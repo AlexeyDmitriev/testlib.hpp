@@ -1,7 +1,7 @@
 #pragma once
 
 #include "istream.hpp"
-#include "float.hpp"
+#include "readers/float.hpp"
 #include "verdictFunctions.hpp"
 
 template<typename T, typename TReader = DefaultReader<T>>
