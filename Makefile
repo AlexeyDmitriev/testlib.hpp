@@ -1,5 +1,5 @@
 CPP := g++
-CPP_FLAGS := -Wall -Wextra -Werror -Wno-type-limits -Wno-unused-parameter -std=c++11 -I. -Ibuild/release -g
+CPP_FLAGS := -Wall -Wextra -Werror -Wno-type-limits -Wno-unused-parameter -Wno-parentheses -std=c++11 -I. -Ibuild/release -g
 LINK_FLAGS := -lboost_unit_test_framework
 TEST_CPP_FILES := $(wildcard tests/*.cpp)
 TEST_OBJ_FILES := $(TEST_CPP_FILES:%.cpp=build/%.o)
@@ -8,6 +8,7 @@ EXAMPLES_RUN_FILES := $(EXAMPLES_CPP_FILES:%.cpp=build/%.bin)
 EXAMPLES_OBJ_FILES := $(EXAMPLES_RUN_FILES:%.bin=%.o)
 LIBRARIES := $(wildcard libs/*)
 LIBRARIES := $(LIBRARIES:libs/%=%)
+RELEASE_FILES := build/release/testlib.hpp build/release/testlib.full.hpp $(LIBRARIES:%=build/release/%.hpp)
 
 default:
 	@echo Default target disallowed
@@ -25,12 +26,10 @@ clean:
 	@rm -rf build
 	@rm -rf dist
 
-release: release-files test example
+release: $(RELEASE_FILES) test example
 	@mkdir -p dist
 	@echo copying to dist
 	@cp -r build/release/* dist
-
-release-files: build/release/testlib.hpp build/release/testlib.full.hpp $(LIBRARIES:%=build/release/%.hpp)
 
 build/test: $(TEST_OBJ_FILES)
 	@echo Build test
@@ -58,7 +57,7 @@ build/%.bin: build/%.o
 	@echo "Build $*"
 	@$(CPP) $< $(LINK_FLAGS) -o $@
 
-$(EXAMPLES_OBJ_FILES): release-files
+$(EXAMPLES_OBJ_FILES): $(RELEASE_FILES)
 
 build/%.o: %.cpp
 	@mkdir -p build/$(*D)
