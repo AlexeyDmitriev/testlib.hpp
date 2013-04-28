@@ -4,55 +4,53 @@ LINK_FLAGS := -lboost_unit_test_framework
 TEST_CPP_FILES := $(wildcard tests/*.cpp)
 TEST_OBJ_FILES := $(TEST_CPP_FILES:%.cpp=build/%.o)
 EXAMPLES_CPP_FILES := $(wildcard examples/checkers/*.cpp examples/validators/*.cpp examples/generators/*.cpp)
-EXAMPLES_OBJ_FILES := $(EXAMPLES_CPP_FILES:%.cpp=build/%.o)
-EXAMPLES_RUN_FILES := $(EXAMPLES_OBJ_FILES:%.o=%.bin)
-OBJ_FILES := $(TEST_OBJ_FILES) $(EXAMPLES_OBJ_FILES)
-DEP_FILES := $(OBJ_FILES:%.o=%.d)
-OUTPUT_FILES := testlib
+EXAMPLES_RUN_FILES := $(EXAMPLES_CPP_FILES:%.cpp=build/%.bin)
+EXAMPLES_OBJ_FILES := $(EXAMPLES_RUN_FILES:%.bin=%.o)
 
 default:
-	@echo "Default target disallowed"
+	@echo Default target disallowed
 
-test: build-tests
-	@echo "Run test"
+test: build/test
+	@echo Run test
 	@build/test
 
-release: test example build/release/testlib.hpp
-	@mkdir -p dist
-	@cp build/release/testlib.hpp dist/testlib.hpp
-
-example: build/release/testlib.hpp Makefile $(EXAMPLES_RUN_FILES)
-	@echo "Run examples"
+example: $(EXAMPLES_RUN_FILES)
+	@echo Run examples
 	@scripts/runExample.py --files $(EXAMPLES_CPP_FILES)
 
-build/release/testlib.hpp: Makefile scripts/output_head.txt $(OUTPUT_FILES)
-	@echo "Make realease header"
-	@mkdir -p build/release
-	@cp scripts/output_head.txt build/release/testlib.hpp
-	@scripts/headerSorter.py $(OUTPUT_FILES) >> build/release/testlib.hpp
+clean:
+	@echo clean
+	@rm -rf build
+	@rm -rf dist
 
-EXAMPLE_OBJ_FILES: build/release/testlib.hpp
+release: build/release/testlib.hpp test example
+	@mkdir -p dist
+	@echo copying to dist
+	@cp $< dist/testlib.hpp
 
-build-tests: $(TEST_OBJ_FILES) Makefile
-	@echo "build test"
+build/test: $(TEST_OBJ_FILES)
+	@echo Build test
 	@$(CPP) $(TEST_OBJ_FILES) $(LINK_FLAGS) -o build/test
 
-build/%.bin: build/%.o Makefile
-	@echo "build $*.bin"
+build/release/testlib.hpp: testlib/** 
+	@echo "Make release header"
+	@mkdir -p build/release
+	@cp scripts/output_head.txt $@
+	@scripts/headerSorter.py testlib >> $@
+
+build/%.bin: build/%.o
+	@echo "Build $*"
 	@$(CPP) $< $(LINK_FLAGS) -o $@
 
-build/%.d: build/release/testlib.hpp %.cpp
+$(EXAMPLES_OBJ_FILES): build/release/testlib.hpp
+
+build/%.o: %.cpp
 	@mkdir -p build/$(*D)
-	@echo Make dependencies for $*.cpp
-	@$(CPP) -MM -MP -MT $@ -MT build/$*.o $(CPP_FLAGS) $*.cpp -o $@
+	@echo Make dependencies for $*
+	@$(CPP) -MM -MP -MT build/$*.o $(CPP_FLAGS) $*.cpp -o build/$*.d
 
-clean:
-	@echo "clean"
-	@rm -rf build
-	@rm -rf dist 
+	@echo "Compile $*"
+	@$(CPP) $< $(CPP_FLAGS) -c -o $@
 
-build/%.o: Makefile %.cpp
-	@echo "Compile $*.o"
-	@$(CPP) $*.cpp $(CPP_FLAGS) -c -o $@
 
-include $(DEP_FILES)
+-include build/**/*.d
