@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <cassert>
-#include "random.hpp"
+#include "testlib/random.hpp"
 #include <iostream>
 #include "testlib/generator.hpp"
 #include "testlib/generators/int.hpp"
