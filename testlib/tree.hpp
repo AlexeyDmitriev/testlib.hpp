@@ -84,7 +84,7 @@ inline Tree shuffle(const Tree& tree, Random& rnd);
 inline Tree makeParentsIdLess(const Tree& tree);
 
 namespace utils{
-inline void dfsToRenumerate(const Tree& tree, size_t vertex, vector<size_t>& resultsPermutation, size_t usedNumbers) {
+inline void dfsToRenumerate(const Tree& tree, size_t vertex, vector<size_t>& resultsPermutation, size_t& usedNumbers) {
 	resultsPermutation[vertex] = usedNumbers++;
 	for (size_t to: tree.children(vertex))
 		dfsToRenumerate(tree, to, resultsPermutation, usedNumbers);
@@ -134,7 +134,8 @@ inline vector<vector<size_t> > treeToGraph(const Tree& tree) {
 
 inline Tree makeParentsIdLess(const Tree& tree) {
 	vector<size_t> permutation(tree.size());
-	utils::dfsToRenumerate(tree, tree.getRoot(), permutation, 0);
+	size_t qUsedVertices = 0;
+	utils::dfsToRenumerate(tree, tree.getRoot(), permutation, qUsedVertices);
 	return renumerateVertices(tree, permutation);
 }
 
@@ -145,12 +146,16 @@ template<>
 class DefaultGenerator<tree::Tree> : public Generator<tree::Tree> {
 public:
 	
-	tree::Tree generate(Random& rnd, size_t numberVertices) const {
+	tree::Tree generate(Random& rnd, size_t numberVertices, double coefHeight = 1.0) const {
+		if (coefHeight < 0.0 || coefHeight > 1.0)
+			throw VerdictException(Verdict::FAIL, "DefaultGenerator<Tree> coefficient of height should be from 0.0 to 1.0");
 		std::vector<std::pair<size_t, size_t> > edges(numberVertices - 1);
-		for (size_t i = 1; i < numberVertices; i++)
-			edges[i - 1] = std::make_pair(i, rnd.next<int>(0, i - 1));
+		for (size_t i = 1; i < numberVertices; i++) {
+			size_t to = rnd.next<size_t>(0, i - 1) * coefHeight; 
+			edges[i - 1] = std::make_pair(i, to);
+		}
 		tree::Tree tree = tree::Tree(edges);
-		tree = tree.rehang(rnd.next<int>(0, numberVertices - 1));
+		tree = tree.rehang(rnd.next<size_t>(0, numberVertices - 1));
 		tree = tree::shuffle(tree, rnd);
 		return tree;
 	}
@@ -178,7 +183,7 @@ public:
 		curLevel.push_back(0); 
 		size_t qProcessed = 1;
 		while (qProcessed != numberVertices) {
-			bool isNonList = false;
+			bool isList = true;
 			for (size_t i = 0; i < curLevel.size(); i++)
 				if (rnd.nextBit()) {
 					size_t v = curLevel[i];
@@ -186,10 +191,10 @@ public:
 						edges.push_back(std::make_pair(v, qProcessed));
 						nextLevel.push_back(qProcessed);
 						qProcessed++;
-						isNonList = true;
+						isList = false;
 					}
 				}
-			if (!isNonList) {
+			if (isList) {
 				size_t v = curLevel[0];
 				for (size_t j = 0; j < 2 && qProcessed < numberVertices; j++) {
 					edges.push_back(std::make_pair(v, qProcessed));
@@ -201,7 +206,6 @@ public:
 			nextLevel.clear();
 		}
 		tree::Tree tree = tree::Tree(edges);
-		tree = tree.rehang(rnd.next<int>(0, numberVertices - 1));
 		tree = tree::shuffle(tree, rnd);
 		return tree;
 	}
