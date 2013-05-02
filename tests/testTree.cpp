@@ -28,9 +28,27 @@ BOOST_FIXTURE_TEST_SUITE(TreeTest, NonStrictRead)
 			b.push_back(x);
 		expected = {2};
 		BOOST_CHECK(b == expected);
-		
 	}
 	
+	BOOST_AUTO_TEST_CASE(MakeParentIdLessTree) {
+		setStr("3 0 1 0 2 1 3");
+		vpii a = stream.read<vpii>(DefaultReader<std::pair<size_t, size_t> >());
+		Tree tree(a);
+		tree = tree.rehang(2);
+		tree = makeParentsIdLess(tree);		
+		std::vector<size_t> b;
+		for (auto x: tree.children(0))
+			b.push_back(x);
+		std::vector<size_t> expected = {1};
+		BOOST_CHECK(b == expected);
+		
+		b.clear();
+		for (auto x : tree.children(1))
+			b.push_back(x);
+		sort(b.begin(), b.end());	
+		expected = {2};
+		BOOST_CHECK(b == expected);		
+	}
 	BOOST_AUTO_TEST_CASE(RehangTree) {
 		setStr("5 0 1 0 2 1 3 1 4 4 5");
 		vpii a = stream.read<vpii>(DefaultReader<std::pair<size_t, size_t> >());
