@@ -1,10 +1,9 @@
 #pragma once
-#include <vector>
-#include <cassert>
-#include "testlib/random.hpp"
 #include <iostream>
+#include <vector>
 #include "testlib/generator.hpp"
 #include "testlib/generators/int.hpp"
+#include "testlib/random.hpp"
 
 namespace tree
 {
