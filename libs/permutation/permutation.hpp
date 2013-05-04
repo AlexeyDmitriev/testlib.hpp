@@ -8,6 +8,7 @@
 #include <ostream>
 #include <array>
 #include <cstdint>
+#include <algorithm>
 class Permutation {
 	typedef size_t ValueType;
 	typedef std::vector<ValueType>::const_iterator iterator;
@@ -32,17 +33,17 @@ public:
 	template <typename Iterator>
 	void applyTo(Iterator from, Iterator to) const {
 		std::ptrdiff_t n = to - from;
-		std::vector<decltype(*from)> result(n);
+		std::vector<typename std::iterator_traits<Iterator>::value_type> result(n);
 		if(std::distance(from, to) != n)
 			throw VerdictException(Verdict::FAIL, "Size of permutation not equal to size of range");
-		for(size_t i = 0; i < n; ++i) {
+		for(size_t i = 0, s = static_cast<size_t>(n); i < s; ++i) {
 			result[permutation[i]] = std::move(from[i]);
 		}
 		std::move(result.begin(), result.end(), from);
 	}
 
 	template <typename T>
-	void applyTo(const T& range) const {
+	void applyTo(T& range) const {
 		return applyTo(std::begin(range), std::end(range));
 	}
 
