@@ -139,7 +139,7 @@ inline Tree makeParentsIdLess(const Tree& tree) {
 }
 
 
-}
+}// end of namespace tree
 
 template<>
 class DefaultGenerator<tree::Tree> : public Generator<tree::Tree> {
