@@ -1,5 +1,8 @@
 #pragma once
 
+#include "testlib/core.hpp"
+#include "testlib/generator.hpp"
+#include "testlib/generators/int.hpp"
 #include "testlib/istream.hpp"
 #include "testlib/random.hpp"
 #include "testlib/reader.hpp"
@@ -9,7 +12,7 @@
 #include <string>
 #include <vector>
 
-//TODO *,/,0,design,toLong
+//TODO 0,design,toLong
 namespace biginteger {
 using std::vector;
 
@@ -17,7 +20,7 @@ class BigInteger {
 public:
 	BigInteger() : sign(1), data(0) {}
 
-	explicit BigInteger(long long val) {
+	explicit BigInteger(intmax_t val) {
 		sign = 1;
 		if (val < 0) {
 			sign = -1;
@@ -52,7 +55,7 @@ public:
 		data = v.data;
 		return *this;
 	}
-	BigInteger& operator = (long long v) {
+	BigInteger& operator = (intmax_t v) {
 		return *this = BigInteger(v);
 	}
 
@@ -114,30 +117,32 @@ public:
 	}
 
 
-	BigInteger& operator /= (int v) {
-		if (v < 0)
-			sign = -sign, v = -v;
+	BigInteger& operator /= (int divider) {
+		if (divider == 0)
+			throw VerdictException(Verdict::FAIL, "division by zero");
+		if (divider < 0)
+			sign = -sign, divider = -divider;
 		for (int i = (int) data.size() - 1, rem = 0; i >= 0; --i) {
 			long long cur = data[i] + rem * (long long) base;
-			data[i] = (int) (cur / v);
-			rem = (int) (cur % v);
+			data[i] = (int) (cur / divider);
+			rem = (int) (cur % divider);
 		}
 		removeLeadingZeros();
 		return *this;
 	}
 
-	BigInteger operator / (int v) const {
+	BigInteger operator / (int divider) const {
 		BigInteger res = *this;
-		res /= v;
+		res /= divider;
 		return res;
 	}
 
-	int operator % (int v) const {
-		if (v < 0)
-			v = -v;
+	int operator % (int divider) const {
+		if (divider < 0)
+			divider = -divider;
 		int m = 0;
 		for (int i = data.size() - 1; i >= 0; --i)
-			m = (data[i] + m * (long long) base) % v;
+			m = (data[i] + m * (long long) base) % divider;
 		return m * sign;
 	}
 
@@ -183,12 +188,12 @@ public:
 		return res;
 	}
 
-	BigInteger operator / (const BigInteger &v) const {
-		return divmod(v).first;
+	BigInteger operator / (const BigInteger &divider) const {
+		return divmod(divider).first;
 	}
 
-	BigInteger operator % (const BigInteger &v) const {
-		return divmod(v).second;
+	BigInteger operator % (const BigInteger &divider) const {
+		return divmod(divider).second;
 	}
 
 	friend BigInteger gcd(const BigInteger &a, const BigInteger &b) {
@@ -199,13 +204,13 @@ public:
 		return a / gcd(a, b) * b;
 	}
 
-	BigInteger& operator /= (const BigInteger &v) {
-		*this = *this / v;
+	BigInteger& operator /= (const BigInteger &divider) {
+		*this = *this / divider;
 		return *this;
 	}
 
-    BigInteger& operator %= (const BigInteger &v) {
-		*this = *this % v;
+    BigInteger& operator %= (const BigInteger &divider) {
+		*this = *this % divider;
 		return *this;
 	}
 	
@@ -221,44 +226,44 @@ public:
 		return BigInteger(10);	
 	}
 
-	BigInteger pow(long long v) { //how to do??? which lib contains uintmax_t ?
+	BigInteger pow(uintmax_t exponent) const { //how to do??? which lib contains uintmax_t ?
 		BigInteger res = ONE();
 		BigInteger cur(*this);		
-		while (v) {
-			if (v & 1) {
+		while (exponent) {
+			if (exponent & 1) {
 				res *= cur;
 			}	
 			cur *= cur;	
-			v >>= 1;
+			exponent >>= 1;
 		}
 		return res;
 	}
 
-	bool operator < (const BigInteger &v) const {
-		if (sign != v.sign)
-			return sign < v.sign;
-		if (data.size() != v.data.size())
-			return data.size() * sign < v.data.size() * v.sign;
+	bool operator < (const BigInteger &val) const {
+		if (sign != val.sign)
+			return sign < val.sign;
+		if (data.size() != val.data.size())
+			return data.size() * sign < val.data.size() * val.sign;
 		for (int i = data.size() - 1; i >= 0; i--)
-			if (data[i] != v.data[i])
-				return data[i] * sign < v.data[i] * sign;
+			if (data[i] != val.data[i])
+				return data[i] * sign < val.data[i] * sign;
 		return false;
 	}
 
-	bool operator > (const BigInteger &v) const {
-		return v < *this;
+	bool operator > (const BigInteger &val) const {
+		return val < *this;
 	}
-	bool operator <= (const BigInteger &v) const {
-		return !(v < *this);
+	bool operator <= (const BigInteger &val) const {
+		return !(val < *this);
 	}
-	bool operator >= (const BigInteger &v) const {
-		return !(*this < v);
+	bool operator >= (const BigInteger &val) const {
+		return !(*this < val);
 	}
-	bool operator == (const BigInteger &v) const {
-		return !(*this < v) && !(v < *this);
+	bool operator == (const BigInteger &val) const {
+		return !(*this < val) && !(val < *this);
 	}
-	bool operator != (const BigInteger &v) const {
-		return *this < v || v < *this;
+	bool operator != (const BigInteger &val) const {
+		return *this < val || val < *this;
 	}
 
 	bool isZero() const {
@@ -304,6 +309,9 @@ private:
 	}
 
 	std::pair<BigInteger, BigInteger> divmod(const BigInteger &b1) const {
+ 		if (b1.isZero())
+			throw VerdictException(Verdict::FAIL, "division by zero");
+		
 		int norm = base / (b1.data.back() + 1);
 		BigInteger a = (*this).abs() * norm;
 		BigInteger b = b1.abs() * norm;
@@ -355,6 +363,35 @@ public:
 				stream.quit(Verdict::PE, expectation("BigInteger", input));	
 		}	
 		return biginteger::BigInteger(input);
+	}
+};
+
+template<>
+class DefaultGenerator<biginteger::BigInteger>: public Generator<biginteger::BigInteger>{
+private:
+	biginteger::BigInteger generateTo (Random& rnd, biginteger::BigInteger to) const {
+		size_t qDigits = to.toString().length();
+		std::string str = "1";
+		for (size_t i = 0; i < qDigits; ++i)
+			str += "0";
+		biginteger::BigInteger limit(str);
+		biginteger::BigInteger disallowed = limit - limit % to;
+		biginteger::BigInteger number;
+		do {
+			std::string str;
+			for (size_t i = 0; i < qDigits; ++i)
+				str += std::to_string(rnd.next<int>(0, 9));
+			number = biginteger::BigInteger(str);
+		}
+		while (number >= disallowed);
+		return number % to;
+	}
+	
+public:
+	biginteger::BigInteger generate(Random& rnd, biginteger::BigInteger l, biginteger::BigInteger r) const {
+		if(l > r)
+			throw VerdictException(Verdict::FAIL, "DefaultGenerator<BigInteger>::generate(): l > r");
+		return generateTo(rnd, r - l + biginteger::BigInteger::ONE()) + l;
 	}
 };
 
