@@ -12,7 +12,7 @@ OUTPUT_FILES := testlib
 
 default:
 	@echo "Default target disallowed"
-
+	
 test: build-tests
 	@echo "Run test"
 	@build/test

@@ -1,12 +1,12 @@
+#include <boost/test/unit_test.hpp>
+#include <algorithm>
+#include <limits>
 #include <string>
 #include <vector>
-#include <limits>
-#include <algorithm>
-#include  "libs/tree.hpp"
+#include "libs/tree/tree.hpp"
 #include "testlib/readers/pair.hpp"
 #include "testlib/readers/vector.hpp"
 #include "testReadTools.hpp"
-#include <boost/test/unit_test.hpp>
 #include "testTree/utils.hpp"
 
 typedef std::vector<std::pair<size_t, size_t> > vpii;
