@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <utility>
+#include "random.hpp"
 #include "generator.hpp"
 
 template <typename T>

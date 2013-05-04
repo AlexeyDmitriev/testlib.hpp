@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <climits>
+#include <limits>
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
