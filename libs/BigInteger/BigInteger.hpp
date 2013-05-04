@@ -5,6 +5,7 @@
 #include "testlib/reader.hpp"
 #include "testlib/readers/string.hpp"
 #include <algorithm>
+#include <cctype>
 #include <string>
 #include <vector>
 
@@ -16,30 +17,30 @@ class BigInteger {
 public:
 	BigInteger() : sign(1), data(0) {}
 
-	explicit BigInteger(long long v) {
+	explicit BigInteger(long long val) {
 		sign = 1;
-		if (v < 0) {
+		if (val < 0) {
 			sign = -1;
-			v = -v;
+			val = -val;
 		}
-		while (v) {
-			data.push_back(v % base);
-			v /= base;
+		while (val) {
+			data.push_back(val % base);
+			val /= base;
 		}
 	}
 
 	explicit BigInteger(const std::string &s) {
 		sign = 1;
 		data.clear();
-		int pos = 0;
-		while (pos < (int) s.size() && (s[pos] == '-' || s[pos] == '+')) {
+		size_t pos = 0;
+		while (pos < s.size() && (s[pos] == '-' || s[pos] == '+')) {
 			if (s[pos] == '-')
 				sign = -sign;
 			++pos;
 		}
-		for (int i = s.size() - 1; i >= pos; i -= base_digits) {
+		for (int i = s.size() - 1; i >= (int)pos; i -= baseDigits) {
 			int x = 0;
-			for (int j = std::max(pos, i - base_digits + 1); j <= i; j++)
+			for (int j = std::max((int)pos, i - (int)baseDigits + 1); j <= i; j++)
 				x = x * 10 + s[j] - '0';
 			data.push_back(x);
 		}
@@ -182,38 +183,12 @@ public:
 		return res;
 	}
 
-	friend std::pair<BigInteger, BigInteger> divmod(const BigInteger &a1, const BigInteger &b1) {
-		int norm = base / (b1.data.back() + 1);
-		BigInteger a = a1.abs() * norm;
-		BigInteger b = b1.abs() * norm;
-		BigInteger q, r;
-		q.data.resize(a.data.size());
-
-		for (int i = a.data.size() - 1; i >= 0; i--) {
-			r *= base;
-			r += BigInteger(a.data[i]);
-			int s1 = r.data.size() <= b.data.size() ? 0 : r.data[b.data.size()];
-			int s2 = r.data.size() <= b.data.size() - 1 ? 0 : r.data[b.data.size() - 1];
-			int d = ((long long) base * s1 + s2) / b.data.back();
-			r -= b * d;
-			while (r < BigInteger(0))
-				r += b, --d;
-			q.data[i] = d;
-		}
-
-		q.sign = a1.sign * b1.sign;
-		r.sign = a1.sign;
-		q.removeLeadingZeros();
-		r.removeLeadingZeros();
-		return std::make_pair(q, r / norm);
-	}
-
 	BigInteger operator / (const BigInteger &v) const {
-		return divmod(*this, v).first;
+		return divmod(v).first;
 	}
 
 	BigInteger operator % (const BigInteger &v) const {
-		return divmod(*this, v).second;
+		return divmod(v).second;
 	}
 
 	friend BigInteger gcd(const BigInteger &a, const BigInteger &b) {
@@ -232,6 +207,31 @@ public:
     BigInteger& operator %= (const BigInteger &v) {
 		*this = *this % v;
 		return *this;
+	}
+	
+	static BigInteger ZERO() {
+		return BigInteger(0);	
+	}	
+	
+	static BigInteger ONE() {
+		return BigInteger(1);	
+	}
+
+	static BigInteger TEN() {
+		return BigInteger(10);	
+	}
+
+	BigInteger pow(long long v) { //how to do??? which lib contains uintmax_t ?
+		BigInteger res = ONE();
+		BigInteger cur(*this);		
+		while (v) {
+			if (v & 1) {
+				res *= cur;
+			}	
+			cur *= cur;	
+			v >>= 1;
+		}
+		return res;
 	}
 
 	bool operator < (const BigInteger &v) const {
@@ -265,15 +265,13 @@ public:
 		return data.empty() || (data.size() == 1 && !data[0]);
 	}
 
-
-
 	long long toLong() const {
 		long long res = 0;
 		for (int i = data.size() - 1; i >= 0; i--)
 			res = res * base + data[i];
 		return res * sign;
 	}
-
+	
 	std::string toString() const {
 		std:: string res;
 		if (data.empty())
@@ -285,15 +283,16 @@ public:
 
 		for (int i = data.size() - 2; i >= 0; i--) {
 			std::string s = std::to_string(data[i]);
-			while (s.length() < 9)
-				s = "0" + s;
-			res += s;
+			std::string addString;
+			for (size_t j = 0; j < baseDigits - s.length(); ++j)			
+				addString += "0";
+			res += addString + s;
 		}
 		return res;
 	}
 private:
 	static const int base = 1000000000;
-	static const int base_digits = 9;
+	static const size_t baseDigits = 9;
 	int sign;
 	vector<int> data;
 
@@ -303,6 +302,33 @@ private:
 		if (data.empty())
 			sign = 1;
 	}
+
+	std::pair<BigInteger, BigInteger> divmod(const BigInteger &b1) const {
+		int norm = base / (b1.data.back() + 1);
+		BigInteger a = (*this).abs() * norm;
+		BigInteger b = b1.abs() * norm;
+		BigInteger q, r;
+		q.data.resize(a.data.size());
+
+		for (int i = a.data.size() - 1; i >= 0; i--) {
+			r *= base;
+			r += BigInteger(a.data[i]);
+			int s1 = r.data.size() <= b.data.size() ? 0 : r.data[b.data.size()];
+			int s2 = r.data.size() <= b.data.size() - 1 ? 0 : r.data[b.data.size() - 1];
+			int d = ((long long) base * s1 + s2) / b.data.back();
+			r -= b * d;
+			while (r < BigInteger(0))
+				r += b, --d;
+			q.data[i] = d;
+		}
+
+		q.sign = (*this).sign * b1.sign;
+		r.sign = (*this).sign;
+		q.removeLeadingZeros();
+		r.removeLeadingZeros();
+		return std::make_pair(q, r / norm);
+	}
+
 };
 
 }//namespace biginteger
