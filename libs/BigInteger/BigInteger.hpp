@@ -285,7 +285,7 @@ public:
 
 		res += std::to_string(data.back());
 
-		for (size_t i = data.size() - 1; i-- > 0; i {
+		for (size_t i = data.size() - 1; i-- > 0; ) {
 			std::string s = std::to_string(data[i]);
 			std::string addString;
 			for (size_t j = 0; j < baseDigits - s.length(); ++j)
@@ -329,8 +329,8 @@ private:
 			q.data[i] = d;
 		}
 
-		q.sign = (*this).sign * b1.sign;
-		r.sign = (*this).sign;
+		q.sign = sign * b1.sign;
+		r.sign = sign;
 		q.removeLeadingZeros();
 		r.removeLeadingZeros();
 		return std::make_pair(q, r / norm);
