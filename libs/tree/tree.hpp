@@ -149,7 +149,6 @@ public:
 			edges[i - 1] = std::make_pair(i, to);
 		}
 		tree::Tree tree = tree::Tree(edges);
-		tree = tree.rehang(rnd.next<size_t>(0, numberVertices - 1));
 		tree = tree::shuffle(tree, rnd);
 		return tree;
 	}
@@ -162,12 +161,11 @@ public:
 		for (size_t i = 1; i < numberVertices; i++)
 			edges[i - 1] = std::make_pair(i, i - 1);
 		tree::Tree tree = tree::Tree(edges);
-		tree = tree.rehang(rnd.next<size_t>(0, numberVertices - 1));
 		tree = tree::shuffle(tree, rnd);
 		return tree;
 	}
 };
-//
+
 class BinaryTreeGenerator : public Generator<tree::Tree> {
 public:
 	tree::Tree generate(Random& rnd, size_t numberVertices) const {
@@ -212,7 +210,6 @@ public:
 		for (size_t i = 1; i < numberVertices; i++)
 			edges[i - 1] = std::make_pair(i , (i - 1) / vertexDegree);
 		tree::Tree tree = tree::Tree(edges);
-		tree = tree.rehang(rnd.next<size_t>(0, numberVertices - 1));
 		tree = tree::shuffle(tree, rnd);
 		return tree;
 	}
@@ -228,7 +225,6 @@ public:
 		for (size_t i = bambooSize; i < numberVertices; i++)
 			edges[i - 1] = std::make_pair(i, rnd.next<size_t>(0, bambooSize - 1));
 		tree::Tree tree = tree::Tree(edges);
-		tree = tree.rehang(rnd.next<size_t>(0, numberVertices - 1));
 		tree = tree::shuffle(tree, rnd);
 		return tree;
 	}
