@@ -284,9 +284,9 @@ public:
 		return data.empty();
 	}
 
-	long long toLong() const {
-		long long res = 0;
-		for (int i = data.size(); i-- > 0;)
+	intmax_t toInteger() const {
+		intmax_t res = 0;
+		for (size_t i = data.size(); i-- > 0;)
 			res = res * base + data[i];
 		return res * sign;
 	}

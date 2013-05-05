@@ -7,7 +7,7 @@ BOOST_FIXTURE_TEST_SUITE(BigIntegerStrict, StrictRead)
 
 BOOST_AUTO_TEST_CASE(BigIntegerRead){
 	setStr("-894 ");
-	BOOST_CHECK_EQUAL(stream.read<BigInteger>().toLong(), -894);
+	BOOST_CHECK_EQUAL(stream.read<BigInteger>().toInteger(), -894);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
