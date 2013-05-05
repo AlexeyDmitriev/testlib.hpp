@@ -266,7 +266,7 @@ public:
 	}
 
 	bool isZero() const {
-		return data.empty() || (data.size() == 1 && !data[0]);
+		return data.empty();
 	}
 
 	long long toLong() const {
