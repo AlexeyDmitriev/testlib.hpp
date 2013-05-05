@@ -92,7 +92,7 @@ inline void dfsToRenumerate(const Tree& tree, size_t vertex, vector<size_t>& res
 	
 
 Tree Tree::rehang(size_t newRoot) const {
-	vector<vector<size_t>> g = treeToGraph(*this);	
+	vector<vector<size_t>> g = treeToGraph(*this);
 	Tree resultTree(g, newRoot);
 	return resultTree;
 }	
@@ -113,11 +113,6 @@ inline Tree shuffle(const Tree& tree, Random& rnd) {
 	for (size_t i = 0; i < permutation.size(); ++i) 
 		permutation[i] = i;
 	rnd.shuffle(permutation.begin(), permutation.end());
-	for (size_t i = 0; i < permutation.size(); ++i)
-		if (permutation[i] == tree.getRoot()) {
-			std::swap(permutation[i], permutation[tree.getRoot()]);
-			break;
-		}
 	return renumerateVertices(tree, permutation);
 }
 
