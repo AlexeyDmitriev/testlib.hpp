@@ -12,10 +12,6 @@
 #include <string>
 #include <vector>
 
-//TODO 0,design,toLong
-namespace biginteger {
-using std::vector;
-
 class BigInteger {
 public:
 	BigInteger() : sign(1), data(0) {}
@@ -34,7 +30,6 @@ public:
 
 	explicit BigInteger(const std::string &s) {
 		sign = 1;
-		data.clear();
 		size_t pos = 0;
 		while (pos < s.size() && (s[pos] == '-' || s[pos] == '+')) {
 			if (s[pos] == '-')
@@ -215,25 +210,25 @@ public:
 	}
 	
 	static BigInteger ZERO() {
-		return BigInteger(0);	
-	}	
+		return BigInteger(0);
+	}
 	
 	static BigInteger ONE() {
-		return BigInteger(1);	
+		return BigInteger(1);
 	}
 
 	static BigInteger TEN() {
-		return BigInteger(10);	
+		return BigInteger(10);
 	}
 
-	BigInteger pow(uintmax_t exponent) const { //how to do??? which lib contains uintmax_t ?
+	BigInteger pow(uintmax_t exponent) const {
 		BigInteger res = ONE();
-		BigInteger cur(*this);		
+		BigInteger cur(*this);
 		while (exponent) {
 			if (exponent & 1) {
 				res *= cur;
-			}	
-			cur *= cur;	
+			}
+			cur *= cur;
 			exponent >>= 1;
 		}
 		return res;
@@ -289,7 +284,7 @@ public:
 		for (int i = data.size() - 2; i >= 0; i--) {
 			std::string s = std::to_string(data[i]);
 			std::string addString;
-			for (size_t j = 0; j < baseDigits - s.length(); ++j)			
+			for (size_t j = 0; j < baseDigits - s.length(); ++j)
 				addString += "0";
 			res += addString + s;
 		}
@@ -299,7 +294,7 @@ private:
 	static const int base = 1000000000;
 	static const size_t baseDigits = 9;
 	int sign;
-	vector<int> data;
+	std::vector<int> data;
 
 	void removeLeadingZeros() {
 		while (!data.empty() && !data.back())
@@ -339,12 +334,10 @@ private:
 
 };
 
-}//namespace biginteger
-
 template<>
-class DefaultReader<biginteger::BigInteger> : public Reader<biginteger::BigInteger> {
+class DefaultReader<BigInteger> : public Reader<BigInteger> {
 public:
-	biginteger::BigInteger read(IStream& stream) const {
+	BigInteger read(IStream& stream) const {
 		std::string input = stream.read<std::string>();
 		if (input.length() == 0)
 			stream.quit(Verdict::PE, expectation("BigInteger", input));		
@@ -362,36 +355,36 @@ public:
 			if (!isdigit(input[i]))
 				stream.quit(Verdict::PE, expectation("BigInteger", input));	
 		}	
-		return biginteger::BigInteger(input);
+		return BigInteger(input);
 	}
 };
 
 template<>
-class DefaultGenerator<biginteger::BigInteger>: public Generator<biginteger::BigInteger>{
+class DefaultGenerator<BigInteger>: public Generator<BigInteger>{
 private:
-	biginteger::BigInteger generateTo (Random& rnd, biginteger::BigInteger to) const {
+	BigInteger generateTo (Random& rnd, BigInteger to) const {
 		size_t qDigits = to.toString().length();
 		std::string str = "1";
 		for (size_t i = 0; i < qDigits; ++i)
 			str += "0";
-		biginteger::BigInteger limit(str);
-		biginteger::BigInteger disallowed = limit - limit % to;
-		biginteger::BigInteger number;
+		BigInteger limit(str);
+		BigInteger disallowed = limit - limit % to;
+		BigInteger number;
 		do {
 			std::string str;
 			for (size_t i = 0; i < qDigits; ++i)
 				str += std::to_string(rnd.next<int>(0, 9));
-			number = biginteger::BigInteger(str);
+			number = BigInteger(str);
 		}
 		while (number >= disallowed);
 		return number % to;
 	}
 	
 public:
-	biginteger::BigInteger generate(Random& rnd, biginteger::BigInteger l, biginteger::BigInteger r) const {
+	BigInteger generate(Random& rnd, BigInteger l, BigInteger r) const {
 		if(l > r)
 			throw VerdictException(Verdict::FAIL, "DefaultGenerator<BigInteger>::generate(): l > r");
-		return generateTo(rnd, r - l + biginteger::BigInteger::ONE()) + l;
+		return generateTo(rnd, r - l + BigInteger::ONE()) + l;
 	}
 };
 

@@ -3,7 +3,6 @@
 #include "tests/testReadTools.hpp"
 #include "testRandomTools.hpp"
 
-using namespace biginteger;
 BOOST_FIXTURE_TEST_SUITE(BigIntegerStrict, StrictRead)
 
 BOOST_AUTO_TEST_CASE(BigIntegerRead){
