@@ -15,7 +15,7 @@ public:
 		graph.resize(parents.size());
 		parent = parents;
 		for (size_t i = 0; i < parents.size(); ++i)
-			if (parents[i] == (int)i || parents[i] == -1)
+			if (parents[i] == -1)
 				root = i;
 			else
 				graph[parents[i]].push_back(i);
