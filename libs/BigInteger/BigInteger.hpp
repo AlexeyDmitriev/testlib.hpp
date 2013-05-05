@@ -195,7 +195,23 @@ public:
 		return divmod(divider).second;
 	}
 
-	friend BigInteger gcd(const BigInteger &a, const BigInteger &b) {
+	friend BigInteger gcd(BigInteger a, BigInteger b) {
+		int powerOf2 = 0;
+		while(!b.isZero() && !a.isZero()) {
+			while(a.isEven() && b.isEven()) {
+				a /= 2;
+				b /= 2;
+				++powerOf2;
+			}
+			while(a.isEven()) {
+				a /= 2;
+			}
+			while(b.isEven()) {
+				b /= 2;
+			}
+			a -= b;
+		}
+		return pow(BigInteger(2), powerOf2) * (a.isZero() ? b : a);
 		return b.isZero() ? a : gcd(b, a % b);
 	}
 
@@ -225,14 +241,13 @@ public:
 		return BigInteger(10);
 	}
 
-	BigInteger pow(uintmax_t exponent) const {
+	friend BigInteger pow(BigInteger base, uintmax_t exponent) {
 		BigInteger res = ONE();
-		BigInteger cur(*this);
 		while (exponent) {
 			if (exponent & 1) {
-				res *= cur;
+				res *= base;
 			}
-			cur *= cur;
+			base *= base;
 			exponent >>= 1;
 		}
 		return res;
@@ -305,6 +320,10 @@ private:
 			data.pop_back();
 		if (data.empty())
 			sign = 1;
+	}
+
+	bool isEven() const {
+		return data.empty() || ((data[0] & 1) == 0);
 	}
 
 	std::pair<BigInteger, BigInteger> divmod(const BigInteger &b1) const {
