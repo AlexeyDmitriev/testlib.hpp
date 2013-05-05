@@ -36,11 +36,15 @@ public:
 				sign = -sign;
 			++pos;
 		}
-		for (int i = s.size() - 1; i >= (int)pos; i -= baseDigits) {
+		if(pos > 1)
+			throw VerdictException(Verdict::FAIL, "Too many signs");
+		for (size_t i = s.size(); i > pos;) {
 			int x = 0;
-			for (int j = std::max((int)pos, i - (int)baseDigits + 1); j <= i; j++)
+			size_t startIndex = i > pos + baseDigits ? i - baseDigits : pos;//max, avoid underflow
+			for (size_t j = startIndex; j < i; ++j)
 				x = x * 10 + s[j] - '0';
 			data.push_back(x);
+			i = startIndex;
 		}
 		removeLeadingZeros();
 	}
@@ -56,7 +60,7 @@ public:
 
 	BigInteger& operator += (const BigInteger &summand) {
 		if (sign == summand.sign) {
-			for (size_t i = 0, carry = 0; i < std::max(data.size(), summand.data.size()) || carry; ++i) {
+			for (size_t i = 0, carry = 0; i < std::max(data.size(), summand.data.size()) || carry > 0; ++i) {
 				if (i == data.size())
 					data.push_back(0);
 				data[i] += carry + (i < summand.data.size() ? summand.data[i] : 0);
@@ -117,10 +121,10 @@ public:
 			throw VerdictException(Verdict::FAIL, "division by zero");
 		if (divider < 0)
 			sign = -sign, divider = -divider;
-		for (int i = (int) data.size() - 1, rem = 0; i >= 0; --i) {
+		for (size_t i = data.size(), rem = 0; i-- > 0; ) {
 			long long cur = data[i] + rem * (long long) base;
 			data[i] = (int) (cur / divider);
-			rem = (int) (cur % divider);
+			rem = static_cast<int>(cur % divider);
 		}
 		removeLeadingZeros();
 		return *this;
@@ -136,7 +140,7 @@ public:
 		if (divider < 0)
 			divider = -divider;
 		int m = 0;
-		for (int i = data.size() - 1; i >= 0; --i)
+		for (size_t i = data.size(); i-- > 0;)
 			m = (data[i] + m * (long long) base) % divider;
 		return m * sign;
 	}
@@ -239,7 +243,7 @@ public:
 			return sign < val.sign;
 		if (data.size() != val.data.size())
 			return data.size() * sign < val.data.size() * val.sign;
-		for (int i = data.size() - 1; i >= 0; i--)
+		for (size_t i = data.size() - 1; i-- > 0;)
 			if (data[i] != val.data[i])
 				return data[i] * sign < val.data[i] * sign;
 		return false;
@@ -267,7 +271,7 @@ public:
 
 	long long toLong() const {
 		long long res = 0;
-		for (int i = data.size() - 1; i >= 0; i--)
+		for (int i = data.size(); i-- > 0;)
 			res = res * base + data[i];
 		return res * sign;
 	}
@@ -281,7 +285,7 @@ public:
 
 		res += std::to_string(data.back());
 
-		for (int i = data.size() - 2; i >= 0; i--) {
+		for (size_t i = data.size() - 1; i-- > 0; i {
 			std::string s = std::to_string(data[i]);
 			std::string addString;
 			for (size_t j = 0; j < baseDigits - s.length(); ++j)
@@ -313,7 +317,7 @@ private:
 		BigInteger q, r;
 		q.data.resize(a.data.size());
 
-		for (int i = a.data.size() - 1; i >= 0; i--) {
+		for (size_t i = a.data.size(); i-- > 0;) {
 			r *= base;
 			r += BigInteger(a.data[i]);
 			int s1 = r.data.size() <= b.data.size() ? 0 : r.data[b.data.size()];
