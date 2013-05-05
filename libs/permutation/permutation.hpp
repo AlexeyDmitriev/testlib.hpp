@@ -18,14 +18,14 @@ public:
 		std::vector<char> used(n);
 		for(ValueType to: permutation){
 			if(to < 0 || to >= n) {
-				throw VerdictException(Verdict::FAIL, "Permutation Number: in permutation is out of range");
+				throw VerdictException(Verdict::FAIL, "Permutation::Permutation() Number in permutation is out of range");
 			}
 			used[to] = true;
 		}
 
 		for(size_t i = 0; i < n; ++i) {
 			if(!used[i]){
-				throw VerdictException(Verdict::FAIL, "Duplicate numbers in permutation");
+				throw VerdictException(Verdict::FAIL, "Permutation::Permutation() Duplicate numbers in permutation");
 			}
 		}
 	}
@@ -35,7 +35,7 @@ public:
 		std::ptrdiff_t n = to - from;
 		std::vector<typename std::iterator_traits<Iterator>::value_type> result(n);
 		if(std::distance(from, to) != n)
-			throw VerdictException(Verdict::FAIL, "Size of permutation not equal to size of range");
+			throw VerdictException(Verdict::FAIL, "Permutation::applyTo() Size of permutation not equal to size of range");
 		for(size_t i = 0, s = static_cast<size_t>(n); i < s; ++i) {
 			result[permutation[i]] = std::move(from[i]);
 		}
