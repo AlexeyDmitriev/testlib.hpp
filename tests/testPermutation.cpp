@@ -77,6 +77,24 @@ BOOST_AUTO_TEST_CASE(sizes) {
 	BOOST_CHECK_NO_THROW(a * a);
 }
 
+BOOST_AUTO_TEST_CASE(power) {
+	for(int i = 0; i < 10; ++i) {
+		size_t n = rnd.next<size_t>(5, 10);
+		size_t e = rnd.next<size_t>(1, 10);
+		Permutation p = rnd.next<Permutation>(n);
+
+		Permutation res = Permutation::identity(n);
+
+		for(size_t i = 0; i < e; ++i)
+			res = res * p;
+
+		BOOST_CHECK_EQUAL(res, pow(p, e));
+
+		BOOST_CHECK_EQUAL(pow(p, e) * pow(p, -e), Permutation::identity(n));
+
+	}
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 

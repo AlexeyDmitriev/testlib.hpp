@@ -134,7 +134,7 @@ private:
 
 Permutation pow(Permutation p, intmax_t n) {
 	bool needInverse = n < 0;
-	Permutation result = Permutation::identity(n);
+	Permutation result = Permutation::identity(p.size());
 	while(n != 0) {
 		if(n % 2) {
 			result = result * p;
