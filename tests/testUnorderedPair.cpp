@@ -10,16 +10,12 @@
 #include "libs/unorderedPair.hpp"
 
 typedef UnorderedPair<int> pi;
-
-template<typename T>
-std::ostream& operator << (std::ostream& stream, UnorderedPair<T> const & p){
-	return stream << '{' << p.first << ',' << p.second << '}' << std::endl;
-}
+typedef UnorderedPair<std::string> ps;
 
 BOOST_FIXTURE_TEST_SUITE(UnorderedPairs, StrictRead)
 
-#include "testUnorderedPair/allOk.hpp"
-#include "testUnorderedPair/allFail.hpp"
-#include "testUnorderedPair/strictFail.hpp"
+#include "testUnorderedPair/readerTests.hpp"
 
 BOOST_AUTO_TEST_SUITE_END()
+
+#include "testUnorderedPair/compareTests.hpp"

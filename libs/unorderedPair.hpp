@@ -26,6 +26,15 @@ private:
 	T maxElement() const {
 		return std::max(first, second);
 	}
+
+	template<typename U>
+	friend bool operator <(const UnorderedPair<U>& lhs, const UnorderedPair<U>& rhs);
+
+	template<typename U>
+	friend bool operator ==(const UnorderedPair<U>& lhs, const UnorderedPair<U>& rhs);
+	
+	template<typename U>
+	friend bool operator !=(const UnorderedPair<U>& lhs, const UnorderedPair<U>& rhs);
 };	
 
 template<typename T>
@@ -48,6 +57,11 @@ bool operator ==(const UnorderedPair<T>& lhs, const UnorderedPair<T>& rhs) {
 template<typename T>
 bool operator !=(const UnorderedPair<T>& lhs, const UnorderedPair<T>& rhs) {
 	return !(lhs == rhs);
+}
+
+template<typename T>
+std::ostream& operator << (std::ostream& stream, UnorderedPair<T> const & p){
+	return stream << '{' << p.first << ',' << p.second << '}' << std::endl;
 }
 
 // template<typename T>
