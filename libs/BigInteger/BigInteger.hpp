@@ -280,6 +280,26 @@ public:
 		return *this < val || val < *this;
 	}
 
+	BigInteger& operator ++() {
+		return *this += BigInteger(1);
+	}
+
+	BigInteger operator ++(int) {
+		BigInteger copy = *this;
+		++*this;
+		return copy;
+	}
+
+	BigInteger& operator -- () {
+		return *this -= BigInteger(1);
+	}
+
+	BigInteger operator -- (int) {
+		BigInteger copy = *this;
+		--*this;
+		return copy;
+	}
+
 	bool isZero() const {
 		return data.empty();
 	}
