@@ -7,9 +7,7 @@
 #include "testlib/readers/float.hpp"
 #include "testlib/readerWrapper.hpp"
 #include "testReadTools.hpp"
-#include "testRandomTools.hpp"
 #include "libs/unorderedPair.hpp"
-#include "testlib/generators/int.hpp"
 
 typedef UnorderedPair<int> pi;
 typedef UnorderedPair<std::string> ps;
@@ -20,5 +18,4 @@ BOOST_FIXTURE_TEST_SUITE(UnorderedPairs, StrictRead)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-#include "testUnorderedPair/comparatorTests.hpp"
-#include "testUnorderedPair/generatorTests.hpp"
+#include "testUnorderedPair/compareTests.hpp"
