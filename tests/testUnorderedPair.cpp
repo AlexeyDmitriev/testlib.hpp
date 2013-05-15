@@ -10,6 +10,7 @@
 #include "testRandomTools.hpp"
 #include "libs/unorderedPair.hpp"
 #include "testlib/generators/int.hpp"
+#include "testlib/generators/unique.hpp"
 
 typedef UnorderedPair<int> pi;
 typedef UnorderedPair<std::string> ps;
