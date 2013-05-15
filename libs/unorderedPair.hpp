@@ -9,6 +9,13 @@
 #include "testlib/utility.hpp"
 #include <iostream>
 
+/**
+	@internal
+	Class for representing unordered pair {a, b}
+
+	Class for representing unordered pair {a, b}
+	Pairs are equal when they equal like sets.
+*/
 template<typename T>
 class UnorderedPair {
 public:
@@ -32,7 +39,7 @@ private:
 
 	template<typename U>
 	friend bool operator ==(const UnorderedPair<U>& lhs, const UnorderedPair<U>& rhs);
-	
+
 	template<typename U>
 	friend bool operator !=(const UnorderedPair<U>& lhs, const UnorderedPair<U>& rhs);
 };	
@@ -47,12 +54,14 @@ bool operator <(const UnorderedPair<T>& lhs, const UnorderedPair<T>& rhs) {
 	return less(lhs.maxElement(), rhs.maxElement());
 }
 
+/*! @internal */
 template<typename T>
 bool operator ==(const UnorderedPair<T>& lhs, const UnorderedPair<T>& rhs) {
 	std::equal_to<T> equal;
 	return (equal(lhs.first, rhs.first) && equal(lhs.second, rhs.second)) || 
 					(equal(lhs.first, rhs.second) && equal(lhs.second, rhs.first));
 }
+/*! @endinternal */
 
 template<typename T>
 bool operator !=(const UnorderedPair<T>& lhs, const UnorderedPair<T>& rhs) {
@@ -64,8 +73,21 @@ std::ostream& operator << (std::ostream& stream, UnorderedPair<T> const & p){
 	return stream << '{' << p.first << ',' << p.second << '}' << std::endl;
 }
 
-// template<typename T>
-// class DefaultGenerator<
+template<typename T>
+class DefaultGenerator<UnorderedPair<T>> : public Generator<UnorderedPair<T>> {
+	typedef UnorderedPair<T> Pair;
+public:
+	Pair generate(Random& rnd) const {
+		return generate(rnd, DefaultGenerator<T>());
+	}
+
+	template <typename Gen>
+	Pair generate(Random& rnd, Gen gen) const {
+		T first = rnd.next<T>(gen);
+		T second = rnd.next<T>(gen);
+		return Pair(std::move(first), std::move(second));
+	}
+};
 
 template<typename T>
 class DefaultReader<UnorderedPair<T>>: public Reader<UnorderedPair<T>> {
