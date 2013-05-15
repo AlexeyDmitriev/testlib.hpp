@@ -9,13 +9,6 @@
 #include "testlib/utility.hpp"
 #include <iostream>
 
-/**
-	@internal
-	Class for representing unordered pair {a, b}
-
-	Class for representing unordered pair {a, b}
-	Pairs are equal when they equal like sets.
-*/
 template<typename T>
 class UnorderedPair {
 public:
@@ -54,14 +47,12 @@ bool operator <(const UnorderedPair<T>& lhs, const UnorderedPair<T>& rhs) {
 	return less(lhs.maxElement(), rhs.maxElement());
 }
 
-/*! @internal */
 template<typename T>
 bool operator ==(const UnorderedPair<T>& lhs, const UnorderedPair<T>& rhs) {
 	std::equal_to<T> equal;
 	return (equal(lhs.first, rhs.first) && equal(lhs.second, rhs.second)) || 
 					(equal(lhs.first, rhs.second) && equal(lhs.second, rhs.first));
 }
-/*! @endinternal */
 
 template<typename T>
 bool operator !=(const UnorderedPair<T>& lhs, const UnorderedPair<T>& rhs) {
