@@ -177,6 +177,7 @@ public:
 	BigInteger operator * (const BigInteger &multiplier) const {
 		BigInteger res;
 		res.data.assign(data.size() + multiplier.data.size(), 0);
+		res.sign = sign * multiplier.sign;
 		for (size_t i = 0; i < data.size(); ++i)
 			for (size_t j = 0, carry = 0; j < multiplier.data.size() || carry; ++j) {
 				long long cur = res.data[i + j] + data[i] * 1LL * (j < multiplier.data.size() ? multiplier.data[j] : 0) + carry;
@@ -230,25 +231,25 @@ public:
 		return *this;
 	}
 
-    BigInteger& operator %= (const BigInteger &divider) {
+	BigInteger& operator %= (const BigInteger &divider) {
 		*this = *this % divider;
 		return *this;
 	}
 	
-	static BigInteger ZERO() {
+	static BigInteger zero() {
 		return BigInteger(0);
 	}
 	
-	static BigInteger ONE() {
+	static BigInteger one() {
 		return BigInteger(1);
 	}
 
-	static BigInteger TEN() {
+	static BigInteger ten() {
 		return BigInteger(10);
 	}
 
 	friend BigInteger pow(BigInteger base, uintmax_t exponent) {
-		BigInteger res = ONE();
+		BigInteger res = one();
 		while (exponent) {
 			if (exponent & 1) {
 				res *= base;
@@ -393,12 +394,12 @@ public:
 	BigInteger read(IStream& stream) const {
 		std::string input = stream.read<std::string>();
 		if (input.length() == 0)
-			stream.quit(Verdict::PE, expectation("BigInteger", input));		
+			stream.quit(Verdict::PE, expectation("BigInteger", input));
 		size_t firstDigitPos = 0;
 		if (input[0] == '-') {
 			++firstDigitPos;
 			if (input.length() == 1 || input[1] == '0')	
-				stream.quit(Verdict::PE, expectation("BigInteger", input));		
+				stream.quit(Verdict::PE, expectation("BigInteger", input));
 		}
 		if (input.length() > 1) {
 			if (input[0] == '0')
@@ -406,8 +407,8 @@ public:
 		}
 		for (size_t i = firstDigitPos; i < input.length(); ++i){
 			if (!isdigit(input[i]))
-				stream.quit(Verdict::PE, expectation("BigInteger", input));	
-		}	
+				stream.quit(Verdict::PE, expectation("BigInteger", input));
+		}
 		return BigInteger(input);
 	}
 };
@@ -437,7 +438,7 @@ public:
 	BigInteger generate(Random& rnd, BigInteger l, BigInteger r) const {
 		if(l > r)
 			throw VerdictException(Verdict::FAIL, "DefaultGenerator<BigInteger>::generate(): l > r");
-		return generateTo(rnd, r - l + BigInteger::ONE()) + l;
+		return generateTo(rnd, r - l + BigInteger::one()) + l;
 	}
 };
 
