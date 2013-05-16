@@ -18,7 +18,20 @@ BOOST_AUTO_TEST_CASE(BigIntegerRandom){
 	BigInteger from = BigInteger(010100);
 	BigInteger to = BigInteger(100100);
 	BigInteger r = rnd.next<BigInteger>(from, to);
-	BOOST_CHECK(from <= r && r <= to); 
+	BOOST_CHECK(from <= r && r <= to);
+}
+
+BOOST_AUTO_TEST_CASE(BIgcd) {
+	{
+		BigInteger a(3);
+		BigInteger b(5);
+		BOOST_CHECK_EQUAL(gcd(a, b), BigInteger(1));
+	}
+	{
+		BigInteger a("10394540081827693200473815328053988703889568");
+		BigInteger b("10008658978277140167971344646087256144407296");
+		BOOST_CHECK_EQUAL(gcd(a, b), BigInteger("2669734086172442650208"));
+	}
 }
 
 BOOST_AUTO_TEST_SUITE_END()

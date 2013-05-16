@@ -197,6 +197,8 @@ public:
 
 	friend BigInteger gcd(BigInteger a, BigInteger b) {
 		int powerOf2 = 0;
+		a.sign = 1;
+		b.sign = 1;
 		while(!b.isZero() && !a.isZero()) {
 			while(a.isEven() && b.isEven()) {
 				a /= 2;
@@ -210,9 +212,13 @@ public:
 				b /= 2;
 			}
 			a -= b;
+
+			if(a.sign != 1){
+				a.sign = 1;
+				std::swap(a, b);
+			}
 		}
 		return pow(BigInteger(2), powerOf2) * (a.isZero() ? b : a);
-		return b.isZero() ? a : gcd(b, a % b);
 	}
 
 	friend BigInteger lcm(const BigInteger &a, const BigInteger &b) {
@@ -258,7 +264,7 @@ public:
 			return sign < val.sign;
 		if (data.size() != val.data.size())
 			return data.size() * sign < val.data.size() * val.sign;
-		for (size_t i = data.size() - 1; i-- > 0;)
+		for (size_t i = data.size(); i-- > 0;)
 			if (data[i] != val.data[i])
 				return data[i] * sign < val.data[i] * sign;
 		return false;
@@ -376,6 +382,10 @@ private:
 	}
 
 };
+
+bool operator << (std::ostream& stream, const BigInteger& value) {
+	return stream << value.toString();
+}
 
 template<>
 class DefaultReader<BigInteger> : public Reader<BigInteger> {
