@@ -230,7 +230,7 @@ public:
 		return *this;
 	}
 
-    BigInteger& operator %= (const BigInteger &divider) {
+	BigInteger& operator %= (const BigInteger &divider) {
 		*this = *this % divider;
 		return *this;
 	}
@@ -393,12 +393,12 @@ public:
 	BigInteger read(IStream& stream) const {
 		std::string input = stream.read<std::string>();
 		if (input.length() == 0)
-			stream.quit(Verdict::PE, expectation("BigInteger", input));		
+			stream.quit(Verdict::PE, expectation("BigInteger", input));
 		size_t firstDigitPos = 0;
 		if (input[0] == '-') {
 			++firstDigitPos;
 			if (input.length() == 1 || input[1] == '0')	
-				stream.quit(Verdict::PE, expectation("BigInteger", input));		
+				stream.quit(Verdict::PE, expectation("BigInteger", input));
 		}
 		if (input.length() > 1) {
 			if (input[0] == '0')
@@ -406,8 +406,8 @@ public:
 		}
 		for (size_t i = firstDigitPos; i < input.length(); ++i){
 			if (!isdigit(input[i]))
-				stream.quit(Verdict::PE, expectation("BigInteger", input));	
-		}	
+				stream.quit(Verdict::PE, expectation("BigInteger", input));
+		}
 		return BigInteger(input);
 	}
 };
