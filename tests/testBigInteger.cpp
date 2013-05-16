@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(arithm) {
 
 BOOST_AUTO_TEST_CASE(zeroDivision) {
 	BigInteger a{"47743248374387483247832"};
-	BOOST_CHECK_THROW(a / BigInteger::ZERO(), VerdictException);
-	BOOST_CHECK_THROW(a % BigInteger::ZERO(), VerdictException);
+	BOOST_CHECK_THROW(a / BigInteger::zero(), VerdictException);
+	BOOST_CHECK_THROW(a % BigInteger::zero(), VerdictException);
 }
 BOOST_AUTO_TEST_SUITE_END()

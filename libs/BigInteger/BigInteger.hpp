@@ -236,20 +236,20 @@ public:
 		return *this;
 	}
 	
-	static BigInteger ZERO() {
+	static BigInteger zero() {
 		return BigInteger(0);
 	}
 	
-	static BigInteger ONE() {
+	static BigInteger one() {
 		return BigInteger(1);
 	}
 
-	static BigInteger TEN() {
+	static BigInteger ten() {
 		return BigInteger(10);
 	}
 
 	friend BigInteger pow(BigInteger base, uintmax_t exponent) {
-		BigInteger res = ONE();
+		BigInteger res = one();
 		while (exponent) {
 			if (exponent & 1) {
 				res *= base;
@@ -438,7 +438,7 @@ public:
 	BigInteger generate(Random& rnd, BigInteger l, BigInteger r) const {
 		if(l > r)
 			throw VerdictException(Verdict::FAIL, "DefaultGenerator<BigInteger>::generate(): l > r");
-		return generateTo(rnd, r - l + BigInteger::ONE()) + l;
+		return generateTo(rnd, r - l + BigInteger::one()) + l;
 	}
 };
 
