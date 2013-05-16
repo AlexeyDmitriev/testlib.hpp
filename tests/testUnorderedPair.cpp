@@ -8,7 +8,7 @@
 #include "testlib/readerWrapper.hpp"
 #include "testReadTools.hpp"
 #include "testRandomTools.hpp"
-#include "libs/unorderedPair.hpp"
+#include "libs/unorderedPair/unorderedPair.hpp"
 #include "testlib/generators/int.hpp"
 #include "testlib/generators/unique.hpp"
 
