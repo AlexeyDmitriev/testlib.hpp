@@ -34,9 +34,9 @@ BOOST_AUTO_TEST_CASE(BIgcd) {
 	}
 }
 
-BOOST_AUTO_TEST_CASE(sum) {
-	std::vector<int> a = {1,  5, 3, -5, -1, -2, -5, -6, 5};
-	std::vector<int> b = {2, -3, -5, 3,  1, -6,  8, -2, 4};
+BOOST_AUTO_TEST_CASE(arithm) {
+	std::vector<int> a = {1,  5, 3, -5, -1, -2, -5, -6, 5,  0, 0};
+	std::vector<int> b = {2, -3, -5, 3,  1, -6,  8, -2, 4, -5, 7};
 	BOOST_REQUIRE_EQUAL(a.size(), b.size());
 	for(size_t i = 0; i < a.size(); ++i) {
 		BOOST_CHECK_EQUAL(BigInteger(a[i]) + BigInteger(b[i]), BigInteger(a[i] + b[i]));
@@ -44,5 +44,21 @@ BOOST_AUTO_TEST_CASE(sum) {
 	for(size_t i = 0; i < a.size(); ++i) {
 		BOOST_CHECK_EQUAL(BigInteger(a[i]) - BigInteger(b[i]), BigInteger(a[i] - b[i]));
 	}
+	for(size_t i = 0; i < a.size(); ++i) {
+		BOOST_CHECK_EQUAL(BigInteger(a[i]) * BigInteger(b[i]), BigInteger(a[i] * b[i]));
+	}
+	for(size_t i = 0; i < a.size(); ++i) {
+		BOOST_CHECK_EQUAL(BigInteger(a[i]) / BigInteger(b[i]), BigInteger(a[i] / b[i]));
+	}
+
+	for(size_t i = 0; i < a.size(); ++i) {
+		BOOST_CHECK_EQUAL(BigInteger(a[i]) % BigInteger(b[i]), BigInteger(a[i] % b[i]));
+	}
+}
+
+BOOST_AUTO_TEST_CASE(zeroDivision) {
+	BigInteger a{"47743248374387483247832"};
+	BOOST_CHECK_THROW(a / BigInteger::ZERO(), VerdictException);
+	BOOST_CHECK_THROW(a % BigInteger::ZERO(), VerdictException);
 }
 BOOST_AUTO_TEST_SUITE_END()

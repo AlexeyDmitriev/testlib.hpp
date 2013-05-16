@@ -177,6 +177,7 @@ public:
 	BigInteger operator * (const BigInteger &multiplier) const {
 		BigInteger res;
 		res.data.assign(data.size() + multiplier.data.size(), 0);
+		res.sign = sign * multiplier.sign;
 		for (size_t i = 0; i < data.size(); ++i)
 			for (size_t j = 0, carry = 0; j < multiplier.data.size() || carry; ++j) {
 				long long cur = res.data[i + j] + data[i] * 1LL * (j < multiplier.data.size() ? multiplier.data[j] : 0) + carry;
