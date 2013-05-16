@@ -34,4 +34,15 @@ BOOST_AUTO_TEST_CASE(BIgcd) {
 	}
 }
 
+BOOST_AUTO_TEST_CASE(sum) {
+	std::vector<int> a = {1,  5, 3, -5, -1, -2, -5, -6, 5};
+	std::vector<int> b = {2, -3, -5, 3,  1, -6,  8, -2, 4};
+	BOOST_REQUIRE_EQUAL(a.size(), b.size());
+	for(size_t i = 0; i < a.size(); ++i) {
+		BOOST_CHECK_EQUAL(BigInteger(a[i]) + BigInteger(b[i]), BigInteger(a[i] + b[i]));
+	}
+	for(size_t i = 0; i < a.size(); ++i) {
+		BOOST_CHECK_EQUAL(BigInteger(a[i]) - BigInteger(b[i]), BigInteger(a[i] - b[i]));
+	}
+}
 BOOST_AUTO_TEST_SUITE_END()
