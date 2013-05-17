@@ -9,10 +9,20 @@
 #include <array>
 #include <cstdint>
 #include <algorithm>
+
+/**
+ * Class for representing permutation.
+ * Detailed description.
+ */
 class Permutation {
 	typedef size_t ValueType;
 	typedef std::vector<ValueType>::const_iterator iterator;
 public:
+
+	/**
+	 * Constructor.
+	 * @param  permutation
+	 */
 	explicit Permutation(const std::vector<ValueType>& permutation): permutation(permutation) {
 		size_t n = permutation.size();
 		std::vector<char> used(n);
@@ -128,6 +138,10 @@ private:
 	Permutation(size_t n): permutation(n) {
 	}
 
+	/**
+	 * Containter to store permutation.
+	 * Details.
+	 */
 	std::vector<ValueType> permutation;
 
 };
