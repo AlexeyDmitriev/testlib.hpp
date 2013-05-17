@@ -416,7 +416,7 @@ public:
 template<>
 class DefaultGenerator<BigInteger>: public Generator<BigInteger>{
 private:
-	BigInteger generateTo (Random& rnd, BigInteger to) const {
+	BigInteger generateTo (Random& rnd, const BigInteger& to) const {
 		size_t qDigits = to.toString().length();
 		std::string str = "1";
 		for (size_t i = 0; i < qDigits; ++i)
@@ -435,7 +435,7 @@ private:
 	}
 	
 public:
-	BigInteger generate(Random& rnd, BigInteger l, BigInteger r) const {
+	BigInteger generate(Random& rnd, const BigInteger& l, const BigInteger& r) const {
 		if(l > r)
 			throw VerdictException(Verdict::FAIL, "DefaultGenerator<BigInteger>::generate(): l > r");
 		return generateTo(rnd, r - l + BigInteger::one()) + l;
