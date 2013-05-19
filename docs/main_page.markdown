@@ -1,2 +1,2 @@
-Main page {#main_page}
+Main page {#mainpage}
 =========

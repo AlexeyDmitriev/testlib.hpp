@@ -671,7 +671,8 @@ INPUT                  = ../testlib \
                          ../examples \
                          ../libs \
                          tutorial.markdown \
-                         general_documentation.markdown
+                         general_documentation.markdown \
+                         main_page.markdown
 
 
 # This tag can be used to specify the character encoding of the source files 
