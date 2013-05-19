@@ -99,3 +99,15 @@ inline std::string englishEnding(Integral n){
         return "rd";
     return "th";
 }
+
+
+#ifdef TESTLIB_DEBUG
+	#define TESTLIB_ASSERT(x) \
+		if(!(x)) { \
+			std::cerr << "Assertion failed: " << #x << std::endl; \
+			std::exit(1); \
+		}
+#else
+	#define TESTLIB_ASSERT(x)
+#endif
+	

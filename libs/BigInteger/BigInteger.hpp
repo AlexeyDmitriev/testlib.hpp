@@ -15,6 +15,12 @@
 class BigInteger {
 public:
 	BigInteger() : sign(1), data(0) {}
+	
+	~BigInteger() {
+		TESTLIB_ASSERT(sign == -1 || sign == 1);
+		TESTLIB_ASSERT(data.empty() || data.back() != 0);
+		TESTLIB_ASSERT(sign == 1 || !data.empty());
+	}
 
 	explicit BigInteger(intmax_t val) {
 		sign = 1;
@@ -59,7 +65,7 @@ public:
 	}
 
 	BigInteger& operator += (const BigInteger &summand) {
-		if (sign == summand.sign) {
+		if (sign == summand.sign || summand.isZero()) {
 			for (size_t i = 0, carry = 0; i < std::max(data.size(), summand.data.size()) || carry > 0; ++i) {
 				if (i == data.size())
 					data.push_back(0);
@@ -75,7 +81,7 @@ public:
 	}
 
 	BigInteger& operator -= (const BigInteger &deduction) {
-		if (sign == deduction.sign) {
+		if (sign == deduction.sign || deduction.isZero()) {
 			if (abs() >= deduction.abs()) {
 				for (size_t i = 0, carry = 0; i < deduction.data.size() || carry; ++i) {
 					data[i] -= carry + (i < deduction.data.size() ? deduction.data[i] : 0);
@@ -93,7 +99,8 @@ public:
 		return *this;
 	}
 
-	BigInteger& operator *= (int multiplier) {
+	BigInteger& operator *= (int rhs) {
+		long long multiplier = rhs; //avoid overflow with MIN_INT
 		if (multiplier < 0) {
 			sign = -sign;
 			multiplier = -multiplier;
@@ -102,7 +109,7 @@ public:
 			if (i == data.size())
 				data.push_back(0);
 			long long cur = data[i] * (long long) multiplier + carry;
-			carry = (int) (cur / base);
+			carry = (size_t) (cur / base);
 			data[i] = (int) (cur % base);
 		}
 		removeLeadingZeros();
@@ -116,7 +123,8 @@ public:
 	}
 
 
-	BigInteger& operator /= (int divider) {
+	BigInteger& operator /= (int rhs) {
+		long long divider = rhs; //avoid overflow with MIN_INT
 		if (divider == 0)
 			throw VerdictException(Verdict::FAIL, "division by zero");
 		if (divider < 0)
@@ -124,7 +132,7 @@ public:
 		for (size_t i = data.size(), rem = 0; i-- > 0; ) {
 			long long cur = data[i] + rem * (long long) base;
 			data[i] = (int) (cur / divider);
-			rem = static_cast<int>(cur % divider);
+			rem = (int)(cur % divider);
 		}
 		removeLeadingZeros();
 		return *this;
@@ -136,7 +144,8 @@ public:
 		return res;
 	}
 
-	int operator % (int divider) const {
+	int operator % (int rhs) const {
+		long long divider = rhs; //avoid overflow with MIN_INT
 		if (divider < 0)
 			divider = -divider;
 		int m = 0;
@@ -144,7 +153,12 @@ public:
 			m = (data[i] + m * (long long) base) % divider;
 		return m * sign;
 	}
-
+	
+	BigInteger& operator %= (int divider) {
+		*this = *this % divider;
+		return *this;
+	}
+	
 	BigInteger operator + (const BigInteger &summand) const {
 		BigInteger res(*this);
 		res += summand;
