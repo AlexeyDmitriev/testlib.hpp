@@ -98,6 +98,7 @@ Tree Tree::rehang(size_t newRoot) const {
 }	
 
 inline Tree renumerateVertices(const Tree& tree, vector<size_t> permutation) {
+	size_t oldRoot = tree.getRoot();
 	vector<vector<size_t>> g = treeToGraph(tree);
 	for (size_t v = 0; v < g.size(); ++v)
 		for (auto& to : g[v])
@@ -105,7 +106,7 @@ inline Tree renumerateVertices(const Tree& tree, vector<size_t> permutation) {
 	vector<vector<size_t>> resG(g.size(), vector<size_t>());
 	for (size_t v = 0; v < g.size(); ++v)
 		resG[permutation[v]] = g[v];
-	return Tree(resG);
+	return Tree(resG, permutation[oldRoot]);
 }
 
 inline Tree shuffle(const Tree& tree, Random& rnd) {
