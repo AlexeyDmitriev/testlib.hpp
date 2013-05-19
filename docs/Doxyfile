@@ -667,12 +667,12 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = ../testlib \
-                         ../examples \
-                         ../libs \
-                         tutorial.markdown \
-                         general_documentation.markdown \
-                         main_page.markdown
+INPUT                  = testlib \
+                         examples \
+                         libs \
+                         docs/tutorial.markdown \
+                         docs/general_documentation.markdown \
+                         docs/main_page.markdown
 
 
 # This tag can be used to specify the character encoding of the source files 
