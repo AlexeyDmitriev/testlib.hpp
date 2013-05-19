@@ -1,6 +1,9 @@
 #pragma once
+#include <algorithm>
+#include <vector>
 #include <libs/tree/tree.hpp>
-using namespace std;
+
+using std::vector;
 using namespace tree;
 
 bool dfsCheckNoCycle(const vector<vector<size_t> >& graph, size_t v, vector<char>& used, int parent = -1){
@@ -27,6 +30,63 @@ bool isTree(const Tree& tree){
 	return true;
 }
 
+void dfsHeight(const Tree& tree, size_t v, vector<size_t>& heights ){
+	for (auto to : tree.children(v)){
+		heights[to] = heights[v] + 1;
+		dfsHeight(tree, to, heights);
+	}
+}
+
+template<typename T>
+void printVector(const vector<T>& a)
+{
+	for (auto to: a)
+		std::cerr << to << " ";
+	std::cerr << std::endl;
+}
+
+bool isBalancedKTree(const Tree& tree, size_t k){
+	if (!isTree(tree))
+		return false;
+	vector<size_t> heights(tree.size(), 0);
+	dfsHeight(tree, tree.getRoot(), heights);
+	//printVector(heights);
+	size_t maxHeight = *std::max_element(heights.begin(), heights.end());
+	size_t qPrevLastLevel = 0;
+	for (size_t v = 0; v < tree.size(); v++)
+		if (heights[v] != maxHeight)
+		{
+			if (heights[v] != maxHeight - 1){
+				if (tree.children(v).size() != k)
+					return false;
+			}
+			else{
+				if (tree.children(v).size() < k && tree.children(v).size() > 0)
+					qPrevLastLevel++;
+				if (tree.children(v).size() > k)
+					return false;		
+			}
+		}
+		else
+		{
+			if (tree.children(v).size() != 0)
+				return false;
+		}
+	return qPrevLastLevel <= 1;
+}
+
+bool isBinaryTree(const Tree& tree){
+	if (!isTree(tree))
+		return false;
+	for (size_t v = 0; v < tree.size(); ++v){
+		if (tree.children(v).size() != 0 && tree.children(v).size() != 2)
+			return false;
+	}
+	return true;
+}
+
+using std::cerr;
+using std::endl;
 void printTree(const Tree& tree)
 {
 	cerr << tree.getRoot() << endl;

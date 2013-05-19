@@ -170,6 +170,9 @@ public:
 class BinaryTreeGenerator : public Generator<tree::Tree> {
 public:
 	tree::Tree generate(Random& rnd, size_t numberVertices) const {
+		if (numberVertices % 2 == 0)
+			throw VerdictException(Verdict::FAIL, "BinaryTreeGenerator: numberVertices is even");
+		
 		std::vector<std::pair<size_t, size_t> > edges; 
 		edges.reserve(numberVertices - 1);
 		std::vector<size_t> curLevel, nextLevel;
@@ -207,6 +210,8 @@ public:
 class BalancedKTreeGenerator : public Generator<tree::Tree> {
 public:
 	tree::Tree generate(Random& rnd, size_t numberVertices, size_t vertexDegree) const {
+		if (vertexDegree == 0)
+			throw VerdictException(Verdict::FAIL, "BalancedKTreeGenerator: vertexDegree = 0");
 		std::vector<std::pair<size_t, size_t> > edges(numberVertices - 1);
 		for (size_t i = 1; i < numberVertices; i++)
 			edges[i - 1] = std::make_pair(i , (i - 1) / vertexDegree);
