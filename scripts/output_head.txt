@@ -5,7 +5,7 @@
  * Repository URL: git://github.com/AlexeyDmitriev/testlib.hpp.git
  * Bug tracker: https://github.com/AlexeyDmitriev/testlib.hpp/issues
  *
- * testlib.hpp version 0.1.0
+ * testlib.hpp version 0.2.0
  * This material is provided "as is", with absolutely no warranty expressed
  * or implied. Any use is at your own risk.
  * You are free to use and change it without any fee.
