@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <type_traits>
+#include <iterator>
 #include "reader.hpp"
 
 template <typename... All>
@@ -29,19 +30,26 @@ inline std::string toString(const std::string& value){
 	return value;
 }
 
-template <typename T>
-inline std::string rangeToString(T start, T end){
+template <typename T, typename U>
+inline std::string separated(T start, T end, U separator) {
 	std::stringstream ss;
-	ss << '[';
-	for(T current = start; current != end; ++current){
+	for(T current = start; current != end; ++current) {
 		if(current != start)
-			ss << ", ";
+			ss << separator;
 		ss << *current;
 	}
-	ss << ']';
 	return ss.str();
 }
 
+template <typename T, typename U>
+inline std::string separated(const T& collection, U&& separator) {
+	return separated(std::begin(collection), std::end(collection), std::forward<U>(separator));
+}
+
+template <typename T>
+inline std::string rangeToString(T start, T end) {
+	return '[' + separated(start, end, ", ") + ']';
+}
 template <typename T>
 inline std::string toPrint(T value){
 	const size_t MAX_LENGTH = 70;
@@ -91,3 +99,15 @@ inline std::string englishEnding(Integral n){
         return "rd";
     return "th";
 }
+
+
+#ifdef TESTLIB_DEBUG
+	#define TESTLIB_ASSERT(x) \
+		if(!(x)) { \
+			std::cerr << "Assertion failed: " << #x << std::endl; \
+			std::exit(1); \
+		}
+#else
+	#define TESTLIB_ASSERT(x)
+#endif
+	

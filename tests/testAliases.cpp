@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
-#include "tests/testTools.hpp"
+#include "tests/testReadTools.hpp"
 #include "testlib/alias.hpp"
-#include "testlib/int.hpp"
+#include "testlib/readers/int.hpp"
 typedef Alias<int, HexReader<int>> Hex;
 BOOST_FIXTURE_TEST_SUITE(aliasTest, StrictRead)
 

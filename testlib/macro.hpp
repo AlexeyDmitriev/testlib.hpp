@@ -80,7 +80,7 @@ private:
 #define TESTLIB_CHECK() void check(IStream& inf, IStream& ouf, IStream& ans); \
 int main(int argc, char** argv){ \
 	Verdict verdict = Verdict::FAIL; \
-	std::string message = "No message provided"; \
+	std::string message = "No verdict returned"; \
 	Options options; \
 	try { \
 		options.fill(argc, argv); \
@@ -132,3 +132,61 @@ int main(){ \
 	return verdict.exitCode(); \
 } \
 void validate(IStream& inf)
+
+uint64_t getHash(size_t argc, char** argv)
+{
+	uint64_t seed = 0, multiplier = 0x5f17;
+	uint64_t p = 1;
+	for (size_t i = 1; i < argc; ++i) {
+		for (size_t j = 0, n = strlen(argv[i]); j < n; ++j) {
+			seed += argv[i][j] * p;
+			p *= multiplier;
+		}
+		seed += p * ' ';
+		p *= multiplier;
+	}
+	return seed;
+}
+
+class ArgumentsReader {
+public:
+	template<typename T, typename... Args>
+	T get(Args&&... args) {
+		rangeCheck();
+		std::stringstream ss(argv[cur]);
+		FailIStream in(std::unique_ptr<StreamReader>(new StdStreamReader(ss)), IStream::Mode::NON_STRICT);
+		return in.read<T>(std::forward<Args>(args)...);
+	}
+	std::string getRaw() {
+		rangeCheck();
+		return argv[cur];
+	}
+	ArgumentsReader (int argc, char** argv): argc(argc), argv(argv), cur(0) {}
+private:
+	void rangeCheck() {
+		++cur;
+		if(cur == argc)
+			throw VerdictException(Verdict::FAIL, "Too few command-line arguments");
+	}
+	int argc;
+	char** argv;
+	int cur;
+};
+
+#define TESTLIB_GENERATE() void generate(Random& rnd, ArgumentsReader& args); \
+int main(int argc, char** argv) {\
+	Verdict verdict = Verdict::OK; \
+	\
+	Random rnd(getHash(argc, argv)); \
+	ArgumentsReader args(argc, argv); \
+	try { \
+		generate(rnd, args); \
+	} \
+	catch(VerdictException& ex) { \
+		verdict = Verdict::FAIL; \
+		std::cerr << "FAIL: " << ex.message << std::endl;\
+	} \
+	return verdict.exitCode(); \
+} \
+void generate(Random& rnd, ArgumentsReader& args)
+

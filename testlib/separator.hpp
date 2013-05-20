@@ -1,4 +1,5 @@
 #pragma once
+#include "istream.hpp"
 #include <string>
 
 class Separator{

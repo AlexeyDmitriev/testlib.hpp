@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2.7
 import os
 import subprocess
 import sys
@@ -132,8 +132,9 @@ def runAllTests(cpp, logLevel):
 	"""
 	log("cpp", logLevel, "Start test", cpp)
 	errors = 0
-	for testFile in os.listdir(testDir(cpp)):
-		errors += runTestFile(cpp, testFile, logLevel)
+	if os.path.isdir(testDir(cpp)):	
+		for testFile in os.listdir(testDir(cpp)):
+			errors += runTestFile(cpp, testFile, logLevel)
 	log("cpp", logLevel, errors, "errors in", cpp)
 	return errors
 

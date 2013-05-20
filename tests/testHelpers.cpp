@@ -1,6 +1,6 @@
-#include "testTools.hpp"
+#include "testReadTools.hpp"
 #include <boost/test/unit_test.hpp>
-#include "testlib/float.hpp"
+#include "testlib/readers/float.hpp"
 #include "testlib/verdictFunctions.hpp"
 #include <algorithm>
 #include <vector>

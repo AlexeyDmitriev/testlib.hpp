@@ -2,9 +2,9 @@
 #include <vector>
 #include <limits>
 #include <algorithm>
-#include "testlib/string.hpp"
+#include "testlib/readers/string.hpp"
 #include "testlib/alias.hpp"
-#include "testTools.hpp"
+#include "testReadTools.hpp"
 #include <boost/test/unit_test.hpp>
 #include "testString/utils.hpp"
 

@@ -1,8 +1,8 @@
 #pragma once
 #include <utility>
 #include <string>
-#include "istream.hpp"
-#include "separator.hpp"
+#include "testlib/istream.hpp"
+#include "testlib/separator.hpp"
 
 template<typename T, typename U>
 class DefaultReader<std::pair<T, U>> : Reader<std::pair<T, U>>{

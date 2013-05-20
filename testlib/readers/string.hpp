@@ -1,6 +1,6 @@
 #pragma once
-#include "istream.hpp"
-#include "reader.hpp"
+#include "testlib/istream.hpp"
+#include "testlib/reader.hpp"
 #include <string>
 
 template <>

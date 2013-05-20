@@ -1,7 +1,7 @@
 #pragma once
 #include <type_traits>
-#include "reader.hpp"
-#include "istream.hpp"
+#include "testlib/reader.hpp"
+#include "testlib/istream.hpp"
 template <typename T>
 struct is_char : public std::false_type{};
 

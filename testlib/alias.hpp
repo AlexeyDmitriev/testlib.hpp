@@ -1,5 +1,6 @@
 #pragma once
 #include "reader.hpp"
+#include "generator.hpp"
 #include <type_traits>
 #include <iostream>
 
@@ -8,14 +9,12 @@ class AliasImpl;
 
 template<typename T, typename R>
 class AliasImpl<T, R, std::true_type> : public T {
-	static_assert(std::is_base_of<Reader<T>, R>::value, "R must be reader of T");
 public:
 	/*implicit*/ AliasImpl(const T& value): T(value){}
 };
 
 template <typename T, typename R>
 class AliasImpl<T, R, std::false_type>{
-	static_assert(std::is_base_of<Reader<T>, R>::value, "R must be reader of T");
 public:
 	/*implicit*/ AliasImpl(const T& value): value(value){}
 	operator T () const {
@@ -34,7 +33,17 @@ class DefaultReader<Alias<T,R>> : public Reader<Alias<T,R>> {
 public:
 	typedef typename Base::type type;
 	template<typename... Args>
-	type read(Args&&... args){
+	type read(Args&&... args) {
 		return R().read(std::forward<Args>(args)...);
+	}
+};
+
+template <typename T, typename G>
+class DefaultGenerator<Alias<T,G>> : public Generator<Alias<T, G>> {
+public:
+	typedef typename Generator<Alias<T, G>>::type type;
+	template<typename... Args>
+	type generate(Args&&... args) {
+		return G().generate(std::forward<Args>(args)...);
 	}
 };

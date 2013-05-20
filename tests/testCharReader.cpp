@@ -1,7 +1,7 @@
-#include "testTools.hpp"
+#include "testReadTools.hpp"
 #include <boost/test/unit_test.hpp>
 #include "testChar/utils.hpp"
-#include "testlib/char.hpp"
+#include "testlib/readers/char.hpp"
 
 BOOST_FIXTURE_TEST_SUITE(Integers, StrictRead)
 

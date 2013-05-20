@@ -5,11 +5,164 @@
  * Repository URL: git://github.com/AlexeyDmitriev/testlib.hpp.git
  * Bug tracker: https://github.com/AlexeyDmitriev/testlib.hpp/issues
  *
- * testlib.hpp version 0.1.0
+ * testlib.hpp version 0.2.0
  * This material is provided "as is", with absolutely no warranty expressed
  * or implied. Any use is at your own risk.
  * You are free to use and change it without any fee.
  */
+#pragma once
+#include <type_traits>
+
+template<typename T>
+class Generator {
+public:
+	typedef T type;
+};
+
+template<typename T, typename = std::true_type>
+class DefaultGenerator;
+#pragma once
+
+#include <sstream>
+#include <type_traits>
+#include <iterator>
+#pragma once
+#include <type_traits>
+template<typename T>
+class Reader{
+public:
+	typedef T type;
+};
+
+template<typename T, typename = std::true_type>
+class DefaultReader;
+
+template <typename... All>
+struct firstType;
+template <typename First, typename... Other>
+struct firstType<First, Other...>{
+	typedef First type;
+};
+
+template <>
+struct firstType<>{
+	typedef void type;
+};
+
+
+template <typename T>
+inline std::string toString(const T& value){
+	std::stringstream ss;
+	ss << value;
+	return ss.str();
+}
+
+template <>
+inline std::string toString(const std::string& value){
+	return value;
+}
+
+template <typename T, typename U>
+inline std::string separated(T start, T end, U separator) {
+	std::stringstream ss;
+	for(T current = start; current != end; ++current) {
+		if(current != start)
+			ss << separator;
+		ss << *current;
+	}
+	return ss.str();
+}
+
+template <typename T, typename U>
+inline std::string separated(const T& collection, U&& separator) {
+	return separated(std::begin(collection), std::end(collection), std::forward<U>(separator));
+}
+
+template <typename T>
+inline std::string rangeToString(T start, T end) {
+	return '[' + separated(start, end, ", ") + ']';
+}
+template <typename T>
+inline std::string toPrint(T value){
+	const size_t MAX_LENGTH = 70;
+	std::string str = toString(value);
+	if(str.length() <= MAX_LENGTH)
+		return "\"" + str + "\"";
+	else
+		return "\"" + str.substr(0, MAX_LENGTH / 2) + "..." 
+		            + str.substr(str.length() - MAX_LENGTH / 2) + "\"";
+}
+
+template <>
+inline std::string toPrint<char>(char value){
+	if(value == '\n')
+		return "EOLN";
+	if(value == '\r')
+		return "CR";
+	if(value == ' ')
+		return "' '";
+	if(value >= 0 && value < ' ')
+		return "'#" + toString(static_cast<int>(value)) + "'";
+	return "'" + toString(value) + "'";
+}
+
+template <>
+inline std::string toPrint<const char*>(const char* string){
+	return toString(string);
+}
+
+template<typename T, typename U>
+inline std::string expectation(T&& expected, U&& found){
+	return toPrint(expected) + " expected, " + toPrint(found) + " found";
+}
+
+template <typename ReaderT, typename T, typename Result>
+using if_reader = typename std::enable_if<std::is_base_of<Reader<T>, ReaderT>::value,Result>::type;
+
+template<typename Integral>
+inline std::string englishEnding(Integral n){
+    if (n / 10 % 10 == 1)
+        return "th";
+    if (n % 10 == 1)
+        return "st";
+    if (n % 10 == 2)
+        return "nd";
+    if (n % 10 == 3)
+        return "rd";
+    return "th";
+}
+
+
+#ifdef TESTLIB_DEBUG
+	#define TESTLIB_ASSERT(x) \
+		if(!(x)) { \
+			std::cerr << "Assertion failed: " << #x << std::endl; \
+			std::exit(1); \
+		}
+#else
+	#define TESTLIB_ASSERT(x)
+#endif
+	
+#pragma once
+
+#include <ctime>
+#include <cstdint>
+#include <cstddef>
+#include <climits>
+#include <limits>
+#include <stdexcept>
+#include <type_traits>
+#include <utility>
+#include <iterator>
+#pragma once
+
+
+#include <cstdlib>
+#include <stdexcept>
+#include <string>
+#include <cassert>
+#include <map>
+#pragma once
 
 #ifndef OK_EXIT_CODE
 	#define OK_EXIT_CODE 0
@@ -46,86 +199,6 @@
 		#define PARTIALLY_EXIT_CODE 0
 	#endif
 #endif
-#include <iostream>
-class StreamReader {
-public:
-	virtual int get() = 0;
-	virtual int peek() = 0;
-	
-	virtual ~StreamReader() {}
-};
-class StdStreamReader : public StreamReader {
-public:
-	StdStreamReader(std::istream& stream):stream(stream){}
-	
-	int get(){
-		return stream.get();
-	}
-	
-	int peek(){
-		return stream.peek();
-	}
-	virtual ~StdStreamReader() {}
-private:
-	std::istream& stream;
-};
-
-class File {
-public:
-	File():stream(nullptr), opened(false){}
-	File(FILE* stream): stream(stream), opened(false){}
-	void open(const char* name, const char* format){
-		opened = true;
-		stream = fopen(name, format);
-	}
-	bool fail() const {
-		return stream == nullptr;
-	}
-	~File() {
-		if(opened && stream)
-			fclose(stream);
-	}
-	FILE* stream;
-private:
-	bool opened;
-};
-
-class BufferedFileReader : public StreamReader{
-public:
-	BufferedFileReader(const File& file): file(file){}
-	int get() {
-		if(!fill())
-			return EOF;
-		return buffer[position++];
-	}
-	
-	int peek() {
-		if(!fill())
-			return EOF;
-		return buffer[position];
-	}
-	virtual ~BufferedFileReader(){}
-private:
-	bool fill(){
-		if(position < bufferSize)
-			return true;
-		bufferSize = fread(buffer, 1, BUFFER_SIZE, file.stream);
-		position = 0;
-		return bufferSize > 0;
-	}
-	static const int BUFFER_SIZE = 100000;
-	char buffer[BUFFER_SIZE];
-	int position = 0;
-	int bufferSize = 0;
-	const File& file;
-};
-
-
-#include <cstdlib>
-#include <stdexcept>
-#include <string>
-#include <cassert>
-#include <map>
 
 #if ( _WIN32 || __WIN32__ || _WIN64 || __WIN64__ )
 	#define ON_WINDOWS
@@ -205,215 +278,177 @@ public:
 	std::string message;
 	VerdictException(Verdict verdict, const std::string& str): verdict(verdict), message(str){}
 };
-#include <sstream>
-#include <algorithm>
-#include <iterator>
-
-#define QUIT(verdict, msg) \
-do { \
-	std::stringstream ss; \
-	ss << msg; \
-	throw VerdictException(verdict, ss.str()); \
-} \
-while (false); \
-
-#define OK(msg) QUIT(Verdict::OK, msg)
-#define WA(msg) QUIT(Verdict::WA, msg)
-#define FAIL(msg) QUIT(Verdict::FAIL, msg)
-#define PE(msg) QUIT(Verdict::PE, msg)
-
-#define ensure(condition) \
-do { \
-	if(!(condition)) {\
-		FAIL("\"" #condition "\" on line "  << __LINE__ << " is false"); \
-	} \
-} while(false);
-
-#define verify(condition, verdict, message) \
-do { \
-	if(!(condition)) {\
-		QUIT(verdict, message); \
-	} \
-} while(false);
-/*
-template <typename T, typename U>
-inline void verifyEqual(T&& t, U&& u, Verdict verdict = Verdict::WA){
-	verify(t == u, verdict, t << " != " << u);
-}
-
-template <typename T>
-inline void verifySorted(T start, T end, Verdict verdict = Verdict::WA){
-	verify(std::is_sorted(start, end), verdict, expectation("Sorted range", rangeToString(start, end)));
-}
-*/
-template <typename T, typename Equal = std::equal_to<T>>
-inline void verifyEqual(T&& t, T&& u, Verdict verdict = Verdict::WA, Equal equal = Equal()){
-	verify(equal(t, u), verdict, t << " != " << u);
-}
-
-template <typename T, typename Compare = std::less<typename std::iterator_traits<T>::value_type>>
-inline void verifySorted(T start, T end, Verdict verdict = Verdict::WA, Compare comp = Compare()){
-	verify(std::is_sorted(start, end, comp), verdict, expectation("Sorted range", rangeToString(start, end)));
-}
-
-template <typename T, typename U>
-inline void verifyEqualRanges (T startT, T endT, U startU, U endU, Verdict verdict = Verdict::WA){
-	T itT = startT;
-	U itU = startU;
-	while(true){
-		if(itT == endT && itU == endU)
-			return;
-		if(itT == endT || itU == endU)
-			QUIT(verdict, rangeToString(startT, endT) << " != " << rangeToString(startU, endU));
-		if(*itT != *itU)
-			QUIT(verdict, rangeToString(startT, endT) << " != " << rangeToString(startU, endU));
-		++itT;
-		++itU;
+class Random {
+public:
+	static const size_t MAX_BITS = sizeof(uintmax_t) * CHAR_BIT;
+	Random(uint64_t seed){
+		this->seed = (seed ^ 0x5DEECE66DL) & ((one() << 48) - 1);
 	}
-}
-#include <type_traits>
-template<typename T>
-class Reader{
-public:
-	typedef T type;
-};
 
-template<typename T, typename = std::true_type>
-class DefaultReader;
-#include <type_traits>
-#include <iostream>
+	bool nextBit() {
+		return _nextBits(1);
+	}
 
-template <typename T, typename R, typename X>
-class AliasImpl;
+	uintmax_t nextBits(size_t bitCount) {
+		if(bitCount > MAX_BITS){
+			throw std::out_of_range("Can't fit this number of bits in uintmax_t");
+		}
+		uintmax_t v = _nextBits(bitCount & 31);
+		bitCount >>= 5;
+		while(bitCount--){
+			v <<= 32;
+			v ^= _nextBits(32);
+		}
+		return v;
+	}
 
-template<typename T, typename R>
-class AliasImpl<T, R, std::true_type> : public T {
-	static_assert(std::is_base_of<Reader<T>, R>::value, "R must be reader of T");
-public:
-	/*implicit*/ AliasImpl(const T& value): T(value){}
-};
+	template<typename T, typename... Args>
+	typename std::enable_if<!std::is_base_of<Generator<T>, typename firstType<Args...>::type>::value,T>::type next(Args&&... args){
+		return DefaultGenerator<T>().generate(*this, std::forward<Args>(args)...);
+	}
+	
+	template<typename T, typename U, typename... Args>
+	typename std::enable_if<std::is_base_of<Generator<T>, U>::value,T>::type next(U generator, Args&&... args){
+		return generator.generate(*this, std::forward<Args>(args)...);
+	}
 
-template <typename T, typename R>
-class AliasImpl<T, R, std::false_type>{
-	static_assert(std::is_base_of<Reader<T>, R>::value, "R must be reader of T");
-public:
-	/*implicit*/ AliasImpl(const T& value): value(value){}
-	operator T () const {
-		return value;
+	template<typename T, typename... Args>
+	void fill(T& variable, Args&&... args) {
+		variable = next<T>(std::forward<Args>(args)...);
+	}
+	
+	template <typename RAI>
+	void shuffle(RAI first, RAI last) {
+		using std::swap;
+		ptrdiff_t len = last - first;
+		while(first != last){
+			--len;
+			swap(*first, first[next<ptrdiff_t>(0, len)]);
+			++first;
+		}
+	}
+
+	template <typename T, typename OI, typename... Args> 
+	void fillN(size_t n, OI iterator, Args&&... args){
+		for(size_t i = 0; i < n; ++i){
+			*(iterator++) = next<T>(std::forward<Args>(args)...);
+		}
+	}
+
+	template <typename FI, typename... Args>
+	void fillRange(FI first, FI last, Args&&... args) {
+		for(;first != last;++first){
+			*first = next<typename std::remove_reference<decltype(*first)>::type>(std::forward<Args>(args)...);
+		}
+	}
+
+	template <typename Iterator>
+	typename std::iterator_traits<Iterator>::value_type any(Iterator begin, Iterator end) {
+		auto len = std::distance(begin, end);
+		if(begin == end)
+			throw VerdictException(Verdict::FAIL, "Empty range to generate any");
+		return *std::next(begin, next<decltype(len)>(0, len - 1));
+	}
+
+	template <typename T>
+	auto any(const T& collection) -> decltype(any(collection.begin(), collection.end())) {
+		return any(collection.begin(), collection.end());
 	}
 private:
-	T value;
-};
-
-template <typename T, typename R>
-using Alias = AliasImpl<T, R, typename std::is_class<T>::type>;
-
-template <typename T, typename R>
-class DefaultReader<Alias<T,R>> : public Reader<Alias<T,R>> {
-	typedef Reader<Alias<T,R>> Base;
-public:
-	typedef typename Base::type type;
-	template<typename... Args>
-	type read(Args&&... args){
-		return R().read(std::forward<Args>(args)...);
+	uint64_t seed;
+	
+	uint32_t _nextBits(size_t bitCount){
+		seed = (seed * 0x5DEECE66DL + 0xBL) & ((one() << 48) - 1);
+		return uint32_t(seed >> (48 - bitCount));
 	}
-};
 
-#include <sstream>
-#include <type_traits>
-
-template <typename... All>
-struct firstType;
-template <typename First, typename... Other>
-struct firstType<First, Other...>{
-	typedef First type;
-};
-
-template <>
-struct firstType<>{
-	typedef void type;
-};
-
-
-template <typename T>
-inline std::string toString(const T& value){
-	std::stringstream ss;
-	ss << value;
-	return ss.str();
-}
-
-template <>
-inline std::string toString(const std::string& value){
-	return value;
-}
-
-template <typename T>
-inline std::string rangeToString(T start, T end){
-	std::stringstream ss;
-	ss << '[';
-	for(T current = start; current != end; ++current){
-		if(current != start)
-			ss << ", ";
-		ss << *current;
+	uintmax_t one(){
+		return 1;
 	}
-	ss << ']';
-	return ss.str();
-}
 
-template <typename T>
-inline std::string toPrint(T value){
-	const size_t MAX_LENGTH = 70;
-	std::string str = toString(value);
-	if(str.length() <= MAX_LENGTH)
-		return "\"" + str + "\"";
-	else
-		return "\"" + str.substr(0, MAX_LENGTH / 2) + "..." 
-		            + str.substr(str.length() - MAX_LENGTH / 2) + "\"";
-}
+};
+#pragma once
 
-template <>
-inline std::string toPrint<char>(char value){
-	if(value == '\n')
-		return "EOLN";
-	if(value == '\r')
-		return "CR";
-	if(value == ' ')
-		return "' '";
-	if(value >= 0 && value < ' ')
-		return "'#" + toString(static_cast<int>(value)) + "'";
-	return "'" + toString(value) + "'";
-}
-
-template <>
-inline std::string toPrint<const char*>(const char* string){
-	return toString(string);
-}
-
-template<typename T, typename U>
-inline std::string expectation(T&& expected, U&& found){
-	return toPrint(expected) + " expected, " + toPrint(found) + " found";
-}
-
-template <typename ReaderT, typename T, typename Result>
-using if_reader = typename std::enable_if<std::is_base_of<Reader<T>, ReaderT>::value,Result>::type;
-
-template<typename Integral>
-inline std::string englishEnding(Integral n){
-    if (n / 10 % 10 == 1)
-        return "th";
-    if (n % 10 == 1)
-        return "st";
-    if (n % 10 == 2)
-        return "nd";
-    if (n % 10 == 3)
-        return "rd";
-    return "th";
-}
+#pragma once
 #include <iostream>
 #include <functional>
 #include <type_traits>
 #include <cstdio>
 #include <memory>
+#pragma once
+#include <iostream>
+class StreamReader {
+public:
+	virtual int get() = 0;
+	virtual int peek() = 0;
+	
+	virtual ~StreamReader() {}
+};
+class StdStreamReader : public StreamReader {
+public:
+	StdStreamReader(std::istream& stream):stream(stream){}
+	
+	int get(){
+		return stream.get();
+	}
+	
+	int peek(){
+		return stream.peek();
+	}
+	virtual ~StdStreamReader() {}
+private:
+	std::istream& stream;
+};
+
+class File {
+public:
+	File():stream(nullptr), opened(false){}
+	File(FILE* stream): stream(stream), opened(false){}
+	void open(const char* name, const char* format){
+		opened = true;
+		stream = fopen(name, format);
+	}
+	bool fail() const {
+		return stream == nullptr;
+	}
+	~File() {
+		if(opened && stream)
+			fclose(stream);
+	}
+	FILE* stream;
+private:
+	bool opened;
+};
+
+class BufferedFileReader : public StreamReader{
+public:
+	BufferedFileReader(const File& file): file(file){}
+	int get() {
+		if(!fill())
+			return EOF;
+		return buffer[position++];
+	}
+	
+	int peek() {
+		if(!fill())
+			return EOF;
+		return buffer[position];
+	}
+	virtual ~BufferedFileReader(){}
+private:
+	bool fill(){
+		if(position < bufferSize)
+			return true;
+		bufferSize = fread(buffer, 1, BUFFER_SIZE, file.stream);
+		position = 0;
+		return bufferSize > 0;
+	}
+	static const int BUFFER_SIZE = 100000;
+	char buffer[BUFFER_SIZE];
+	int position = 0;
+	int bufferSize = 0;
+	const File& file;
+};
 
 class IStream {
 public:
@@ -588,6 +623,141 @@ public:
 	}
 	virtual ~OutputIStream(){}
 };
+#include <algorithm>
+#include <limits>
+#include <string>
+#include <type_traits>
+#include <cmath>
+
+template<typename T>
+inline bool isInfinite(T value){
+	return value == std::numeric_limits<T>::infinity() || value == -std::numeric_limits<T>::infinity();
+}
+template<typename T>
+inline bool isNaN(T value){
+	return value != value;
+}
+
+template <typename T>
+class FloatReader : public Reader<T> {
+public:
+	T read(IStream& stream) const {
+		std::string input = stream.readToken();
+		const char* usedValue = input.c_str();
+		size_t length = input.length();
+		if(input[0] == '-') {
+			++usedValue;
+			--length;
+		}
+		if(length == 0)
+			stream.quit(Verdict::PE, expectation("Float", input));
+
+		if(usedValue[0] == '0' && length > 1 && usedValue[1] != '.')
+			stream.quit(Verdict::PE, expectation("Float", input));
+		if(usedValue[0] == '.')
+			stream.quit(Verdict::PE, expectation("Float", input));
+		if(usedValue[length - 1] == '.')
+			stream.quit(Verdict::PE, expectation("Float", input));
+
+		bool wasPoint = false;
+		for (size_t i = 0; i < length; ++i) {
+			char digit = usedValue[i];
+			if(digit == '.') {
+				if (wasPoint)
+					stream.quit(Verdict::PE, expectation("Float", input));
+				wasPoint = true;
+			}
+			else {
+				if(digit < '0' || digit > '9')
+					stream.quit(Verdict::PE, expectation("Float", input));
+			}
+		}
+
+		std::stringstream ss(input);
+		T result;
+		
+		ss >> result;
+		if(!ss || isNaN(result) || isInfinite(result))
+			stream.quit(Verdict::PE, expectation("Float", input));
+		return result;
+	}
+	T read(IStream& stream, T min, T max) const {
+		T result = read(stream);
+		if(result < min || result > max)
+			stream.quit(Verdict::WA, "Float violates the range [" + toString(min) + "," + toString(max) + "]");
+		return result; 
+	}
+};
+
+template<typename T>
+class DefaultReader<T, typename std::is_floating_point<T>::type> : public FloatReader<T> {};
+
+template<typename T>
+inline bool areClose(T expected, T value, T epsilon){
+	return (std::abs(value - expected) / std::max(1.0, expected)) < epsilon;
+}
+#pragma once
+#include <utility>
+#include <string>
+#pragma once
+#include <string>
+
+class Separator{
+private:
+	std::string separator;
+public:
+	/*implicit*/ Separator(char c): separator(1, c){}
+	/*implicit*/ Separator(const char* s): separator(s){}
+	/*implicit*/ Separator(const std::string& s): separator(s){}
+	void read(IStream& stream) const {
+		for(char c: separator){
+			stream.readChar(c);
+		}
+	}
+};
+
+template<typename T, typename U>
+class DefaultReader<std::pair<T, U>> : Reader<std::pair<T, U>>{
+public:
+	
+	typedef std::pair<T, U> type;
+	type read(IStream& stream) const {
+		return read(stream, defaultSeparator(stream));
+	}
+	type read(IStream& stream, const Separator& separator) const {
+		return read(stream, DefaultReader<T>(), DefaultReader<U>(), separator);
+	}
+	
+	template <typename ReaderT, typename ReaderU>
+	if_reader<ReaderT, T, if_reader<ReaderU, U, type>> read(IStream& stream, const ReaderT& readerT, const ReaderU& readerU) const {
+		return read(stream, readerT, readerU, defaultSeparator(stream));
+	}
+	
+	template <typename ReaderT, typename ReaderU>
+	if_reader<ReaderT, T, if_reader<ReaderU, U, type>> read(IStream& stream, const ReaderT& readerT, const ReaderU& readerU, const Separator& separator) const {
+		T t = stream.namedRead<T>("first", readerT);
+		separator.read(stream);
+		U u = stream.namedRead<U>("second", readerU);
+		return std::make_pair(std::move(t), std::move(u));
+	}
+	template <typename ReaderT>
+	if_reader<ReaderT, T, type> read(IStream& stream, const ReaderT& readerT) const {
+		static_assert(std::is_same<T, U>::value, "You may use only reader only for pair<T, T>");
+		return read(stream, readerT, defaultSeparator(stream));
+	}
+	
+	template <typename ReaderT>
+	if_reader<ReaderT, T, type> read(IStream& stream, const ReaderT& readerT, const Separator& separator) const {
+		static_assert(std::is_same<T, U>::value, "You may use only reader only for pair<T, T>");
+		return read(stream, readerT, readerT, separator);
+	}
+	
+private:
+	Separator defaultSeparator(IStream& stream) const {
+		return stream.getMode() == IStream::Mode::STRICT ? " " : "";
+	}
+};
+#pragma once
 #include <type_traits>
 template <typename T>
 struct is_char : public std::false_type{};
@@ -617,6 +787,7 @@ public:
 		assert(false);
 	}
 };
+#pragma once
 #include <string>
 
 template <>
@@ -655,6 +826,7 @@ private:
 		return c == '\n' || c == '\r' || c == EOF;
 	}
 };
+#pragma once
 
 #include <limits>
 #include <string>
@@ -794,80 +966,465 @@ class DefaultReader<T, typename is_integer<T>::type> : public IntegerReader<T>{}
 
 template<typename T>
 using HexReader = IntegerReader<T, 16>;
-
-#include <algorithm>
-#include <limits>
-#include <string>
+#pragma once
+#include <utility>
 #include <type_traits>
-#include <cmath>
+#include <vector>
 
 template<typename T>
-inline bool isInfinite(T value){
-	return value == std::numeric_limits<T>::infinity() || value == -std::numeric_limits<T>::infinity();
+class DefaultReader<std::vector<T>> : Reader<std::vector<T>>{
+public:
+	typedef std::vector<T> type;
+	
+	template <typename Reader = DefaultReader<T>>
+	if_reader<Reader, T, type> read(IStream& stream, size_t numberElements, Reader reader = DefaultReader<T>()) const {
+		return read(stream, numberElements, defaultElementsSeparator(stream), reader);
+	}
+	
+	template <typename Reader = DefaultReader<T>>
+	if_reader<Reader, T, type> read(IStream& stream, size_t numberElements, const Separator& separator, Reader reader = DefaultReader<T>()) const {
+		std::vector<T> res;
+		res.reserve(numberElements);
+		for (size_t i = 0; i < numberElements; i++){
+			res.push_back(stream.namedRead<T>("index " + toString(i), reader));
+			if (i != numberElements - 1)
+				separator.read(stream);
+		}
+		return res;
+	}
+	
+	template <typename Reader = DefaultReader<T>>
+	if_reader<Reader, T, type> read(IStream& stream, Reader reader = DefaultReader<T>()) const {
+		return read(stream, defaultSizeSeparator(stream), defaultElementsSeparator(stream), reader);
+	}
+	
+	template <typename Reader = DefaultReader<T>>
+	if_reader<Reader, T, type> read(IStream& stream, const Separator& sizeSeparator, const Separator& elementsSeparator, Reader reader = DefaultReader<T>()) const {
+		size_t numberElements =  stream.namedRead<size_t>("Size");
+		sizeSeparator.read(stream);
+		return read(stream, numberElements, elementsSeparator, reader);
+	}
+	
+private:
+	Separator defaultSizeSeparator(IStream& stream) const {
+		return stream.getMode() == IStream::Mode::STRICT ? "\n" : "";
+	}
+	Separator defaultElementsSeparator(IStream& stream) const {
+		return stream.getMode() == IStream::Mode::STRICT ? " " : "";
+	}	
+};
+#pragma once
+
+#pragma once
+#include <sstream>
+#include <algorithm>
+#include <iterator>
+
+#define QUIT(verdict, msg) \
+do { \
+	std::stringstream ss; \
+	ss << msg; \
+	throw VerdictException(verdict, ss.str()); \
+} \
+while (false) \
+
+#define OK(msg) QUIT(Verdict::OK, msg)
+#define WA(msg) QUIT(Verdict::WA, msg)
+#define FAIL(msg) QUIT(Verdict::FAIL, msg)
+#define PE(msg) QUIT(Verdict::PE, msg)
+
+#define ensure(condition) \
+do { \
+	if(!(condition)) {\
+		FAIL("\"" #condition "\" on line "  << __LINE__ << " is false"); \
+	} \
+} while(false)
+
+#define verify(condition, verdict, message) \
+do { \
+	if(!(condition)) {\
+		QUIT(verdict, message); \
+	} \
+} while(false)
+template <typename T, typename Equal = std::equal_to<T>>
+inline void verifyEqual(T&& t, T&& u, Verdict verdict = Verdict::WA, Equal equal = Equal()){
+	verify(equal(t, u), verdict, expectation(t, u));
 }
+
+template <typename T, typename Compare = std::less<typename std::iterator_traits<T>::value_type>>
+inline void verifySorted(T start, T end, Verdict verdict = Verdict::WA, Compare comp = Compare()){
+	verify(std::is_sorted(start, end, comp), verdict, expectation("Sorted range", rangeToString(start, end)));
+}
+
+template <typename T, typename U>
+inline void verifyEqualRanges (T startT, T endT, U startU, U endU, Verdict verdict = Verdict::WA){
+	T itT = startT;
+	U itU = startU;
+	while(true){
+		if(itT == endT && itU == endU)
+			return;
+		if(itT == endT || itU == endU)
+			QUIT(verdict, "Length differ, " << expectation(rangeToString(startT, endT), rangeToString(startU, endU)));
+		if(*itT != *itU)
+			QUIT(verdict, expectation(rangeToString(startT, endT), rangeToString(startU, endU)));
+		++itT;
+		++itU;
+	}
+}
+
+template<typename T, typename TReader = DefaultReader<T>>
+inline void checkExtraTokensInEnd(IStream& ans, IStream& ouf, size_t alreadyReadTokensNumber, 
+	                                TReader reader = DefaultReader<T>()) {
+	size_t extraInAnsCount = 0;
+	while (!ans.seekEof()) {
+		ans.read<T>(reader);
+		++extraInAnsCount;
+	}
+
+	size_t extraInOufCount = 0;
+	while (!ouf.seekEof()) {
+		ouf.read<T>(reader);
+		++extraInOufCount;
+	}
+
+	if (extraInAnsCount) {
+		WA("Answer contains longer sequence [length = " 
+				<< alreadyReadTokensNumber + extraInAnsCount << "], but output contains "
+				<< alreadyReadTokensNumber << " tokens");
+	}
+
+	if (extraInOufCount) {
+		WA("Output contains longer sequence [length = " 
+				<< alreadyReadTokensNumber + extraInOufCount << "], but answer contains "
+				<< alreadyReadTokensNumber << " tokens");
+	}
+}
+
+template<typename T, typename EqualComparator = std::equal_to<T>>
+struct AreEqualChecker {
+	explicit AreEqualChecker(const EqualComparator& equalComparator = EqualComparator()): equalComparator(equalComparator) {}
+
+	void operator() (const T& ansToken, const T& oufToken) const {
+		verifyEqual(ansToken, oufToken, Verdict::WA, equalComparator);
+	}
+
+private:
+	EqualComparator equalComparator;
+};
+
+template<typename T, typename TokensChecker = AreEqualChecker<T>, typename TReader = DefaultReader<T>>
+inline void checkToEof(IStream& ans, IStream& ouf, TokensChecker tokensChecker = AreEqualChecker<T>(), 
+	                     TReader reader = DefaultReader<T>()) {
+	size_t tokensNumber = 0;
+	while (!ans.seekEof() && !ouf.seekEof()) {
+		T ansToken = ans.read<T>(reader);
+		T oufToken = ouf.read<T>(reader);
+		++tokensNumber;
+		try {
+			tokensChecker(ansToken, oufToken);
+		} catch(VerdictException& verdict) {
+			verdict.message = "Differs in " + std::to_string(tokensNumber) + englishEnding(tokensNumber) 
+			           	       + " item: " + verdict.message;
+			throw verdict;
+		}
+	}
+	checkExtraTokensInEnd<T>(ans, ouf, tokensNumber, reader);
+	OK(tokensNumber << " tokens");
+}
+
+template<typename T, typename TokensChecker = AreEqualChecker<T>, typename TReader = DefaultReader<T>>
+inline void checkN(IStream& ans, IStream& ouf, size_t tokensNumber, TokensChecker tokensChecker = AreEqualChecker<T>(), 
+	                 Reader<T> reader = DefaultReader<T>()) {
+	for (size_t tokenNumber = 0; tokenNumber < tokensNumber; ++tokenNumber) {
+		T ansToken = ans.read<T>(reader);
+		T oufToken = ouf.read<T>(reader);
+
+		try {
+			tokensChecker(ansToken, oufToken);
+		} catch(VerdictException& verdict) {
+			verdict.message = "Differs in " + std::to_string(tokensNumber) + englishEnding(tokensNumber) 
+			           	       + " item: " + verdict.message;
+			throw verdict;
+		}
+	}
+}
+
 template<typename T>
-inline bool isNaN(T value){
-	return value != value;
-}
+struct AreClose {
+	explicit AreClose(T epsilon): epsilon(epsilon) {}
+
+	bool operator() (const T& lhs, const T& rhs) const {
+		return areClose(lhs, rhs, epsilon);
+	}
+
+private:
+	T epsilon;
+};
+
+#pragma once
+#include <functional>
+#include <utility>
 
 template <typename T>
-class FloatReader : public Reader<T> {
+class ReaderWrapper : public Reader<typename T::type> {
 public:
-	T read(IStream& stream) const {
-		std::string input = stream.readToken();
-		const char* usedValue = input.c_str();
-		size_t length = input.length();
-		if(input[0] == '-') {
-			++usedValue;
-			--length;
-		}
-		if(length == 0)
-			stream.quit(Verdict::PE, expectation("Float", input));
+	typedef typename T::type type;
+	
+	template <typename... Args>
+	ReaderWrapper(T reader, Args&& ... args) {
+		using namespace std::placeholders;
 
-		if(usedValue[0] == '0' && length > 1 && usedValue[1] != '.')
-			stream.quit(Verdict::PE, expectation("Float", input));
-		if(usedValue[0] == '.')
-			stream.quit(Verdict::PE, expectation("Float", input));
-		if(usedValue[length - 1] == '.')
-			stream.quit(Verdict::PE, expectation("Float", input));
-
-		bool wasPoint = false;
-		for (size_t i = 0; i < length; ++i) {
-			char digit = usedValue[i];
-			if(digit == '.') {
-				if (wasPoint)
-					stream.quit(Verdict::PE, expectation("Float", input));
-				wasPoint = true;
-			}
-			else {
-				if(digit < '0' || digit > '9')
-					stream.quit(Verdict::PE, expectation("Float", input));
-			}
-		}
-
-		std::stringstream ss(input);
-		T result;
-		
-		ss >> result;
-		if(!ss || isNaN(result) || isInfinite(result))
-			stream.quit(Verdict::PE, expectation("Float", input));
-		return result;
+		lambda = std::bind(
+			[reader](IStream& stream, Args... args) {
+				return reader.read(stream, args...);
+			},
+			_1,
+			std::forward<Args> (args)...
+		);
 	}
-	T read(IStream& stream, T min, T max) const {
-		T result = read(stream);
-		if(result < min || result > max)
-			stream.quit(Verdict::WA, "Float violates the range [" + toString(min) + "," + toString(max) + "]");
-		return result; 
+
+	type read(IStream& stream) {
+		return lambda(stream);
+	}
+private:
+	std::function<type(IStream&)> lambda;
+};
+
+template <typename T, typename... Args>
+ReaderWrapper<T> make_reader(T reader, Args&&... args) {
+	return ReaderWrapper<T>(reader, std::forward<Args> (args)...);
+}
+
+template <typename T, typename... Args>
+ReaderWrapper<DefaultReader<T>> make_default_reader(Args&&... args) {
+	return make_reader(DefaultReader<T>(), std::forward<Args>(args)...);
+}
+#include <type_traits>
+
+template <typename T>
+class DefaultGenerator<T, typename std::is_floating_point<T>::type> : public Generator<T> {
+public:
+	T generate(Random& rnd, T from, T to) const {
+		T diff = to - from;
+		T ans = from;
+		while(from + diff != from){
+			diff /= 2;
+			if(rnd.nextBit())
+				ans += diff;
+		}
+		return ans;
+	}
+};
+#pragma once
+#include <utility>
+#include <string>
+
+template<typename T, typename U>
+class DefaultGenerator<std::pair<T, U>> : Generator<std::pair<T, U>>{
+public:
+	typedef std::pair<T, U> type;
+	type generate(Random& rnd) const {
+		return generate(rnd, DefaultGenerator<T>(), DefaultGenerator<U>());
+	}
+	
+	template <typename GeneratorT, typename GeneratorU>
+	type generate(Random& rnd, const GeneratorT& generatorT, const GeneratorU& generatorU) const {
+		//Can't inline here because order of argument calculation is unspecified
+		//It would possibly break random stability on different compilers
+		T first = rnd.next<T>(generatorT);
+		U second = rnd.next<U>(generatorU);
+		return std::make_pair(std::move(first), std::move(second));
+	}
+	
+	template <typename GeneratorT>
+	type generate(Random& rnd, const GeneratorT& generatorT) const {
+		static_assert(std::is_same<T, U>::value, "You may use only generator only for pair<T, T>");
+		return generate(rnd, generatorT, generatorT);
+	}
+};
+#pragma once
+
+#include <deque>
+#include <vector>
+#include <string>
+#include <list>
+#include <set>
+#include <map>
+
+template<typename T, typename U>
+inline auto reserveIfExists(T& container, U&& n, int)
+	-> decltype(container.reserve(n), void())
+{
+	container.reserve(n);
+}
+
+template<typename T, typename U>
+inline void reserveIfExists(T&, U&& n, long){}
+
+
+template<typename T, typename U>
+inline auto addToContainer(T& container, U&& value) -> decltype(container.push_back(value), void()) {
+	container.push_back(value);
+}
+
+template<typename T, typename U>
+inline auto addToContainer(T& container, U&& value) -> decltype(container.insert(value), void()) {
+	container.insert(value);
+}
+
+template<typename T>
+class ContainerGenerator : public Generator<T> {
+	typedef typename T::value_type value_type;
+	typedef typename T::size_type size_type;
+public:
+	template<typename... Args>
+	T generate(Random& rnd, size_type n, Args&&... args) const {
+		T result;
+		reserveIfExists(result, n, 0);
+		while(result.size() != n) {
+			addToContainer(result, rnd.next<value_type>(std::forward<Args>(args)...));
+		}
+		return result;
 	}
 };
 
 template<typename T>
-class DefaultReader<T, typename std::is_floating_point<T>::type> : public FloatReader<T> {};
+class DefaultGenerator<std::vector<T>> : public ContainerGenerator<std::vector<T>> {
+};
+
+template <>
+class DefaultGenerator<std::string> : public ContainerGenerator<std::string> {
+};
 
 template<typename T>
-inline bool areClose(T expected, T value, T epsilon){
-	return (std::abs(value - expected) / std::max(1.0, expected)) < epsilon;
-}
+class DefaultGenerator<std::deque<T>> : public ContainerGenerator<std::deque<T>> {
+};
+
+template<typename T>
+class DefaultGenerator<std::list<T>> : public ContainerGenerator<std::list<T>> {
+};
+
+template<typename T>
+class DefaultGenerator<std::set<T>> : public ContainerGenerator<std::set<T>> {
+};
+
+template<typename K, typename V>
+class DefaultGenerator<std::map<K, V>> : public ContainerGenerator<std::map<K, V>> {
+};
+
+template<typename T>
+class DefaultGenerator<std::multiset<T>> : public ContainerGenerator<std::multiset<T>> {
+};
+
+template<typename K, typename V>
+class DefaultGenerator<std::multimap<K, V>> : public ContainerGenerator<std::multimap<K, V>> {
+};
+
+
+#pragma once
+#include <set>
+template <typename T, typename Cmp = std::less<typename T::value_type>>
+class UniqueGenerator : public Generator<T> {
+	typedef typename T::value_type value_type;
+	typedef typename T::size_type size_type;
+	Cmp less;
+public:
+	UniqueGenerator(Cmp less = Cmp()): less(less) {}
+	template<typename... Args>
+	T generate(Random& rnd, size_type n, Args&&... args) const {
+		T result;
+		std::set<value_type, Cmp> used(less);
+		reserveIfExists(result, n, 0);
+		while(used.size() != n){
+			auto value = rnd.next<value_type>(std::forward<Args>(args)...);
+			if(used.find(value) == used.end()) {
+				addToContainer(result, value);
+				used.insert(value);
+			}
+		}
+		return result;
+	}
+};
+
+
+template<typename T>
+class DefaultGenerator<T, typename std::is_integral<T>::type> : public Generator<T>{
+	uintmax_t generateMax(Random& rnd) {
+		return rnd.nextBits(rnd.MAX_BITS);
+	}
+
+	T generateTo (Random& rnd, uintmax_t to) const {
+		uintmax_t disallowed = std::numeric_limits<uintmax_t>::max() / to * to;
+		uintmax_t number;
+		do {
+			number = rnd.nextBits(rnd.MAX_BITS);
+		}
+		while(number >= disallowed);
+		return number % to;
+	}
+public:
+	T generate(Random& rnd) const {
+		return rnd.nextBits(sizeof(T) * CHAR_BIT);
+	}
+
+	T generate(Random& rnd, T l, T r) const {
+		if(l > r)
+			throw VerdictException(Verdict::FAIL, "DefaultGenerator<int>::generate(): l > r");
+		if(l == std::numeric_limits<T>::min() && r == std::numeric_limits<T>::max())
+			return generate(rnd);
+
+		return generateTo(rnd, uintmax_t(r) - uintmax_t(l) + uintmax_t(1)) + l;
+	}
+};
+
+#pragma once
+#include <type_traits>
+#include <iostream>
+
+template <typename T, typename R, typename X>
+class AliasImpl;
+
+template<typename T, typename R>
+class AliasImpl<T, R, std::true_type> : public T {
+public:
+	/*implicit*/ AliasImpl(const T& value): T(value){}
+};
+
+template <typename T, typename R>
+class AliasImpl<T, R, std::false_type>{
+public:
+	/*implicit*/ AliasImpl(const T& value): value(value){}
+	operator T () const {
+		return value;
+	}
+private:
+	T value;
+};
+
+template <typename T, typename R>
+using Alias = AliasImpl<T, R, typename std::is_class<T>::type>;
+
+template <typename T, typename R>
+class DefaultReader<Alias<T,R>> : public Reader<Alias<T,R>> {
+	typedef Reader<Alias<T,R>> Base;
+public:
+	typedef typename Base::type type;
+	template<typename... Args>
+	type read(Args&&... args) {
+		return R().read(std::forward<Args>(args)...);
+	}
+};
+
+template <typename T, typename G>
+class DefaultGenerator<Alias<T,G>> : public Generator<Alias<T, G>> {
+public:
+	typedef typename Generator<Alias<T, G>>::type type;
+	template<typename... Args>
+	type generate(Args&&... args) {
+		return G().generate(std::forward<Args>(args)...);
+	}
+};
+#pragma once
 #include <fstream>
 #include <cstdlib>
 #include <cstring>
@@ -946,7 +1503,7 @@ private:
 #define TESTLIB_CHECK() void check(IStream& inf, IStream& ouf, IStream& ans); \
 int main(int argc, char** argv){ \
 	Verdict verdict = Verdict::FAIL; \
-	std::string message = "No message provided"; \
+	std::string message = "No verdict returned"; \
 	Options options; \
 	try { \
 		options.fill(argc, argv); \
@@ -998,146 +1555,99 @@ int main(){ \
 	return verdict.exitCode(); \
 } \
 void validate(IStream& inf)
-#include <string>
 
-class Separator{
-private:
-	std::string separator;
-public:
-	/*implicit*/ Separator(char c): separator(1, c){}
-	/*implicit*/ Separator(const char* s): separator(s){}
-	/*implicit*/ Separator(const std::string& s): separator(s){}
-	void read(IStream& stream) const {
-		for(char c: separator){
-			stream.readChar(c);
+uint64_t getHash(size_t argc, char** argv)
+{
+	uint64_t seed = 0, multiplier = 0x5f17;
+	uint64_t p = 1;
+	for (size_t i = 1; i < argc; ++i) {
+		for (size_t j = 0, n = strlen(argv[i]); j < n; ++j) {
+			seed += argv[i][j] * p;
+			p *= multiplier;
 		}
+		seed += p * ' ';
+		p *= multiplier;
 	}
-};
-#include <utility>
-#include <string>
+	return seed;
+}
 
-template<typename T, typename U>
-class DefaultReader<std::pair<T, U>> : Reader<std::pair<T, U>>{
+class ArgumentsReader {
 public:
-	
-	typedef std::pair<T, U> type;
-	type read(IStream& stream) const {
-		return read(stream, defaultSeparator(stream));
+	template<typename T, typename... Args>
+	T get(Args&&... args) {
+		rangeCheck();
+		std::stringstream ss(argv[cur]);
+		FailIStream in(std::unique_ptr<StreamReader>(new StdStreamReader(ss)), IStream::Mode::NON_STRICT);
+		return in.read<T>(std::forward<Args>(args)...);
 	}
-	type read(IStream& stream, const Separator& separator) const {
-		return read(stream, DefaultReader<T>(), DefaultReader<U>(), separator);
+	std::string getRaw() {
+		rangeCheck();
+		return argv[cur];
 	}
-	
-	template <typename ReaderT, typename ReaderU>
-	if_reader<ReaderT, T, if_reader<ReaderU, U, type>> read(IStream& stream, const ReaderT& readerT, const ReaderU& readerU) const {
-		return read(stream, readerT, readerU, defaultSeparator(stream));
-	}
-	
-	template <typename ReaderT, typename ReaderU>
-	if_reader<ReaderT, T, if_reader<ReaderU, U, type>> read(IStream& stream, const ReaderT& readerT, const ReaderU& readerU, const Separator& separator) const {
-		T t = stream.namedRead<T>("first", readerT);
-		separator.read(stream);
-		U u = stream.namedRead<U>("second", readerU);
-		return std::make_pair(std::move(t), std::move(u));
-	}
-	template <typename ReaderT>
-	if_reader<ReaderT, T, type> read(IStream& stream, const ReaderT& readerT) const {
-		static_assert(std::is_same<T, U>::value, "You may use only reader only for pair<T, T>");
-		return read(stream, readerT, defaultSeparator(stream));
-	}
-	
-	template <typename ReaderT>
-	if_reader<ReaderT, T, type> read(IStream& stream, const ReaderT& readerT, const Separator& separator) const {
-		static_assert(std::is_same<T, U>::value, "You may use only reader only for pair<T, T>");
-		return read(stream, readerT, readerT, separator);
-	}
-	
+	ArgumentsReader (int argc, char** argv): argc(argc), argv(argv), cur(0) {}
 private:
-	Separator defaultSeparator(IStream& stream) const {
-		return stream.getMode() == IStream::Mode::STRICT ? " " : "";
+	void rangeCheck() {
+		++cur;
+		if(cur == argc)
+			throw VerdictException(Verdict::FAIL, "Too few command-line arguments");
 	}
+	int argc;
+	char** argv;
+	int cur;
 };
-#include <utility>
-#include <type_traits>
-#include <vector>
 
-template<typename T>
-class DefaultReader<std::vector<T>> : Reader<std::vector<T>>{
-public:
-	typedef std::vector<T> type;
-	
-	template <typename Reader = DefaultReader<T>>
-	if_reader<Reader, T, type> read(IStream& stream, size_t numberElements, Reader reader = DefaultReader<T>()) const {
-		return read(stream, numberElements, defaultElementsSeparator(stream), reader);
-	}
-	
-	template <typename Reader = DefaultReader<T>>
-	if_reader<Reader, T, type> read(IStream& stream, size_t numberElements, const Separator& separator, Reader reader = DefaultReader<T>()) const {
-		std::vector<T> res;
-		res.reserve(numberElements);
-		for (size_t i = 0; i < numberElements; i++){
-			res.push_back(stream.namedRead<T>("index " + toString(i), reader));
-			if (i != numberElements - 1)
-				separator.read(stream);
-		}
-		return res;
-	}
-	
-	template <typename Reader = DefaultReader<T>>
-	if_reader<Reader, T, type> read(IStream& stream, Reader reader = DefaultReader<T>()) const {
-		return read(stream, defaultSizeSeparator(stream), defaultElementsSeparator(stream), reader);
-	}
-	
-	template <typename Reader = DefaultReader<T>>
-	if_reader<Reader, T, type> read(IStream& stream, const Separator& sizeSeparator, const Separator& elementsSeparator, Reader reader = DefaultReader<T>()) const {
-		size_t numberElements =  stream.namedRead<size_t>("Size");
-		sizeSeparator.read(stream);
-		return read(stream, numberElements, elementsSeparator, reader);
-	}
-	
-private:
-	Separator defaultSizeSeparator(IStream& stream) const {
-		return stream.getMode() == IStream::Mode::STRICT ? "\n" : "";
-	}
-	Separator defaultElementsSeparator(IStream& stream) const {
-		return stream.getMode() == IStream::Mode::STRICT ? " " : "";
-	}	
-};
+#define TESTLIB_GENERATE() void generate(Random& rnd, ArgumentsReader& args); \
+int main(int argc, char** argv) {\
+	Verdict verdict = Verdict::OK; \
+	\
+	Random rnd(getHash(argc, argv)); \
+	ArgumentsReader args(argc, argv); \
+	try { \
+		generate(rnd, args); \
+	} \
+	catch(VerdictException& ex) { \
+		verdict = Verdict::FAIL; \
+		std::cerr << "FAIL: " << ex.message << std::endl;\
+	} \
+	return verdict.exitCode(); \
+} \
+void generate(Random& rnd, ArgumentsReader& args)
+
+#pragma once
 #include <functional>
 #include <utility>
-#include <tuple>
 
 template <typename T>
-class ReaderWrapper : public Reader<typename T::type> {
+class GeneratorWrapper : public Generator<typename T::type> {
 public:
 	typedef typename T::type type;
 	
 	template <typename... Args>
-	ReaderWrapper(T reader, Args&& ... args) {
+	GeneratorWrapper(T generator, Args&& ... args) {
 		using namespace std::placeholders;
 
 		lambda = std::bind(
-			[reader](IStream& stream, Args... args) {
-				return reader.read(stream, args...);
+			[generator](Random& stream, Args... args) {
+				return generator.generate(stream, args...);
 			},
 			_1,
 			std::forward<Args> (args)...
 		);
 	}
 
-	type read(IStream& stream) {
+	type generate(Random& stream) {
 		return lambda(stream);
 	}
 private:
-	std::function<type(IStream&)> lambda;
+	std::function<type(Random&)> lambda;
 };
 
 template <typename T, typename... Args>
-ReaderWrapper<T> make_reader(T reader, Args&&... args) {
-	return ReaderWrapper<T>(reader, std::forward<Args> (args)...);
+GeneratorWrapper<T> make_generator(T generator, Args&&... args) {
+	return GeneratorWrapper<T>(generator, std::forward<Args> (args)...);
 }
 
 template <typename T, typename... Args>
-ReaderWrapper<DefaultReader<T>> make_default_reader(Args&&... args) {
-	return make_reader(DefaultReader<T>(), std::forward<Args>(args)...);
+GeneratorWrapper<DefaultGenerator<T>> make_default_generator(Args&&... args) {
+	return make_generator(DefaultGenerator<T>(), std::forward<Args>(args)...);
 }

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "reader.hpp"
-#include "istream.hpp"
+#include "testlib/reader.hpp"
+#include "testlib/istream.hpp"
 #include <algorithm>
 #include <limits>
 #include <string>

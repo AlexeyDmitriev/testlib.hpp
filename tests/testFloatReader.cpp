@@ -2,8 +2,8 @@
 #include <vector>
 #include <limits>
 #include <algorithm>
-#include "testlib/float.hpp"
-#include "testTools.hpp"
+#include "testlib/readers/float.hpp"
+#include "testReadTools.hpp"
 #include <boost/test/unit_test.hpp>
 #include "testFloat/utils.hpp"
 

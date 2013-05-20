@@ -1,8 +1,8 @@
 #include <vector>
 #include <boost/test/unit_test.hpp>
-#include "tests/testTools.hpp"
+#include "tests/testReadTools.hpp"
 #include "testlib/core.hpp"
-#include "testlib/vector.hpp"
+#include "testlib/readers/vector.hpp"
 #include "testlib/verdictFunctions.hpp"
 
 using std::vector;
