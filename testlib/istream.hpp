@@ -52,7 +52,7 @@ public:
 		skipUnused();
 		int c = get();
 		if(c == EOF)
-			quit(Verdict::PE, expectation("Character", "EOF"));				
+			quit(Verdict::PE, expectation("Character", "EOF"));
 		return c;
 	}
 	
@@ -74,7 +74,8 @@ public:
 	
 	void readEoln(){
 	#ifdef ON_WINDOWS
-		readChar('\r');
+		if(mode == Mode::STRICT)
+			readChar('\r');
 	#endif
 		readChar('\n');
 	}
@@ -86,7 +87,7 @@ public:
 			quit(Verdict::PE, expectation("EOF", char(c)));
 	}
 	
-	std::string readToken(){	
+	std::string readToken(){
 		buffer.clear();
 		skipUnused();
 		while(!isWhiteSpace(stream->peek()))
