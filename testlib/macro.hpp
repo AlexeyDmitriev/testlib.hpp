@@ -57,9 +57,9 @@ struct Options{
 			xml = true;
 		}
 
-		input.open(argv[1], "r");
-		output.open(argv[2], "r");
-		answer.open(argv[3], "r");
+		input.open(argv[1], "rb");
+		output.open(argv[2], "rb");
+		answer.open(argv[3], "rb");
 
 		if(input.fail() || output.fail() || answer.fail())
 			throw VerdictException(Verdict::FAIL, "Can't open files");
@@ -108,8 +108,23 @@ int main(int argc, char** argv){ \
 } \
 void check(IStream& inf, IStream& ouf, IStream& ans)
 
+#ifdef ON_WINDOWS
+#include <fcntl.h>
+#include <io.h>
+#endif
+void setBinaryMode(FILE* file) {
+	#ifdef ON_WINDOWS
+		#ifdef _MSC_VER
+			_setmode(_fileno(file), O_BINARY);
+		#else
+			setmode(fileno(file), O_BINARY);
+		#endif
+	#endif
+}
+
 #define TESTLIB_VALIDATE() void validate(IStream&); \
 int main(){ \
+	setBinaryMode(stdin); \
 	Verdict verdict = Verdict::OK; \
 	std::string message = "No message provided"; \
 	FailIStream input(std::unique_ptr<StreamReader>(new BufferedFileReader(File(stdin))), IStream::Mode::STRICT); \
